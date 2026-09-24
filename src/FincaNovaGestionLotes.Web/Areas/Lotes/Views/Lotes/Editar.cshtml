@@ -1,0 +1,24 @@
+@model LoteFormViewModel
+@{
+    ViewData["Title"] = $"Editar {Ui.TipoLoteTexto(Model.Tipo).ToLower()} {Model.Codigo}";
+}
+
+<h1 class="h3 mb-3">@ViewData["Title"]</h1>
+
+<div class="card">
+    <div class="card-body">
+        <form asp-action="Editar" method="post">
+            <input type="hidden" asp-for="Id" />
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+            <partial name="_FormFields" />
+            <div class="mt-4 d-flex gap-2">
+                <button type="submit" class="btn btn-success">Actualizar</button>
+                <a asp-action="Detalle" asp-route-id="@Model.Id" class="btn btn-outline-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

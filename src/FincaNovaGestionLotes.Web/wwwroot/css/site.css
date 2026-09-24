@@ -1,0 +1,78 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+  background-color: #FAF7F2;
+}
+
+/* Paleta FincaNova: verde primario #2E7D32, verde secundario #66BB6A, café #6D4C41.
+   Bootstrap bundlado es 5.1, así que se sobreescribe con propiedades planas en vez
+   de las variables --bs-btn-* de 5.3. */
+.fn-navbar {
+  background: linear-gradient(135deg, #2E7D32 0%, #1f5e24 100%);
+  border-bottom: 3px solid #6D4C41;
+}
+
+.fn-bean-icon {
+  flex: none;
+}
+
+.card {
+  border-color: rgba(109, 76, 65, 0.15);
+}
+.card-header {
+  background-color: #F2E9DD;
+  font-weight: 600;
+}
+
+.btn-success {
+  background-color: #2E7D32;
+  border-color: #2E7D32;
+}
+.btn-success:hover, .btn-success:focus {
+  background-color: #256b29;
+  border-color: #256b29;
+}
+.btn-outline-success {
+  color: #2E7D32;
+  border-color: #2E7D32;
+}
+.btn-outline-success:hover {
+  background-color: #2E7D32;
+  border-color: #2E7D32;
+}
+
+.btn-warning, .btn-outline-warning:hover {
+  background-color: #6D4C41;
+  border-color: #6D4C41;
+  color: #fff;
+}
+.btn-outline-warning {
+  color: #6D4C41;
+  border-color: #6D4C41;
+}
+
+.badge.bg-success { background-color: #2E7D32 !important; }
+.badge.bg-primary { background-color: #66BB6A !important; }
+.badge.bg-warning { background-color: #6D4C41 !important; color: #fff; }
+
+.table thead {
+  background-color: #F2E9DD;
+}

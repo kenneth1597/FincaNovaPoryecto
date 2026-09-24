@@ -1,0 +1,23 @@
+@model LoteFormViewModel
+@{
+    ViewData["Title"] = Model.Tipo == TipoLote.MicroLote ? "Nuevo micro lote" : "Nuevo lote";
+}
+
+<h1 class="h3 mb-3">@ViewData["Title"]</h1>
+
+<div class="card">
+    <div class="card-body">
+        <form asp-action="Crear" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+            <partial name="_FormFields" />
+            <div class="mt-4 d-flex gap-2">
+                <button type="submit" class="btn btn-success">Guardar</button>
+                <a asp-action="Index" class="btn btn-outline-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
