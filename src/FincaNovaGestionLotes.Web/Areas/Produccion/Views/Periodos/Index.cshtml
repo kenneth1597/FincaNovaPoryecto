@@ -1,0 +1,111 @@
+﻿@model IEnumerable<FincaNovaGestionLotes.Web.Domain.Produccion.PeriodoProductivo>
+
+@{
+    ViewData["Title"] = "Periodos Productivos";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+    <div>
+        <h1 class="h3">Periodos Productivos</h1>
+
+        <p class="text-muted mb-0">
+            Registro de los períodos productivos de los lotes.
+        </p>
+    </div>
+
+    <a asp-action="Crear"
+       class="btn btn-success">
+        + Nuevo período
+    </a>
+
+</div>
+
+@if (TempData["Ok"] is string ok)
+{
+    <div class="alert alert-success">
+        @ok
+    </div>
+}
+
+@if (!Model.Any())
+{
+    <div class="alert alert-secondary">
+        Todavía no hay períodos productivos registrados.
+    </div>
+}
+else
+{
+    <div class="table-responsive">
+
+        <table class="table table-hover align-middle">
+
+            <thead>
+                <tr>
+                    <th>Lote</th>
+                    <th>Inicio</th>
+                    <th>Fin</th>
+                    <th>Estado</th>
+                    <th>Observaciones</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                @foreach (var periodo in Model)
+                {
+                    <tr>
+
+                        <td>
+                            <strong>
+                                @periodo.Lote.Codigo
+                            </strong>
+
+                            <div class="small text-muted">
+                                @periodo.Lote.Nombre
+                            </div>
+                        </td>
+
+                        <td>
+                            @periodo.FechaInicio.ToString("dd/MM/yyyy")
+                        </td>
+
+                        <td>
+                            @if (periodo.FechaFin.HasValue)
+                            {
+                                @periodo.FechaFin.Value.ToString("dd/MM/yyyy")
+                            }
+                            else
+                            {
+                                <span>—</span>
+                            }
+                        </td>
+
+                        <td>
+                            @if (periodo.Cerrado)
+                            {
+                                <span class="badge bg-secondary">
+                                    Cerrado
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-success">
+                                    En curso
+                                </span>
+                            }
+                        </td>
+
+                        <td>
+                            @(periodo.Observaciones ?? "—")
+                        </td>
+
+                    </tr>
+                }
+
+            </tbody>
+
+        </table>
+
+    </div>
+}

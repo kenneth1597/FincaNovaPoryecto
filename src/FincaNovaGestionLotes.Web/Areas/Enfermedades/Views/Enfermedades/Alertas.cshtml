@@ -1,0 +1,167 @@
+﻿@model IEnumerable<FincaNovaGestionLotes.Web.Domain.Enfermedades.Enfermedad>
+
+@{
+    ViewData["Title"] = "Alertas por recurrencia";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1>Alertas por recurrencia</h1>
+        <p class="text-muted mb-0">
+            Enfermedades que se han repetido en un mismo lote.
+        </p>
+    </div>
+
+    <a asp-action="Index"
+       class="btn btn-outline-secondary">
+        Historial
+    </a>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-success">
+        No se detectaron enfermedades recurrentes.
+    </div>
+}
+else
+{
+    foreach (var enfermedad in Model)
+    {
+        <div class="card shadow-sm mb-3">
+
+            <div class="card-body">
+
+                <div class="d-flex justify-content-between">
+
+                    <div>
+                        <h4>
+                            @enfermedad.Nombre
+                        </h4>
+
+                        <p class="mb-1">
+                            <strong>Lote:</strong>
+                            @enfermedad.Lote.Codigo
+                            —
+                            @enfermedad.Lote.Nombre
+                        </p>
+
+                        <p class="mb-1">
+                            <strong>Fecha:</strong>
+                            @enfermedad.FechaDeteccion.ToString("dd/MM/yyyy")
+                        </p>
+
+                        <p class="mb-1">
+                            <strong>Severidad:</strong>
+                            @enfermedad.Severidad
+                        </p>
+                    </div>
+
+                    <div>
+                        @if (enfermedad.Atendida)
+                        {
+                            <span class="badge bg-success">
+                                Atendida
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger">
+                                Pendiente
+                            </span>
+                        }
+                    </div>
+
+                </div>
+
+                <hr />
+
+                <h5>Tratamientos aplicados</h5>
+
+                @if (!enfermedad.Tratamientos.Any())
+                {
+                    <p class="text-muted">
+                        No se han registrado tratamientos.
+                    </p>
+                }
+                else
+                {
+                    foreach (var tratamiento in enfermedad.Tratamientos)
+                    {
+                        <div class="border rounded p-3 mb-2">
+
+                            <strong>
+                                @tratamiento.Tratamiento
+                            </strong>
+
+                            <div>
+                                Fecha:
+                                @tratamiento.FechaAplicacion.ToString("dd/MM/yyyy")
+                            </div>
+
+                            @if (!string.IsNullOrWhiteSpace(tratamiento.Responsable))
+                            {
+                                <div>
+                                    Responsable:
+                                    @tratamiento.Responsable
+                                </div>
+                            }
+
+                            @if (tratamiento.Productos.Any())
+                            {
+                                <div class="mt-2">
+                                    <strong>Productos utilizados:</strong>
+
+                                    <ul>
+                                        @foreach (var producto in tratamiento.Productos)
+                                        {
+                                            <li>
+                                                @producto.NombreProducto -
+                                                @producto.Cantidad
+                                                @producto.Unidad
+                                            </li>
+                                        }
+                                    </ul>
+                                </div>
+                            }
+
+                        </div>
+                    }
+                }
+
+                @if (!enfermedad.Atendida)
+                {
+                    <form asp-action="MarcarAtendida"
+                          method="post"
+                          class="mt-3">
+
+                        <input type="hidden"
+                               name="id"
+                               value="@enfermedad.Id" />
+
+                        <button type="submit"
+                                class="btn btn-success">
+                            Marcar como atendida
+                        </button>
+
+                    </form>
+                }
+                else
+                {
+                    <div class="alert alert-success mt-3 mb-0">
+                        Esta alerta ya fue atendida
+                        @if (enfermedad.FechaAtendida.HasValue)
+                        {
+                            <span>
+                                el
+                                @enfermedad.FechaAtendida.Value.ToLocalTime().ToString("dd/MM/yyyy HH:mm")
+                            </span>
+                        }
+                    </div>
+                }
+
+            </div>
+
+        </div>
+    }
+}

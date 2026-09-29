@@ -1,0 +1,163 @@
+﻿@model IEnumerable<FincaNovaGestionLotes.Web.Domain.Auditoria.AuditLog>
+
+@{
+    ViewData["Title"] = "Bitácora";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+    <div>
+        <h1 class="h3">Bitácora</h1>
+
+        <p class="text-muted mb-0">
+            Historial de operaciones realizadas en el sistema.
+        </p>
+    </div>
+
+</div>
+
+<div class="card shadow-sm mb-4">
+
+    <div class="card-body">
+
+        <form asp-action="Index"
+              method="get"
+              class="row g-2">
+
+            <div class="col-md-3">
+
+                <label class="form-label">
+                    Entidad
+                </label>
+
+                <input type="text"
+                       name="entidad"
+                       value="@ViewBag.Entidad"
+                       class="form-control"
+                       placeholder="Ej. Lote" />
+
+            </div>
+
+            <div class="col-md-3">
+
+                <label class="form-label">
+                    Usuario
+                </label>
+
+                <input type="text"
+                       name="usuario"
+                       value="@ViewBag.Usuario"
+                       class="form-control"
+                       placeholder="Usuario" />
+
+            </div>
+
+            <div class="col-md-2">
+
+                <label class="form-label">
+                    Desde
+                </label>
+
+                <input type="date"
+                       name="desde"
+                       value="@ViewBag.Desde"
+                       class="form-control" />
+
+            </div>
+
+            <div class="col-md-2">
+
+                <label class="form-label">
+                    Hasta
+                </label>
+
+                <input type="date"
+                       name="hasta"
+                       value="@ViewBag.Hasta"
+                       class="form-control" />
+
+            </div>
+
+            <div class="col-md-2 d-flex align-items-end">
+
+                <button type="submit"
+                        class="btn btn-success w-100">
+                    Filtrar
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-secondary">
+        No existen registros en la bitácora con los filtros seleccionados.
+    </div>
+}
+else
+{
+    <div class="table-responsive">
+
+        <table class="table table-hover align-middle">
+
+            <thead>
+
+                <tr>
+                    <th>Fecha</th>
+                    <th>Usuario</th>
+                    <th>Acción</th>
+                    <th>Entidad</th>
+                    <th>ID</th>
+                    <th>Descripción</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                @foreach (var registro in Model)
+                {
+                    <tr>
+
+                        <td>
+                            @registro.FechaHora
+                            .ToLocalTime()
+                            .ToString("dd/MM/yyyy HH:mm")
+                        </td>
+
+                        <td>
+                            @(registro.Usuario ?? "Sistema")
+                        </td>
+
+                        <td>
+                            <span class="badge bg-secondary">
+                                @registro.Accion
+                            </span>
+                        </td>
+
+                        <td>
+                            @registro.Entidad
+                        </td>
+
+                        <td>
+                            @registro.EntidadId
+                        </td>
+
+                        <td>
+                            @registro.Descripcion
+                        </td>
+
+                    </tr>
+                }
+
+            </tbody>
+
+        </table>
+
+    </div>
+}
