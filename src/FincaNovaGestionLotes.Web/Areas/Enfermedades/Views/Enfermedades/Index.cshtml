@@ -1,0 +1,211 @@
+﻿@model FincaNovaGestionLotes.Web.Areas.Enfermedades.Models.EnfermedadFiltroViewModel
+
+@{
+    ViewData["Title"] = "Historial de enfermedades";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1>Historial de enfermedades</h1>
+        <p class="text-muted mb-0">
+            Consulta cronológica de enfermedades registradas.
+        </p>
+    </div>
+
+    <div class="d-flex gap-2">
+        <a asp-action="Alertas"
+           class="btn btn-outline-warning">
+            Alertas por recurrencia
+        </a>
+
+        <a asp-action="Crear"
+           class="btn btn-success">
+            Registrar enfermedad
+        </a>
+    </div>
+</div>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+
+        <form asp-action="Index"
+              method="get"
+              class="row g-3">
+
+            <div class="col-md-3">
+                <label class="form-label">
+                    Lote
+                </label>
+
+                <select asp-for="LoteId"
+                        class="form-select">
+
+                    <option value="">
+                        Todos los lotes
+                    </option>
+
+                    @foreach (var lote in Model.Lotes)
+                    {
+                        <option value="@lote.Id">
+                            @lote.Texto
+                        </option>
+                    }
+
+                </select>
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label">
+                    Enfermedad
+                </label>
+
+                <input asp-for="Nombre"
+                       class="form-control"
+                       placeholder="Buscar enfermedad" />
+            </div>
+
+            <div class="col-md-2">
+                <label class="form-label">
+                    Severidad
+                </label>
+
+                <select asp-for="Severidad"
+                        class="form-select">
+
+                    <option value="">
+                        Todas
+                    </option>
+
+                    <option value="Leve">Leve</option>
+                    <option value="Moderada">Moderada</option>
+                    <option value="Grave">Grave</option>
+
+                </select>
+            </div>
+
+            <div class="col-md-2">
+                <label asp-for="Desde"
+                       class="form-label"></label>
+
+                <input asp-for="Desde"
+                       type="date"
+                       class="form-control" />
+            </div>
+
+            <div class="col-md-2">
+                <label asp-for="Hasta"
+                       class="form-label"></label>
+
+                <input asp-for="Hasta"
+                       type="date"
+                       class="form-control" />
+            </div>
+
+            <div class="col-12">
+                <button class="btn btn-primary"
+                        type="submit">
+                    Filtrar
+                </button>
+
+                <a asp-action="Index"
+                   class="btn btn-outline-secondary">
+                    Limpiar
+                </a>
+            </div>
+
+        </form>
+
+    </div>
+</div>
+
+@if (!Model.Resultados.Any())
+{
+    <div class="alert alert-info">
+        No existen registros de enfermedades
+        con los filtros seleccionados.
+    </div>
+}
+else
+{
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+
+            <div class="table-responsive">
+
+                <table class="table table-hover mb-0">
+
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Lote</th>
+                            <th>Enfermedad</th>
+                            <th>Severidad</th>
+                            <th>Estado</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        @foreach (var item in Model.Resultados)
+                        {
+                            <tr>
+
+                                <td>
+                                    @item.FechaDeteccion.ToString("dd/MM/yyyy")
+                                </td>
+
+                                <td>
+                                    @item.LoteCodigo
+                                </td>
+
+                                <td>
+                                    @item.Nombre
+
+                                    @if (item.EsRecurrencia)
+                                    {
+                                        <span class="badge bg-warning text-dark ms-1">
+                                            Recurrente
+                                        </span>
+                                    }
+                                </td>
+
+                                <td>
+                                    @item.Severidad
+                                </td>
+
+                                <td>
+                                    @if (item.Atendida)
+                                    {
+                                        <span class="badge bg-success">
+                                            Atendida
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">
+                                            Pendiente
+                                        </span>
+                                    }
+                                </td>
+
+                                <td>
+                                    <a asp-action="Detalle"
+                                       asp-route-id="@item.Id"
+                                       class="btn btn-sm btn-outline-primary">
+                                        Ver
+                                    </a>
+                                </td>
+
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+    </div>
+}
