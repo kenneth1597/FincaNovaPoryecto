@@ -1,12 +1,15 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using FincaNovaGestionLotes.Web.Domain.Common;
+using FincaNovaGestionLotes.Web.Domain.Lotes;
 
 namespace FincaNovaGestionLotes.Web.Domain.Produccion;
 
 public class PeriodoProductivo : AuditableEntity
 {
-    [Required, StringLength(100)]
-    public string Nombre { get; set; } = string.Empty;
+    [Required]
+    public int LoteId { get; set; }
+
+    public Lote Lote { get; set; } = null!;
 
     [Required]
     public DateTime FechaInicio { get; set; }
@@ -16,9 +19,5 @@ public class PeriodoProductivo : AuditableEntity
     [StringLength(500)]
     public string? Observaciones { get; set; }
 
-    /// <summary>Cierre explícito del período; tener fecha de fin no lo cierra por sí solo.</summary>
     public bool Cerrado { get; set; }
-
-    /// <summary>Fincas y lotes que participan en el período.</summary>
-    public ICollection<PeriodoTerreno> Terrenos { get; set; } = new List<PeriodoTerreno>();
 }

@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using FincaNovaGestionLotes.Web.Domain.Common;
-using FincaNovaGestionLotes.Web.Domain.Inventario;
 
 namespace FincaNovaGestionLotes.Web.Domain.Enfermedades;
 
@@ -19,8 +18,4 @@ public class ProductoTratamiento : AuditableEntity
 
     [Required, StringLength(30)]
     public string Unidad { get; set; } = string.Empty;
-
-    /// <summary>Insumo del inventario del que se rebaja la cantidad (HU-24).</summary>
-    public int? InsumoId { get; set; }
-    public Insumo? Insumo { get; set; }
 }

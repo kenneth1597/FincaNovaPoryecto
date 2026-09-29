@@ -1,383 +1,200 @@
-﻿@model EnfermedadFiltroViewModel
+﻿@model FincaNovaGestionLotes.Web.Areas.Enfermedades.Models.EnfermedadFiltroViewModel
 
 @{
     ViewData["Title"] = "Historial de enfermedades";
 }
 
-<div class="fn-page-header">
-
+<div class="d-flex justify-content-between align-items-center mb-4">
     <div>
-
-        <h1 class="fn-page-title">
-
-            <span class="fn-page-title-icon">
-                <svg viewBox="0 0 24 24">
-                    <rect x="6" y="4" width="12" height="16" rx="2" />
-                    <path d="M9 4V2h6v2" />
-                    <path d="M12 8v8M8 12h8" />
-                </svg>
-            </span>
-
-            Historial de enfermedades
-
-        </h1>
-
-        <p class="fn-page-subtitle">
-            Consulta cronológica de enfermedades registradas en los lotes.
+        <h1>Historial de enfermedades</h1>
+        <p class="text-muted mb-0">
+            Consulta cronológica de enfermedades registradas.
         </p>
-
     </div>
 
-    <div class="fn-actions">
-
-        @if (Roles.EsAdmin(Context))
-        {
-            <a asp-action="Alertas"
-               class="fn-btn fn-btn-outline">
-                Alertas por recurrencia
-            </a>
-        }
-
-        <a asp-action="Crear"
-           class="fn-btn fn-btn-primary">
-            + Registrar enfermedad
+    <div class="d-flex gap-2">
+        <a asp-action="Alertas"
+           class="btn btn-outline-warning">
+            Alertas por recurrencia
         </a>
 
+        <a asp-action="Crear"
+           class="btn btn-success">
+            Registrar enfermedad
+        </a>
     </div>
-
 </div>
 
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
 
-<!-- FILTROS -->
+        <form asp-action="Index"
+              method="get"
+              class="row g-3">
 
-<div class="fn-card">
+            <div class="col-md-3">
+                <label class="form-label">
+                    Lote
+                </label>
 
-    <div class="fn-card-header">
+                <select asp-for="LoteId"
+                        class="form-select">
 
-        <h2 class="fn-card-title fn-filter-title">
+                    <option value="">
+                        Todos los lotes
+                    </option>
 
-            <span class="fn-filter-icon">
-                <svg viewBox="0 0 24 24">
-                    <path d="M4 5h16l-6 7v5l-4 2v-7L4 5Z" />
-                </svg>
-            </span>
-
-            Filtros de búsqueda
-
-        </h2>
-
-    </div>
-
-    <div class="fn-card-body">
-
-        <form method="get"
-              asp-action="Index">
-
-            <div class="row g-3">
-
-                <div class="col-md-4">
-
-                    <label class="fn-form-label">
-                        Lote
-                    </label>
-
-                    <select name="TerrenoId"
-                            class="fn-form-select">
-
-                        <option value="">
-                            Todas las fincas y lotes
+                    @foreach (var lote in Model.Lotes)
+                    {
+                        <option value="@lote.Id">
+                            @lote.Texto
                         </option>
+                    }
 
-                        @foreach (var lote in Model.Terrenos)
-                        {
-                            <option value="@lote.Id"
-                                    selected="@(Model.TerrenoId == lote.Id)">
-                                @lote.Texto
-                            </option>
-                        }
+                </select>
+            </div>
 
-                    </select>
+            <div class="col-md-3">
+                <label class="form-label">
+                    Enfermedad
+                </label>
 
-                </div>
+                <input asp-for="Nombre"
+                       class="form-control"
+                       placeholder="Buscar enfermedad" />
+            </div>
 
+            <div class="col-md-2">
+                <label class="form-label">
+                    Severidad
+                </label>
 
-                <div class="col-md-4">
+                <select asp-for="Severidad"
+                        class="form-select">
 
-                    <label class="fn-form-label">
-                        Enfermedad
-                    </label>
+                    <option value="">
+                        Todas
+                    </option>
 
-                    <select name="Nombre"
-                            class="fn-form-select">
-                        <option value="">Todas las enfermedades</option>
-                        @foreach (var nombre in CatalogoEnfermedades.Nombres)
-                        {
-                            <option value="@nombre" selected="@(Model.Nombre == nombre)">@nombre</option>
-                        }
-                    </select>
+                    <option value="Leve">Leve</option>
+                    <option value="Moderada">Moderada</option>
+                    <option value="Grave">Grave</option>
 
-                </div>
+                </select>
+            </div>
 
+            <div class="col-md-2">
+                <label asp-for="Desde"
+                       class="form-label"></label>
 
-                <div class="col-md-4">
+                <input asp-for="Desde"
+                       type="date"
+                       class="form-control" />
+            </div>
 
-                    <label class="fn-form-label">
-                        Severidad
-                    </label>
+            <div class="col-md-2">
+                <label asp-for="Hasta"
+                       class="form-label"></label>
 
-                    <select name="Severidad"
-                            class="fn-form-select">
+                <input asp-for="Hasta"
+                       type="date"
+                       class="form-control" />
+            </div>
 
-                        <option value="">
-                            Todas
-                        </option>
+            <div class="col-12">
+                <button class="btn btn-primary"
+                        type="submit">
+                    Filtrar
+                </button>
 
-                        <option value="Leve"
-                                selected="@(Model.Severidad == "Leve")">
-                            Leve
-                        </option>
-
-                        <option value="Moderada"
-                                selected="@(Model.Severidad == "Moderada")">
-                            Moderada
-                        </option>
-
-                        <option value="Grave"
-                                selected="@(Model.Severidad == "Grave")">
-                            Grave
-                        </option>
-
-                    </select>
-
-                </div>
-
-
-                <div class="col-md-4">
-
-                    <label class="fn-form-label">
-                        Estado del caso
-                    </label>
-
-                    <select name="Estado"
-                            class="fn-form-select">
-                        <option value="">Todos</option>
-                        <option value="Abiertas" selected="@(Model.Estado == "Abiertas")">Abiertas (activas y en tratamiento)</option>
-                        <option value="Cerradas" selected="@(Model.Estado == "Cerradas")">Cerradas</option>
-                    </select>
-
-                </div>
-
-
-                <div class="col-md-4">
-
-                    <label class="fn-form-label">
-                        Fecha desde
-                    </label>
-
-                    <input type="date"
-                           name="Desde"
-                           value="@(Model.Desde?.ToString("yyyy-MM-dd"))"
-                           class="fn-form-control" />
-
-                </div>
-
-
-                <div class="col-md-4">
-
-                    <label class="fn-form-label">
-                        Fecha hasta
-                    </label>
-
-                    <input type="date"
-                           name="Hasta"
-                           value="@(Model.Hasta?.ToString("yyyy-MM-dd"))"
-                           class="fn-form-control" />
-
-                </div>
-
-
-                <div class="col-md-4 d-flex align-items-end gap-2">
-
-                    <button type="submit"
-                            class="fn-btn fn-btn-primary">
-                        Filtrar
-                    </button>
-
-                    <a asp-action="Index"
-                       class="fn-btn fn-btn-outline">
-                        Limpiar
-                    </a>
-
-                </div>
-
+                <a asp-action="Index"
+                   class="btn btn-outline-secondary">
+                    Limpiar
+                </a>
             </div>
 
         </form>
 
     </div>
-
 </div>
 
-
-<!-- RESULTADOS -->
-
-<div class="fn-card">
-
-    <div class="fn-card-header d-flex justify-content-between align-items-center">
-
-        <h2 class="fn-card-title">
-            Registros
-        </h2>
-
-        <span class="fn-count">
-            @Model.Paginacion.Total registro(s)
-        </span>
-
+@if (!Model.Resultados.Any())
+{
+    <div class="alert alert-info">
+        No existen registros de enfermedades
+        con los filtros seleccionados.
     </div>
+}
+else
+{
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
 
+            <div class="table-responsive">
 
-    @if (!Model.Resultados.Any())
-    {
-        <div class="fn-empty">
-
-            <div class="fn-empty-title">
-                No existen registros de enfermedades con los filtros seleccionados.
-            </div>
-
-            <div class="fn-empty-text">
-                Intenta modificar los filtros o registrar una nueva enfermedad.
-            </div>
-
-        </div>
-    }
-    else
-    {
-
-        <div class="fn-card-body">
-
-            <div class="fn-table-wrapper">
-
-                <table class="fn-table">
+                <table class="table table-hover mb-0">
 
                     <thead>
-
                         <tr>
                             <th>Fecha</th>
-                            <th>Finca / lote</th>
+                            <th>Lote</th>
                             <th>Enfermedad</th>
                             <th>Severidad</th>
                             <th>Estado</th>
-                            <th>Descripción</th>
-                            <th>Acciones</th>
+                            <th></th>
                         </tr>
-
                     </thead>
 
                     <tbody>
 
-                        @foreach (var enfermedad in Model.Resultados)
+                        @foreach (var item in Model.Resultados)
                         {
                             <tr>
 
                                 <td>
-                                    @enfermedad.FechaDeteccion.ToString("dd/MM/yyyy")
+                                    @item.FechaDeteccion.ToString("dd/MM/yyyy")
                                 </td>
 
                                 <td>
-                                    <strong>
-                                        @enfermedad.TerrenoCodigo
-                                    </strong>
+                                    @item.LoteCodigo
                                 </td>
 
                                 <td>
-                                    @enfermedad.Nombre
+                                    @item.Nombre
 
-                                    @if (enfermedad.EsRecurrencia)
+                                    @if (item.EsRecurrencia)
                                     {
-                                        <div class="mt-1">
-                                            <span class="fn-badge fn-badge-warning">
-                                                Recurrente
-                                            </span>
-                                        </div>
-                                    }
-                                </td>
-
-                                <td>
-
-                                    @if (enfermedad.Severidad == "Grave")
-                                    {
-                                        <span class="fn-badge fn-badge-danger">
-                                            Grave
+                                        <span class="badge bg-warning text-dark ms-1">
+                                            Recurrente
                                         </span>
                                     }
-                                    else if (enfermedad.Severidad == "Moderada")
+                                </td>
+
+                                <td>
+                                    @item.Severidad
+                                </td>
+
+                                <td>
+                                    @if (item.Atendida)
                                     {
-                                        <span class="fn-badge fn-badge-warning">
-                                            Moderada
+                                        <span class="badge bg-success">
+                                            Atendida
                                         </span>
                                     }
                                     else
                                     {
-                                        <span class="fn-badge fn-badge-success">
-                                            Leve
+                                        <span class="badge bg-secondary">
+                                            Pendiente
                                         </span>
                                     }
-
                                 </td>
 
                                 <td>
-
-                                    <span class="fn-badge @Ui.EstadoEnfermedadBadge(enfermedad.Estado)">
-                                        @Ui.EstadoEnfermedadTexto(enfermedad.Estado)
-                                    </span>
-
-                                    @if (enfermedad.EsRecurrencia)
-                                    {
-                                        <div class="small text-muted mt-1">
-                                            Alerta @(enfermedad.Atendida ? "atendida" : "pendiente")
-                                        </div>
-                                    }
-
-                                </td>
-
-                                <td>
-                                    <span class="text-muted">
-                                        @(enfermedad.Descripcion ?? "Sin descripción")
-                                    </span>
-                                </td>
-
-                                <td>
-
-                                    <div class="fn-actions">
-
-                                        <a asp-action="Detalle"
-                                           asp-route-id="@enfermedad.Id"
-                                           class="fn-action-link">
-                                            Ver
-                                        </a>
-
-
-
-                                        @if (!enfermedad.Atendida && Roles.EsAdmin(Context))
-                                        {
-                                            <form asp-action="MarcarAtendida"
-                                                  method="post"
-                                                  class="d-inline">
-
-                                                <input type="hidden"
-                                                       name="id"
-                                                       value="@enfermedad.Id" />
-
-                                                <button type="submit"
-                                                        class="btn btn-link p-0 fn-action-link">
-                                                    Atender
-                                                </button>
-
-                                            </form>
-                                        }
-
-                                    </div>
-
+                                    <a asp-action="Detalle"
+                                       asp-route-id="@item.Id"
+                                       class="btn btn-sm btn-outline-primary">
+                                        Ver
+                                    </a>
                                 </td>
 
                             </tr>
@@ -390,9 +207,5 @@
             </div>
 
         </div>
-
-        <partial name="_Paginacion" model="Model.Paginacion" />
-
-    }
-
-</div>
+    </div>
+}

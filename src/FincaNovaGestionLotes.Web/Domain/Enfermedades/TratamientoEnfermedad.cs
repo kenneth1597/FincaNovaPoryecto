@@ -22,8 +22,6 @@ public class TratamientoEnfermedad : AuditableEntity
     [StringLength(500)]
     public string? Resultado { get; set; }
 
-    public EfectividadTratamiento? Efectividad { get; set; }
-
     [StringLength(500)]
     public string? Observaciones { get; set; }
 

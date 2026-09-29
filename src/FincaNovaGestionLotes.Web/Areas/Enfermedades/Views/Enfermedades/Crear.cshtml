@@ -26,16 +26,16 @@
                  class="text-danger mb-3"></div>
 
             <div class="mb-3">
-                <label asp-for="TerrenoId" class="form-label"></label>
+                <label asp-for="LoteId" class="form-label"></label>
 
-                <select asp-for="TerrenoId"
+                <select asp-for="LoteId"
                         class="form-select">
 
                     <option value="">
-                        -- Seleccione la finca o el lote --
+                        -- Seleccione un lote --
                     </option>
 
-                    @foreach (var lote in Model.Terrenos)
+                    @foreach (var lote in Model.Lotes)
                     {
                         <option value="@lote.Id">
                             @lote.Texto
@@ -44,21 +44,15 @@
 
                 </select>
 
-                <span asp-validation-for="TerrenoId"
+                <span asp-validation-for="LoteId"
                       class="text-danger"></span>
             </div>
 
             <div class="mb-3">
                 <label asp-for="Nombre" class="form-label"></label>
 
-                <select asp-for="Nombre"
-                        class="form-select">
-                    <option value="">-- Seleccione la enfermedad --</option>
-                    @foreach (var nombre in CatalogoEnfermedades.Nombres)
-                    {
-                        <option value="@nombre">@nombre</option>
-                    }
-                </select>
+                <input asp-for="Nombre"
+                       class="form-control" />
 
                 <span asp-validation-for="Nombre"
                       class="text-danger"></span>

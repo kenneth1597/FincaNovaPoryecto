@@ -1,0 +1,77 @@
+﻿@{
+    ViewData["Title"] = "Panel por estado";
+
+    var conteos =
+        (Dictionary<EstadoLote, int>)ViewBag.Conteos;
+
+    int total = (int)ViewBag.Total;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1">Panel por estado</h1>
+
+        <p class="text-muted mb-0">
+            Resumen de los lotes y micro lotes según su estado actual.
+        </p>
+    </div>
+
+    <a asp-action="Index"
+       class="btn btn-outline-secondary">
+        Ver lotes
+    </a>
+</div>
+
+<div class="alert alert-light border mb-4">
+    <strong>Total de registros activos:</strong>
+    @total
+</div>
+
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-3">
+
+    @foreach (EstadoLote estado in Enum.GetValues<EstadoLote>())
+    {
+        var cantidad = conteos.TryGetValue(
+            estado,
+            out var valor)
+            ? valor
+            : 0;
+
+        <div class="col">
+
+            <div class="card h-100 shadow-sm">
+
+                <div class="card-body text-center">
+
+                    <div class="fs-1 fw-bold text-@Ui.EstadoLoteColor(estado)">
+                        @cantidad
+                    </div>
+
+                    <h5 class="card-title">
+                        @Ui.EstadoLoteTexto(estado)
+                    </h5>
+
+                    @if (total > 0)
+                    {
+                        var porcentaje =
+                            cantidad * 100.0 / total;
+
+                        <p class="text-muted mb-0">
+                            @porcentaje.ToString("N1")%
+                        </p>
+                    }
+
+                    <a asp-action="Index"
+                       asp-route-estado="@estado"
+                       class="btn btn-sm btn-outline-secondary mt-3">
+                        Ver registros
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+    }
+
+</div>
