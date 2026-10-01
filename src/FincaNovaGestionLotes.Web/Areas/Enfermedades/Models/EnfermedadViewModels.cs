@@ -125,3 +125,37 @@ public class ProductoViewModel
     [StringLength(30)]
     public string Unidad { get; set; } = string.Empty;
 }
+
+public class EnfermedadEditarViewModel
+{
+    public int Id { get; set; }
+
+    [Required(ErrorMessage = "Debe seleccionar un lote.")]
+    [Display(Name = "Lote")]
+    public int LoteId { get; set; }
+
+    [Required(ErrorMessage = "El nombre de la enfermedad es obligatorio.")]
+    [StringLength(150)]
+    [Display(Name = "Enfermedad")]
+    public string Nombre { get; set; } = string.Empty;
+
+    [Required(ErrorMessage = "La fecha de detección es obligatoria.")]
+    [Display(Name = "Fecha de detección")]
+    public DateTime FechaDeteccion { get; set; }
+
+    [Required(ErrorMessage = "Debe indicar la severidad.")]
+    [Display(Name = "Severidad")]
+    public string Severidad { get; set; } = string.Empty;
+
+    [Required(ErrorMessage = "La descripción es obligatoria.")]
+    [StringLength(500)]
+    [Display(Name = "Descripción")]
+    public string Descripcion { get; set; } = string.Empty;
+
+    [StringLength(500)]
+    [Display(Name = "Observaciones")]
+    public string? Observaciones { get; set; }
+
+    public IEnumerable<LoteOpcionViewModel> Lotes { get; set; }
+        = Enumerable.Empty<LoteOpcionViewModel>();
+}
