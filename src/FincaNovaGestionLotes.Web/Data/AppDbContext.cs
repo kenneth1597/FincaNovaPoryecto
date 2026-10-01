@@ -1,9 +1,8 @@
 using FincaNovaGestionLotes.Web.Domain;
 using FincaNovaGestionLotes.Web.Domain.Auditoria;
 using FincaNovaGestionLotes.Web.Domain.Lotes;
+using FincaNovaGestionLotes.Web.Domain.Usuarios;
 using Microsoft.EntityFrameworkCore;
-using FincaNovaGestionLotes.Web.Domain.Enfermedades;
-using FincaNovaGestionLotes.Web.Domain.Produccion;
 
 namespace FincaNovaGestionLotes.Web.Data;
 
@@ -16,21 +15,16 @@ public class AppDbContext : DbContext
     public DbSet<Finca> Fincas => Set<Finca>();
     public DbSet<Lote> Lotes => Set<Lote>();
     public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
-
-    public DbSet<PeriodoProductivo> PeriodosProductivos
-    => Set<PeriodoProductivo>();
-
-    public DbSet<Enfermedad> Enfermedades => Set<Enfermedad>();
-
-    public DbSet<TratamientoEnfermedad> TratamientosEnfermedad
-        => Set<TratamientoEnfermedad>();
-
-    public DbSet<ProductoTratamiento> ProductosTratamiento
-        => Set<ProductoTratamiento>();
+    public DbSet<Usuario> Usuarios => Set<Usuario>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
+
+        builder.Entity<Usuario>(e =>
+        {
+            e.HasIndex(u => u.Email).IsUnique();
+        });
 
         builder.Entity<Lote>(e =>
         {
@@ -49,47 +43,6 @@ public class AppDbContext : DbContext
             property.SetPrecision(18);
             property.SetScale(2);
         }
-
-        builder.Entity<Enfermedad>(e =>
-        {
-            e.HasOne(x => x.Lote)
-                .WithMany()
-                .HasForeignKey(x => x.LoteId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            e.HasIndex(x => new { x.LoteId, x.Nombre, x.FechaDeteccion });
-        });
-
-        builder.Entity<TratamientoEnfermedad>(e =>
-        {
-            e.HasOne(x => x.Enfermedad)
-                .WithMany(x => x.Tratamientos)
-                .HasForeignKey(x => x.EnfermedadId)
-                .OnDelete(DeleteBehavior.Cascade);
-        });
-
-        builder.Entity<ProductoTratamiento>(e =>
-        {
-            e.HasOne(x => x.TratamientoEnfermedad)
-                .WithMany(x => x.Productos)
-                .HasForeignKey(x => x.TratamientoEnfermedadId)
-                .OnDelete(DeleteBehavior.Cascade);
-        });
-
-        builder.Entity<PeriodoProductivo>(e =>
-        {
-            e.HasOne(p => p.Lote)
-                .WithMany()
-                .HasForeignKey(p => p.LoteId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            e.HasIndex(p => new
-            {
-                p.LoteId,
-                p.FechaInicio
-            });
-        });
-
     }
 
     public override int SaveChanges()
