@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="es">
 <head>
     <meta charset="utf-8" />
@@ -25,6 +26,43 @@
                             <a class="nav-link text-white" asp-area="Lotes" asp-controller="Lotes" asp-action="Index">Lotes y micro lotes</a>
                         </li>
                     </ul>
+
+                    <ul class="navbar-nav">
+                        @{
+                            var usuarioNombre = Context.Session.GetString("UsuarioNombre");
+                        }
+                        @if (!string.IsNullOrEmpty(usuarioNombre))
+                        {
+                            <li class="nav-item">
+                                <span class="nav-link text-white fw-bold">Hola, @usuarioNombre</span>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-white-50" asp-area="" asp-controller="Account" asp-action="Logout">Cerrar Sesión</a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-white" asp-area="" asp-controller="Account" asp-action="Login">Iniciar Sesión</a>
+                            </li>
+                        }
+                        @{
+    var usuarioRol = Context.Session.GetString("UsuarioRol");
+}
+
+<ul class="navbar-nav me-auto">
+    <li class="nav-item">
+        <a class="nav-link text-white" asp-area="Lotes" asp-controller="Lotes" asp-action="Index">Lotes y micro lotes</a>
+    </li>
+    @if (usuarioRol == "Administrador" || usuarioRol == "Dueño")
+    {
+        <li class="nav-item">
+            <a class="nav-link text-white" asp-area="" asp-controller="Usuarios" asp-action="Index">Gestión de Usuarios</a>
+        </li>
+    }
+</ul>
+                    </ul>
+                   
                 </div>
             </div>
         </nav>
