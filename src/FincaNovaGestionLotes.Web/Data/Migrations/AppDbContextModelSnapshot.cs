@@ -54,6 +54,161 @@ namespace FincaNovaGestionLotes.Web.Data.Migrations
                     b.ToTable("AuditLogs");
                 });
 
+            modelBuilder.Entity("FincaNovaGestionLotes.Web.Domain.Enfermedades.Enfermedad", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Atendida")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("AtendidaPor")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CreadoPor")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Descripcion")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime?>("FechaAtendida")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("FechaCreacion")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("FechaDeteccion")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("FechaModificacion")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("LoteId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ModificadoPor")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("Observaciones")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Severidad")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LoteId", "Nombre", "FechaDeteccion");
+
+                    b.ToTable("Enfermedades");
+                });
+
+            modelBuilder.Entity("FincaNovaGestionLotes.Web.Domain.Enfermedades.ProductoTratamiento", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("Cantidad")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("CreadoPor")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("FechaCreacion")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("FechaModificacion")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ModificadoPor")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NombreProducto")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<int>("TratamientoEnfermedadId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Unidad")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TratamientoEnfermedadId");
+
+                    b.ToTable("ProductosTratamiento");
+                });
+
+            modelBuilder.Entity("FincaNovaGestionLotes.Web.Domain.Enfermedades.TratamientoEnfermedad", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CreadoPor")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("EnfermedadId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("FechaAplicacion")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("FechaCreacion")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("FechaModificacion")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ModificadoPor")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Observaciones")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Responsable")
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("Resultado")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Tratamiento")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EnfermedadId");
+
+                    b.ToTable("TratamientosEnfermedad");
+                });
+
             modelBuilder.Entity("FincaNovaGestionLotes.Web.Domain.Finca", b =>
                 {
                     b.Property<int>("Id")
@@ -178,7 +333,7 @@ namespace FincaNovaGestionLotes.Web.Data.Migrations
                     b.ToTable("Lotes");
                 });
 
-            modelBuilder.Entity("FincaNovaGestionLotes.Web.Domain.Usuarios.Usuario", b =>
+            modelBuilder.Entity("FincaNovaGestionLotes.Web.Domain.Produccion.PeriodoProductivo", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -186,49 +341,72 @@ namespace FincaNovaGestionLotes.Web.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<bool>("Activo")
+                    b.Property<bool>("Cerrado")
                         .HasColumnType("bit");
 
                     b.Property<string>("CreadoPor")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<DateTime>("FechaCreacion")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("FechaFin")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("FechaInicio")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("FechaModificacion")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("LoteId")
+                        .HasColumnType("int");
+
                     b.Property<string>("ModificadoPor")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Nombre")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PasswordHash")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ResetPasswordToken")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("ResetPasswordTokenExpiration")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Rol")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<string>("Observaciones")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Email")
-                        .IsUnique();
+                    b.HasIndex("LoteId", "FechaInicio");
 
-                    b.ToTable("Usuarios");
+                    b.ToTable("PeriodosProductivos");
+                });
+
+            modelBuilder.Entity("FincaNovaGestionLotes.Web.Domain.Enfermedades.Enfermedad", b =>
+                {
+                    b.HasOne("FincaNovaGestionLotes.Web.Domain.Lotes.Lote", "Lote")
+                        .WithMany()
+                        .HasForeignKey("LoteId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Lote");
+                });
+
+            modelBuilder.Entity("FincaNovaGestionLotes.Web.Domain.Enfermedades.ProductoTratamiento", b =>
+                {
+                    b.HasOne("FincaNovaGestionLotes.Web.Domain.Enfermedades.TratamientoEnfermedad", "TratamientoEnfermedad")
+                        .WithMany("Productos")
+                        .HasForeignKey("TratamientoEnfermedadId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TratamientoEnfermedad");
+                });
+
+            modelBuilder.Entity("FincaNovaGestionLotes.Web.Domain.Enfermedades.TratamientoEnfermedad", b =>
+                {
+                    b.HasOne("FincaNovaGestionLotes.Web.Domain.Enfermedades.Enfermedad", "Enfermedad")
+                        .WithMany("Tratamientos")
+                        .HasForeignKey("EnfermedadId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Enfermedad");
                 });
 
             modelBuilder.Entity("FincaNovaGestionLotes.Web.Domain.Lotes.Lote", b =>
@@ -247,6 +425,27 @@ namespace FincaNovaGestionLotes.Web.Data.Migrations
                     b.Navigation("Finca");
 
                     b.Navigation("LotePadre");
+                });
+
+            modelBuilder.Entity("FincaNovaGestionLotes.Web.Domain.Produccion.PeriodoProductivo", b =>
+                {
+                    b.HasOne("FincaNovaGestionLotes.Web.Domain.Lotes.Lote", "Lote")
+                        .WithMany()
+                        .HasForeignKey("LoteId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Lote");
+                });
+
+            modelBuilder.Entity("FincaNovaGestionLotes.Web.Domain.Enfermedades.Enfermedad", b =>
+                {
+                    b.Navigation("Tratamientos");
+                });
+
+            modelBuilder.Entity("FincaNovaGestionLotes.Web.Domain.Enfermedades.TratamientoEnfermedad", b =>
+                {
+                    b.Navigation("Productos");
                 });
 
             modelBuilder.Entity("FincaNovaGestionLotes.Web.Domain.Finca", b =>

@@ -336,7 +336,11 @@
                                             Ver
                                         </a>
 
-
+                                        <a asp-action="CrearTratamiento"
+                                           asp-route-id="@enfermedad.Id"
+                                           class="fn-action-link">
+                                            Tratamiento
+                                        </a>
 
                                         @if (!enfermedad.Atendida)
                                         {
