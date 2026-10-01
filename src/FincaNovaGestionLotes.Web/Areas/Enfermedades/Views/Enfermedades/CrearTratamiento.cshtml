@@ -1,0 +1,132 @@
+﻿@model FincaNovaGestionLotes.Web.Areas.Enfermedades.Models.TratamientoCrearViewModel
+
+@{
+    ViewData["Title"] = "Registrar tratamiento";
+}
+
+<h1>Registrar tratamiento</h1>
+
+<p class="text-muted">
+    Registre el tratamiento aplicado y los productos utilizados.
+</p>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+
+        <form asp-action="CrearTratamiento"
+              method="post">
+
+            <input type="hidden"
+                   asp-for="EnfermedadId" />
+
+            <div asp-validation-summary="ModelOnly"
+                 class="text-danger mb-3"></div>
+
+            <div class="mb-3">
+                <label asp-for="Tratamiento"
+                       class="form-label"></label>
+
+                <textarea asp-for="Tratamiento"
+                          class="form-control"
+                          rows="3"></textarea>
+
+                <span asp-validation-for="Tratamiento"
+                      class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="FechaAplicacion"
+                       class="form-label"></label>
+
+                <input asp-for="FechaAplicacion"
+                       type="date"
+                       class="form-control" />
+
+                <span asp-validation-for="FechaAplicacion"
+                      class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Responsable"
+                       class="form-label"></label>
+
+                <input asp-for="Responsable"
+                       class="form-control" />
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Resultado"
+                       class="form-label"></label>
+
+                <textarea asp-for="Resultado"
+                          class="form-control"
+                          rows="3"></textarea>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Observaciones"
+                       class="form-label"></label>
+
+                <textarea asp-for="Observaciones"
+                          class="form-control"
+                          rows="3"></textarea>
+            </div>
+
+            <hr />
+
+            <h4>Productos utilizados</h4>
+
+            <p class="text-muted">
+                Registre los productos utilizados durante el tratamiento.
+            </p>
+
+            <div id="productos">
+
+                @for (int i = 0; i < Model.Productos.Count; i++)
+                {
+                    <div class="row g-2 mb-2 producto">
+
+                        <div class="col-md-5">
+                            <input asp-for="Productos[i].NombreProducto"
+                                   class="form-control"
+                                   placeholder="Nombre del producto" />
+                        </div>
+
+                        <div class="col-md-3">
+                            <input asp-for="Productos[i].Cantidad"
+                                   class="form-control"
+                                   type="number"
+                                   step="0.01"
+                                   placeholder="Cantidad" />
+                        </div>
+
+                        <div class="col-md-3">
+                            <input asp-for="Productos[i].Unidad"
+                                   class="form-control"
+                                   placeholder="Unidad" />
+                        </div>
+
+                    </div>
+                }
+
+            </div>
+
+            <button type="submit"
+                    class="btn btn-success mt-3">
+                Registrar tratamiento
+            </button>
+
+            <a asp-action="Detalle"
+               asp-route-id="@Model.EnfermedadId"
+               class="btn btn-outline-secondary mt-3">
+                Cancelar
+            </a>
+
+        </form>
+
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
