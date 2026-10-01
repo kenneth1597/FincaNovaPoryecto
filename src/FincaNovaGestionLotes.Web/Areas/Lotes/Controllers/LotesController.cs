@@ -22,30 +22,7 @@ public class LotesController : Controller
         _audit = audit;
     }
 
-    [HttpGet]
-    public async Task<IActionResult> Panel()
-    {
-        var lotes = _db.Lotes
-            .AsNoTracking()
-            .Where(l => !l.Eliminado);
-
-        var conteos = await lotes
-            .GroupBy(l => l.Estado)
-            .Select(g => new
-            {
-                Estado = g.Key,
-                Cantidad = g.Count()
-            })
-            .ToDictionaryAsync(x => x.Estado, x => x.Cantidad);
-
-        ViewBag.Conteos = conteos;
-
-        ViewBag.Total = await lotes.CountAsync();
-
-        return View();
-    }
-
-
+    
     [HttpGet]
     public async Task<IActionResult> Index(LoteFiltroViewModel filtro)
     {
@@ -244,7 +221,7 @@ public class LotesController : Controller
 
         lote.Estado = estado.Value;
         lote.FechaUltimoCambioEstado = DateTime.UtcNow;
-        lote.EstadoCambiadoPor = User.Identity?.Name;
+        lote.EstadoCambiadoPor = null;
         await _db.SaveChangesAsync();
 
         await _audit.RegistrarAsync(AccionAuditoria.Modificar, nameof(Lote), lote.Id.ToString(),
