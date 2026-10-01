@@ -3,40 +3,35 @@ using FincaNovaGestionLotes.Web.Domain.Usuarios;
 using FincaNovaGestionLotes.Web.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using FincaNovaGestionLotes.Web.Filters;
-using FincaNovaGestionLotes.Web.ViewSupport;
 using Microsoft.EntityFrameworkCore;
 
 namespace FincaNovaGestionLotes.Web.Controllers;
 
-[RequiereRol(Roles.Administrador, Roles.Duenio)]
-public class UsuariosController(AppDbContext context) : Controller
+public class UsuariosController : Controller
 {
-    private readonly AppDbContext _context = context;
+    private readonly AppDbContext _context;
+
+    public UsuariosController(AppDbContext context)
+    {
+        _context = context;
+    }
 
     // Método auxiliar para proteger que solo Administrador o Dueño entren
     private bool EsAdminODueno()
     {
         var rol = HttpContext.Session.GetString("UsuarioRol");
-        return string.Equals(rol, "Administrador", StringComparison.OrdinalIgnoreCase) ||
-               string.Equals(rol, "Dueño", StringComparison.OrdinalIgnoreCase);
+        return rol == "Administrador" || rol == "Dueño";
     }
 
     // GET: /Usuarios
-    public async Task<IActionResult> Index(int pagina = 1)
+    public async Task<IActionResult> Index()
     {
-        var rolActual = HttpContext.Session.GetString("UsuarioRol");
+        if (!EsAdminODueno()) return Forbid();
 
-        if (rolActual != "Administrador" && rolActual != "Dueño")
-        {
-            return RedirectToAction("AccessDenied", "Account");
-        }
+        var usuarios = await _context.Usuarios
+            .OrderByDescending(u => u.FechaCreacion)
+            .ToListAsync();
 
-        var (usuarios, paginacion) = await _context.Usuarios
-            .OrderBy(u => u.Nombre)
-            .PaginarAsync(pagina);
-
-        ViewBag.Paginacion = paginacion;
         return View(usuarios);
     }
 
@@ -55,13 +50,9 @@ public class UsuariosController(AppDbContext context) : Controller
     {
         if (!EsAdminODueno()) return Forbid();
 
-        if (!Roles.EsValido(model.Rol)) ModelState.AddModelError(nameof(model.Rol), "Seleccione un rol válido.");
-
         if (!ModelState.IsValid) return View(model);
 
-        var existeEmail = await _context.Usuarios
-            .AnyAsync(u => u.Email.ToLower() == model.Email.ToLower());
-
+        var existeEmail = await _context.Usuarios.AnyAsync(u => u.Email.ToLower() == model.Email.ToLower());
         if (existeEmail)
         {
             ModelState.AddModelError("Email", "El correo ya está registrado en el sistema.");
@@ -78,7 +69,7 @@ public class UsuariosController(AppDbContext context) : Controller
             Rol = model.Rol,
             Activo = model.Activo,
             FechaCreacion = DateTime.Now,
-            CreadoPor = usuarioActual
+            CreadoPor = usuarioActual // Guarda quién creó el usuario
         };
 
         _context.Usuarios.Add(nuevoUsuario);
@@ -115,14 +106,12 @@ public class UsuariosController(AppDbContext context) : Controller
     {
         if (!EsAdminODueno()) return Forbid();
 
-        if (!Roles.EsValido(model.Rol)) ModelState.AddModelError(nameof(model.Rol), "Seleccione un rol válido.");
-
         if (!ModelState.IsValid) return View(model);
 
         var usuario = await _context.Usuarios.FindAsync(model.Id);
         if (usuario == null) return NotFound();
 
-        // Corrección de la Línea 116: Traducción compatible con EF Core a SQL LOWER()
+        // Validar correo duplicado si se cambió el email
         var emailExiste = await _context.Usuarios
             .AnyAsync(u => u.Email.ToLower() == model.Email.ToLower() && u.Id != model.Id);
 
@@ -140,9 +129,11 @@ public class UsuariosController(AppDbContext context) : Controller
         usuario.Rol = model.Rol;
         usuario.Activo = model.Activo;
 
+        // Registrar auditoría de modificación
         usuario.FechaModificacion = DateTime.Now;
         usuario.ModificadoPor = usuarioActual;
 
+        // Si digitó una contraseña nueva, actualizarla
         if (!string.IsNullOrWhiteSpace(model.NewPassword))
         {
             usuario.PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.NewPassword);
@@ -152,70 +143,6 @@ public class UsuariosController(AppDbContext context) : Controller
         await _context.SaveChangesAsync();
 
         TempData["SuccessMessage"] = $"Usuario '{usuario.Nombre}' actualizado correctamente.";
-        return RedirectToAction(nameof(Index));
-    }
-
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> ToggleEstado(int id)
-    {
-        var rolActual = HttpContext.Session.GetString("UsuarioRol");
-        if (rolActual != "Administrador" && rolActual != "Dueño")
-        {
-            return RedirectToAction("AccessDenied", "Account");
-        }
-
-        var usuario = await _context.Usuarios.FindAsync(id);
-        if (usuario == null) return NotFound();
-
-        var usuarioActualId = HttpContext.Session.GetInt32("UsuarioId");
-        if (usuario.Id == usuarioActualId)
-        {
-            TempData["ErrorMessage"] = "No puedes cambiar el estado de tu propia cuenta.";
-            return RedirectToAction(nameof(Index));
-        }
-
-        usuario.Activo = !usuario.Activo;
-        _context.Usuarios.Update(usuario);
-        await _context.SaveChangesAsync();
-
-        string mensajeEstado = usuario.Activo ? "reactivado" : "desactivado";
-        TempData["SuccessMessage"] = $"El usuario {usuario.Nombre} ha sido {mensajeEstado}.";
-
-        return RedirectToAction(nameof(Index));
-    }
-
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Delete(int id)
-    {
-        var rolActual = HttpContext.Session.GetString("UsuarioRol");
-        if (rolActual != "Administrador" && rolActual != "Dueño")
-        {
-            return RedirectToAction("AccessDenied", "Account");
-        }
-
-        var usuario = await _context.Usuarios.FindAsync(id);
-        if (usuario == null) return NotFound();
-
-        var usuarioActualId = HttpContext.Session.GetInt32("UsuarioId");
-        if (usuario.Id == usuarioActualId)
-        {
-            TempData["ErrorMessage"] = "No puedes borrar tu propia cuenta de la base de datos.";
-            return RedirectToAction(nameof(Index));
-        }
-
-        try
-        {
-            _context.Usuarios.Remove(usuario);
-            await _context.SaveChangesAsync();
-            TempData["SuccessMessage"] = $"El usuario {usuario.Nombre} ha sido eliminado permanentemente de la base de datos.";
-        }
-        catch (DbUpdateException)
-        {
-            TempData["ErrorMessage"] = "No se puede eliminar el usuario de la base de datos porque tiene registros asociados. Te recomendamos desactivarlo en su lugar.";
-        }
-
         return RedirectToAction(nameof(Index));
     }
 }

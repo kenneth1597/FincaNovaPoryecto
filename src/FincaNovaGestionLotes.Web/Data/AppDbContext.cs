@@ -1,6 +1,7 @@
 using FincaNovaGestionLotes.Web.Domain;
 using FincaNovaGestionLotes.Web.Domain.Auditoria;
 using FincaNovaGestionLotes.Web.Domain.Lotes;
+using FincaNovaGestionLotes.Web.Domain.Usuarios;
 using Microsoft.EntityFrameworkCore;
 using FincaNovaGestionLotes.Web.Domain.Enfermedades;
 using FincaNovaGestionLotes.Web.Domain.Produccion;
@@ -16,6 +17,7 @@ public class AppDbContext : DbContext
     public DbSet<Finca> Fincas => Set<Finca>();
     public DbSet<Lote> Lotes => Set<Lote>();
     public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
+    public DbSet<Usuario> Usuarios => Set<Usuario>();
 
     public DbSet<PeriodoProductivo> PeriodosProductivos
     => Set<PeriodoProductivo>();
@@ -31,6 +33,11 @@ public class AppDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
+
+        builder.Entity<Usuario>(e =>
+        {
+            e.HasIndex(u => u.Email).IsUnique();
+        });
 
         builder.Entity<Lote>(e =>
         {

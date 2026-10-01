@@ -2,40 +2,30 @@
 using FincaNovaGestionLotes.Web.Data;
 using FincaNovaGestionLotes.Web.Domain.Usuarios;
 using FincaNovaGestionLotes.Web.Models;
-using FincaNovaGestionLotes.Web.Services;
+using FincaNovaGestionLotes.Web.Services; // <-- Asegúrate de tener la referencia a tus servicios
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
-using Microsoft.AspNetCore.Authorization;
-using FincaNovaGestionLotes.Web.Filters;
 
 namespace FincaNovaGestionLotes.Web.Controllers;
 
 public class AccountController : Controller
 {
     private readonly AppDbContext _context;
-    private readonly IEmailService _emailService; 
 
-    public AccountController(AppDbContext context, IEmailService emailService)
+    public AccountController(AppDbContext context)
     {
         _context = context;
-        _emailService = emailService;
     }
 
     #region Login
     [HttpGet]
-    [PermitirSinSesion]
     public IActionResult Login()
     {
-        if (HttpContext.Session.GetInt32("UsuarioId") is not null)
-            return RedirectToAction("Index", "Home");
-
         return View();
     }
 
     [HttpPost]
-    [PermitirSinSesion]
     public async Task<IActionResult> Login(LoginViewModel model)
     {
         if (!ModelState.IsValid)
@@ -44,52 +34,11 @@ public class AccountController : Controller
         var usuario = await _context.Usuarios
             .FirstOrDefaultAsync(u => u.Email.ToLower() == model.Email.ToLower() && u.Activo);
 
-        // 1. Verificar si el usuario existe
-        if (usuario == null)
+        if (usuario == null || !BCrypt.Net.BCrypt.Verify(model.Password, usuario.PasswordHash))
         {
             ModelState.AddModelError(string.Empty, "Credenciales incorrectas.");
             return View(model);
         }
-
-        // 2. Verificar si la cuenta ya está bloqueada por intentos fallidos
-        if (usuario.Bloqueado)
-        {
-            TempData["ErrorMessage"] = "Tu cuenta ha sido bloqueada por superar el límite de intentos fallidos. Por favor, restablece tu contraseña para desbloquearla.";
-            return RedirectToAction("ForgotPassword");
-        }
-
-        // 3. Validar la contraseña con BCrypt
-        if (!BCrypt.Net.BCrypt.Verify(model.Password, usuario.PasswordHash))
-        {
-            // Incrementar el contador de intentos fallidos
-            usuario.IntentosFallidos++;
-
-            if (usuario.IntentosFallidos >= 3)
-            {
-                usuario.Bloqueado = true;
-                _context.Usuarios.Update(usuario);
-                await _context.SaveChangesAsync();
-
-                TempData["ErrorMessage"] = "Has superado el límite de 3 intentos fallidos. Tu cuenta ha sido bloqueada; restablece tu contraseña para recuperar el acceso.";
-                return RedirectToAction("ForgotPassword");
-            }
-
-            _context.Usuarios.Update(usuario);
-            await _context.SaveChangesAsync();
-
-            int intentosRestantes = 3 - usuario.IntentosFallidos;
-            ModelState.AddModelError(string.Empty, $"Credenciales incorrectas. Te quedan {intentosRestantes} intento(s) antes de bloquear la cuenta.");
-            return View(model);
-        }
-
-        // 4. Si la contraseña es correcta, reiniciar contador de intentos fallidos
-        if (usuario.IntentosFallidos > 0)
-        {
-            usuario.IntentosFallidos = 0;
-            _context.Usuarios.Update(usuario);
-            await _context.SaveChangesAsync();
-        }
-
 
         HttpContext.Session.SetString("UsuarioNombre", usuario.Nombre);
         HttpContext.Session.SetInt32("UsuarioId", usuario.Id);
@@ -99,78 +48,101 @@ public class AccountController : Controller
     }
     #endregion
 
+    #region Registro
+    [HttpGet]
+    public IActionResult Register()
+    {
+        return View();
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Register(RegisterViewModel model)
+    {
+        if (!ModelState.IsValid)
+            return View(model);
+
+        var existeEmail = await _context.Usuarios
+            .AnyAsync(u => u.Email.ToLower() == model.Email.ToLower());
+
+        if (existeEmail)
+        {
+            ModelState.AddModelError("Email", "El correo electrónico ya está registrado.");
+            return View(model);
+        }
+
+        var nuevoUsuario = new Usuario
+        {
+            Nombre = model.Nombre,
+            Email = model.Email.ToLower(),
+            PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.Password),
+            Rol = "Trabajador", // Rol por defecto al registrarse
+            Activo = true,
+            FechaCreacion = DateTime.Now
+        };
+
+        _context.Usuarios.Add(nuevoUsuario);
+        await _context.SaveChangesAsync();
+
+        TempData["SuccessMessage"] = "Cuenta creada exitosamente. Ya puedes iniciar sesión.";
+        return RedirectToAction("Login");
+    }
+    #endregion
+
+
     #region Olvidé mi Contraseña
     [HttpGet]
-    [PermitirSinSesion]
     public IActionResult ForgotPassword()
     {
         return View();
     }
 
     [HttpPost]
-    [PermitirSinSesion]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> ForgotPassword(string email)
+    public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model, [FromServices] IEmailService emailService)
     {
-        if (string.IsNullOrWhiteSpace(email))
-        {
-            TempData["ErrorMessage"] = "Por favor, ingresa un correo electrónico.";
-            return View();
-        }
+        if (!ModelState.IsValid)
+            return View(model);
 
         var usuario = await _context.Usuarios
-            .FirstOrDefaultAsync(u => u.Email.ToLower() == email.Trim().ToLower());
+            .FirstOrDefaultAsync(u => u.Email.ToLower() == model.Email.Trim().ToLower());
 
         if (usuario == null)
         {
-            // Por seguridad, no revelamos si el correo existe o no
-            TempData["SuccessMessage"] = "Si el correo existe en nuestro sistema, hemos enviado un enlace de recuperación.";
-            return RedirectToAction("Login");
+            // Por seguridad o retroalimentación en pruebas
+            ModelState.AddModelError("Email", "No existe una cuenta asociada a este correo.");
+            return View(model);
         }
 
-        // 1. Generar token único
-        string token = Guid.NewGuid().ToString("N");
+        // 1. Generar token único de seguridad
+        string token = Convert.ToBase64String(Guid.NewGuid().ToByteArray())
+            .Replace("+", "")
+            .Replace("/", "")
+            .Replace("=", "");
 
-        // 2. Definir expiración a 5 minutos a partir de este instante
-        usuario.PasswordResetToken = token;
-        usuario.PasswordResetTokenExpiration = DateTime.Now.AddMinutes(5);
+        // 2. Guardar el token y su vencimiento en el usuario (30 min)
+        usuario.ResetPasswordToken = token;
+        usuario.ResetPasswordTokenExpiration = DateTime.Now.AddMinutes(30);
 
         _context.Usuarios.Update(usuario);
         await _context.SaveChangesAsync();
 
-  
-        // 3. Generar URL Restablecer Contraseña
-        var resetLink = Url.Action("ResetPassword", "Account",
-            new { token = token, email = usuario.Email },
-            protocol: Request.Scheme) ?? string.Empty;
+        // 3. Crear el enlace que irá dentro del correo
+        var resetLink = Url.Action("ResetPassword", "Account", new { token = token, email = usuario.Email }, Request.Scheme);
 
-        // 4. Enviar el correo usando SmtpEmailService
-        await _emailService.SendPasswordResetEmailAsync(usuario.Email, resetLink);
+        // 4. Enviar el correo electrónico
+        await emailService.SendPasswordResetEmailAsync(usuario.Email, resetLink!);
 
-        TempData["SuccessMessage"] = "Si el correo existe en nuestro sistema, hemos enviado un enlace de recuperación.";
+        // 5. Redirigir AL LOGIN (no a ResetPassword) con mensaje de éxito
+        TempData["SuccessMessage"] = "Te hemos enviado un correo electrónico con el enlace para restablecer tu contraseña.";
         return RedirectToAction("Login");
     }
 
-
-    // GET: Token de vencimiento de pasword
     [HttpGet]
-    [PermitirSinSesion]
-    public async Task<IActionResult> ResetPassword(string token, string email)
+    public IActionResult ResetPassword(string token, string email)
     {
         if (string.IsNullOrEmpty(token) || string.IsNullOrEmpty(email))
         {
-            TempData["ErrorMessage"] = "El enlace de recuperación no es válido.";
-            return RedirectToAction("Login");
-        }
-
-        var usuario = await _context.Usuarios
-            .FirstOrDefaultAsync(u => u.Email.ToLower() == email.ToLower() && u.PasswordResetToken == token);
-
-        // Validar si el usuario/token existe y si aún NO ha expirado
-        if (usuario == null || usuario.PasswordResetTokenExpiration == null || usuario.PasswordResetTokenExpiration < DateTime.Now)
-        {
-            TempData["ErrorMessage"] = "El enlace de recuperación ha expirado o ya no es válido. Solicita uno nuevo.";
-            return RedirectToAction("Login");
+            TempData["ErrorMessage"] = "El enlace de recuperación es inválido.";
+            return RedirectToAction("ForgotPassword");
         }
 
         var model = new ResetPasswordViewModel
@@ -183,43 +155,41 @@ public class AccountController : Controller
     }
 
     [HttpPost]
-    [PermitirSinSesion]
-    [ValidateAntiForgeryToken]
     public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
     {
-        if (!ModelState.IsValid) return View(model);
+        if (!ModelState.IsValid)
+            return View(model);
 
+        // Buscar al usuario por correo y validar que el token coincida y no haya expirado
         var usuario = await _context.Usuarios
-            .FirstOrDefaultAsync(u => u.Email.ToLower() == model.Email.ToLower() && u.PasswordResetToken == model.Token);
+            .FirstOrDefaultAsync(u =>
+                u.Email.ToLower() == model.Email.Trim().ToLower() &&
+                u.ResetPasswordToken == model.Token &&
+                u.ResetPasswordTokenExpiration > DateTime.Now);
 
-        // Validar nuevamente la expiración al procesar el formulario
-        if (usuario == null || usuario.PasswordResetTokenExpiration == null || usuario.PasswordResetTokenExpiration < DateTime.Now)
+        if (usuario == null)
         {
-            TempData["ErrorMessage"] = "El plazo de 5 minutos ha expirado. Por favor solicita un nuevo enlace.";
-            return RedirectToAction("Login");
+            ModelState.AddModelError(string.Empty, "El enlace es inválido o ya ha expirado. Por favor solicita uno nuevo.");
+            return View(model);
         }
 
-        // Actualizar contraseña hash (usando BCrypt)
+        // 1. Encriptar la NUEVA contraseña con BCrypt
         usuario.PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.NewPassword);
 
-        // Invalidate/Limpiar el token para que no se vuelva a usar
-        usuario.PasswordResetToken = null;
-        usuario.PasswordResetTokenExpiration = null;
-        usuario.Bloqueado = false;
-        usuario.IntentosFallidos = 0;
-        usuario.FechaModificacion = DateTime.Now;
-        usuario.ModificadoPor = usuario.Nombre;
+        // 2. Anular el token para que no se pueda reutilizar
+        usuario.ResetPasswordToken = null;
+        usuario.ResetPasswordTokenExpiration = null;
 
         _context.Usuarios.Update(usuario);
         await _context.SaveChangesAsync();
 
-        TempData["SuccessMessage"] = "Tu contraseña ha sido restablecida con éxito. Puedes iniciar sesión.";
+        TempData["SuccessMessage"] = "Tu contraseña ha sido restablecida con éxito. Ya puedes iniciar sesión.";
         return RedirectToAction("Login");
     }
+    #endregion
 
     #region Logout
     [HttpGet]
-    [PermitirSinSesion]
     public IActionResult Logout()
     {
         HttpContext.Session.Clear();
@@ -230,126 +200,20 @@ public class AccountController : Controller
     [HttpPost]
     public async Task<IActionResult> CambiarRol(int usuarioId, string nuevoRol)
     {
+        // Verificar que quien hace el cambio sea Administrador o Dueño
         var rolActual = HttpContext.Session.GetString("UsuarioRol");
         if (rolActual != "Administrador" && rolActual != "Dueño")
         {
-            return Forbid();
+            return Forbid(); // Acceso denegado si es un Trabajador
         }
 
         var usuario = await _context.Usuarios.FindAsync(usuarioId);
         if (usuario != null)
         {
-            usuario.Rol = nuevoRol;
+            usuario.Rol = nuevoRol; // "Administrador", "Dueño" o "Trabajador"
             await _context.SaveChangesAsync();
         }
 
         return RedirectToAction("Index", "Usuarios");
     }
-
-    #region Mi Perfil
-
-    [HttpGet]
-    public async Task<IActionResult> Perfil()
-    {
-        // Obtener el ID del usuario desde la Sesión
-        var usuarioId = HttpContext.Session.GetInt32("UsuarioId");
-        if (usuarioId == null)
-        {
-            return RedirectToAction("Login");
-        }
-
-        var usuario = await _context.Usuarios
-            .FirstOrDefaultAsync(u => u.Id == usuarioId.Value);
-
-        if (usuario == null)
-        {
-            return NotFound();
-        }
-
-        var model = new PerfilViewModel
-        {
-            Id = usuario.Id,
-            NombreCompleto = usuario.Nombre, // Se asigna la propiedad Nombre
-            Email = usuario.Email,
-            RolNombre = string.IsNullOrEmpty(usuario.Rol) ? "Sin Rol" : usuario.Rol
-        };
-
-        return View(model);
-    }
-
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Perfil(PerfilViewModel model)
-    {
-        var usuarioId = HttpContext.Session.GetInt32("UsuarioId");
-        if (usuarioId == null || usuarioId.Value != model.Id)
-        {
-            return RedirectToAction("Login");
-        }
-
-        var usuario = await _context.Usuarios
-            .FirstOrDefaultAsync(u => u.Id == usuarioId.Value);
-
-        if (usuario == null)
-        {
-            return NotFound();
-        }
-
-        model.RolNombre = string.IsNullOrEmpty(usuario.Rol) ? "Sin Rol" : usuario.Rol;
-
-        var emailLimpio = model.Email.Trim().ToLower();
-        bool emailExistente = await _context.Usuarios
-            .AnyAsync(u => u.Email.ToLower() == emailLimpio && u.Id != usuarioId.Value);
-
-        if (emailExistente)
-        {
-            ModelState.AddModelError("Email", "El correo ingresado ya pertenece a otra cuenta.");
-        }
-
-        bool deseaCambiarPassword = !string.IsNullOrWhiteSpace(model.NewPassword);
-
-        if (deseaCambiarPassword)
-        {
-            if (string.IsNullOrWhiteSpace(model.CurrentPassword))
-            {
-                ModelState.AddModelError("CurrentPassword", "Debe ingresar su contraseña actual para autorizar el cambio.");
-            }
-            else if (!BCrypt.Net.BCrypt.Verify(model.CurrentPassword, usuario.PasswordHash))
-            {
-                ModelState.AddModelError("CurrentPassword", "La contraseña actual es incorrecta.");
-            }
-        }
-
-        if (!ModelState.IsValid)
-        {
-            return View(model);
-        }
-
-        // Actualizar datos del usuario
-        usuario.Nombre = model.NombreCompleto.Trim();
-        usuario.Email = emailLimpio;
-
-        if (deseaCambiarPassword && !string.IsNullOrWhiteSpace(model.NewPassword))
-        {
-            usuario.PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.NewPassword);
-        }
-
-        _context.Usuarios.Update(usuario);
-        await _context.SaveChangesAsync();
-
-        // Actualizar el nombre en la sesión
-        HttpContext.Session.SetString("UsuarioNombre", usuario.Nombre);
-
-        TempData["SuccessMessage"] = "Tu perfil ha sido actualizado correctamente.";
-        return RedirectToAction("Perfil");
-    }
-
-    #endregion
-    [HttpGet]
-    [PermitirSinSesion]
-    public IActionResult AccessDenied()
-    {
-        return View();
-    }
-    #endregion
-} 
+}
