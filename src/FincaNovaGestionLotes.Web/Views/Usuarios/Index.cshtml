@@ -1,0 +1,87 @@
+﻿@using FincaNovaGestionLotes.Web.Domain.Usuarios;
+@model IEnumerable<Usuario>
+
+@{
+    ViewData["Title"] = "Gestión de Usuarios";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Gestión de Usuarios</h2>
+    <a asp-action="Create" class="btn btn-success">+ Crear Nuevo Usuario</a>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="card shadow-sm border-0">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Id</th>
+                        <th>Nombre</th>
+                        <th>Email</th>
+                        <th>Rol</th>
+                        <th>Estado</th>
+                        <th>Creado Por</th>
+                        <th>Última Modificación</th>
+                        <th class="text-center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var u in Model)
+                    {
+                        <tr>
+                            <td>@u.Id</td>
+                            <td class="fw-bold">@u.Nombre</td>
+                            <td>@u.Email</td>
+                            <td>
+                                <span class="badge @(u.Rol == "Administrador" || u.Rol == "Dueño" ? "bg-primary" : "bg-secondary")">
+                                    @u.Rol
+                                </span>
+                            </td>
+                            <td>
+                                @if (u.Activo)
+                                {
+                                    <span class="badge bg-success">Activo</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger">Inactivo</span>
+                                }
+                            </td>
+                            <td>
+                                <small class="text-muted">
+                                    @(u.CreadoPor ?? "Sistema") <br />
+                                    @u.FechaCreacion.ToString("dd/MM/yyyy HH:mm")
+                                </small>
+                            </td>
+                            <td>
+                                @if (u.FechaModificacion.HasValue)
+                                {
+                                    <small class="text-muted">
+                                        @(u.ModificadoPor ?? "Desc") <br />
+                                        @u.FechaModificacion.Value.ToString("dd/MM/yyyy HH:mm")
+                                    </small>
+                                }
+                                else
+                                {
+                                    <small class="text-muted">-</small>
+                                }
+                            </td>
+                            <td class="text-center">
+                                <a asp-action="Edit" asp-route-id="@u.Id" class="btn btn-sm btn-outline-primary">Editar</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
