@@ -1,111 +1,169 @@
 ﻿@model IEnumerable<FincaNovaGestionLotes.Web.Domain.Produccion.PeriodoProductivo>
 
 @{
-    ViewData["Title"] = "Periodos Productivos";
+    ViewData["Title"] = "Períodos productivos";
 }
 
-<div class="d-flex justify-content-between align-items-center mb-4">
+<div class="fn-page-header">
 
     <div>
-        <h1 class="h3">Periodos Productivos</h1>
 
-        <p class="text-muted mb-0">
-            Registro de los períodos productivos de los lotes.
+        <h1 class="fn-page-title">
+
+            <span class="fn-page-title-icon">
+                <svg viewBox="0 0 24 24">
+                    <rect x="3" y="5" width="18" height="16" rx="2" />
+                    <path d="M7 3v4M17 3v4M3 10h18" />
+                </svg>
+            </span>
+
+            Períodos productivos
+
+        </h1>
+
+        <p class="fn-page-subtitle">
+            Administración de los períodos productivos asociados a cada lote.
         </p>
+
     </div>
 
     <a asp-action="Crear"
-       class="btn btn-success">
+       class="fn-btn fn-btn-primary">
         + Nuevo período
     </a>
 
 </div>
 
+
 @if (TempData["Ok"] is string ok)
 {
-    <div class="alert alert-success">
+    <div class="alert alert-success border-0 shadow-sm">
         @ok
     </div>
 }
 
-@if (!Model.Any())
-{
-    <div class="alert alert-secondary">
-        Todavía no hay períodos productivos registrados.
-    </div>
-}
-else
-{
-    <div class="table-responsive">
 
-        <table class="table table-hover align-middle">
+<div class="fn-card">
 
-            <thead>
-                <tr>
-                    <th>Lote</th>
-                    <th>Inicio</th>
-                    <th>Fin</th>
-                    <th>Estado</th>
-                    <th>Observaciones</th>
-                </tr>
-            </thead>
+    <div class="fn-card-header d-flex justify-content-between align-items-center">
 
-            <tbody>
+        <h2 class="fn-card-title">
+            Períodos registrados
+        </h2>
 
-                @foreach (var periodo in Model)
-                {
-                    <tr>
-
-                        <td>
-                            <strong>
-                                @periodo.Lote.Codigo
-                            </strong>
-
-                            <div class="small text-muted">
-                                @periodo.Lote.Nombre
-                            </div>
-                        </td>
-
-                        <td>
-                            @periodo.FechaInicio.ToString("dd/MM/yyyy")
-                        </td>
-
-                        <td>
-                            @if (periodo.FechaFin.HasValue)
-                            {
-                                @periodo.FechaFin.Value.ToString("dd/MM/yyyy")
-                            }
-                            else
-                            {
-                                <span>—</span>
-                            }
-                        </td>
-
-                        <td>
-                            @if (periodo.Cerrado)
-                            {
-                                <span class="badge bg-secondary">
-                                    Cerrado
-                                </span>
-                            }
-                            else
-                            {
-                                <span class="badge bg-success">
-                                    En curso
-                                </span>
-                            }
-                        </td>
-
-                        <td>
-                            @(periodo.Observaciones ?? "—")
-                        </td>
-
-                    </tr>
-                }
-
-            </tbody>
-
-        </table>
+        <span class="fn-count">
+            @Model.Count() período(s)
+        </span>
 
     </div>
-}
+
+
+    @if (!Model.Any())
+    {
+        <div class="fn-empty">
+
+            <div class="fn-empty-title">
+                No existen períodos productivos registrados.
+            </div>
+
+            <div class="fn-empty-text">
+                Registra el primer período para comenzar.
+            </div>
+
+        </div>
+    }
+    else
+    {
+
+        <div class="fn-card-body">
+
+            <div class="fn-table-wrapper">
+
+                <table class="fn-table">
+
+                    <thead>
+
+                        <tr>
+                            <th>Lote</th>
+                            <th>Fecha de inicio</th>
+                            <th>Fecha de finalización</th>
+                            <th>Estado</th>
+                            <th>Observaciones</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        @foreach (var periodo in Model)
+                        {
+                            <tr>
+
+                                <td>
+
+                                    <strong>
+                                        @periodo.Lote.Codigo
+                                    </strong>
+
+                                    <div class="small text-muted">
+                                        @periodo.Lote.Nombre
+                                    </div>
+
+                                </td>
+
+                                <td>
+                                    @periodo.FechaInicio.ToString("dd/MM/yyyy")
+                                </td>
+
+                                <td>
+                                    @if (periodo.FechaFin.HasValue)
+                                    {
+                                        @periodo.FechaFin.Value.ToString("dd/MM/yyyy")
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">
+                                            En curso
+                                        </span>
+                                    }
+                                </td>
+
+                                <td>
+
+                                    @if (periodo.Cerrado)
+                                    {
+                                        <span class="fn-badge fn-badge-neutral">
+                                            <span class="fn-status-dot fn-status-closed"></span>
+                                            Cerrado
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="fn-badge fn-badge-success">
+                                            <span class="fn-status-dot fn-status-open"></span>
+                                            Abierto
+                                        </span>
+                                    }
+
+                                </td>
+
+                                <td>
+                                    @(string.IsNullOrWhiteSpace(periodo.Observaciones)
+                                        ? "—"
+                                        : periodo.Observaciones)
+                                </td>
+
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    }
+
+</div>
