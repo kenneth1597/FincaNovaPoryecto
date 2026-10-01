@@ -4,164 +4,252 @@
     ViewData["Title"] = "Alertas por recurrencia";
 }
 
-<div class="d-flex justify-content-between align-items-center mb-4">
+<div class="fn-page-header">
+
     <div>
-        <h1>Alertas por recurrencia</h1>
-        <p class="text-muted mb-0">
+
+        <h1 class="fn-page-title">
+
+            <span class="fn-page-title-icon">
+                <svg viewBox="0 0 24 24">
+                    <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9" />
+                    <path d="M10 21h4" />
+                </svg>
+            </span>
+
+            Alertas por recurrencia
+
+        </h1>
+
+        <p class="fn-page-subtitle">
             Enfermedades que se han repetido en un mismo lote.
         </p>
+
     </div>
 
-    <a asp-action="Index"
-       class="btn btn-outline-secondary">
-        Historial
-    </a>
+    <div>
+
+        <a asp-action="Index"
+           class="fn-btn fn-btn-outline">
+            Volver al historial
+        </a>
+
+    </div>
+
 </div>
 
-@if (!Model.Any())
-{
-    <div class="alert alert-success">
-        No se detectaron enfermedades recurrentes.
+
+<div class="fn-card">
+
+    <div class="fn-card-header d-flex justify-content-between align-items-center">
+
+        <h2 class="fn-card-title">
+            Enfermedades recurrentes
+        </h2>
+
+        <span class="fn-count">
+            @Model.Count() alerta(s)
+        </span>
+
     </div>
-}
-else
-{
-    foreach (var enfermedad in Model)
+
+
+    @if (!Model.Any())
     {
-        <div class="card shadow-sm mb-3">
+        <div class="fn-empty">
 
-            <div class="card-body">
+            <div class="fn-empty-title">
+                No se detectaron enfermedades recurrentes.
+            </div>
 
-                <div class="d-flex justify-content-between">
-
-                    <div>
-                        <h4>
-                            @enfermedad.Nombre
-                        </h4>
-
-                        <p class="mb-1">
-                            <strong>Lote:</strong>
-                            @enfermedad.Lote.Codigo
-                            —
-                            @enfermedad.Lote.Nombre
-                        </p>
-
-                        <p class="mb-1">
-                            <strong>Fecha:</strong>
-                            @enfermedad.FechaDeteccion.ToString("dd/MM/yyyy")
-                        </p>
-
-                        <p class="mb-1">
-                            <strong>Severidad:</strong>
-                            @enfermedad.Severidad
-                        </p>
-                    </div>
-
-                    <div>
-                        @if (enfermedad.Atendida)
-                        {
-                            <span class="badge bg-success">
-                                Atendida
-                            </span>
-                        }
-                        else
-                        {
-                            <span class="badge bg-danger">
-                                Pendiente
-                            </span>
-                        }
-                    </div>
-
-                </div>
-
-                <hr />
-
-                <h5>Tratamientos aplicados</h5>
-
-                @if (!enfermedad.Tratamientos.Any())
-                {
-                    <p class="text-muted">
-                        No se han registrado tratamientos.
-                    </p>
-                }
-                else
-                {
-                    foreach (var tratamiento in enfermedad.Tratamientos)
-                    {
-                        <div class="border rounded p-3 mb-2">
-
-                            <strong>
-                                @tratamiento.Tratamiento
-                            </strong>
-
-                            <div>
-                                Fecha:
-                                @tratamiento.FechaAplicacion.ToString("dd/MM/yyyy")
-                            </div>
-
-                            @if (!string.IsNullOrWhiteSpace(tratamiento.Responsable))
-                            {
-                                <div>
-                                    Responsable:
-                                    @tratamiento.Responsable
-                                </div>
-                            }
-
-                            @if (tratamiento.Productos.Any())
-                            {
-                                <div class="mt-2">
-                                    <strong>Productos utilizados:</strong>
-
-                                    <ul>
-                                        @foreach (var producto in tratamiento.Productos)
-                                        {
-                                            <li>
-                                                @producto.NombreProducto -
-                                                @producto.Cantidad
-                                                @producto.Unidad
-                                            </li>
-                                        }
-                                    </ul>
-                                </div>
-                            }
-
-                        </div>
-                    }
-                }
-
-                @if (!enfermedad.Atendida)
-                {
-                    <form asp-action="MarcarAtendida"
-                          method="post"
-                          class="mt-3">
-
-                        <input type="hidden"
-                               name="id"
-                               value="@enfermedad.Id" />
-
-                        <button type="submit"
-                                class="btn btn-success">
-                            Marcar como atendida
-                        </button>
-
-                    </form>
-                }
-                else
-                {
-                    <div class="alert alert-success mt-3 mb-0">
-                        Esta alerta ya fue atendida
-                        @if (enfermedad.FechaAtendida.HasValue)
-                        {
-                            <span>
-                                el
-                                @enfermedad.FechaAtendida.Value.ToLocalTime().ToString("dd/MM/yyyy HH:mm")
-                            </span>
-                        }
-                    </div>
-                }
-
+            <div class="fn-empty-text">
+                Actualmente no existen enfermedades repetidas en un mismo lote.
             </div>
 
         </div>
     }
-}
+    else
+    {
+
+        <div class="fn-card-body">
+
+            <div class="fn-table-wrapper">
+
+                <table class="fn-table">
+
+                    <thead>
+
+                        <tr>
+                            <th>Enfermedad</th>
+                            <th>Lote</th>
+                            <th>Fecha</th>
+                            <th>Severidad</th>
+                            <th>Tratamientos</th>
+                            <th>Estado</th>
+                            <th>Acción</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        @foreach (var enfermedad in Model)
+                        {
+                            <tr>
+
+                                <td>
+                                    <strong>
+                                        @enfermedad.Nombre
+                                    </strong>
+                                </td>
+
+                                <td>
+                                    <strong>
+                                        @enfermedad.Lote.Codigo
+                                    </strong>
+
+                                    <div class="small text-muted">
+                                        @enfermedad.Lote.Nombre
+                                    </div>
+                                </td>
+
+                                <td>
+                                    @enfermedad.FechaDeteccion.ToString("dd/MM/yyyy")
+                                </td>
+
+                                <td>
+
+                                    @if (enfermedad.Severidad == "Grave")
+                                    {
+                                        <span class="fn-badge fn-badge-danger">
+                                            Grave
+                                        </span>
+                                    }
+                                    else if (enfermedad.Severidad == "Moderada")
+                                    {
+                                        <span class="fn-badge fn-badge-warning">
+                                            Moderada
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="fn-badge fn-badge-success">
+                                            Leve
+                                        </span>
+                                    }
+
+                                </td>
+
+                                <td>
+
+                                    @if (enfermedad.Tratamientos != null &&
+                                         enfermedad.Tratamientos.Any())
+                                    {
+                                        foreach (var tratamiento in enfermedad.Tratamientos)
+                                        {
+                                            <div class="mb-2">
+
+                                                <strong>
+                                                    @tratamiento.Tratamiento
+                                                </strong>
+
+                                                <div class="small text-muted">
+                                                    @tratamiento.FechaAplicacion.ToString("dd/MM/yyyy")
+                                                </div>
+
+                                                <div class="small text-muted">
+                                                    Responsable:
+                                                    @tratamiento.Responsable
+                                                </div>
+
+                                                @if (tratamiento.Productos != null &&
+                                                     tratamiento.Productos.Any())
+                                                {
+                                                    <div class="mt-1">
+
+                                                        @foreach (var producto in tratamiento.Productos)
+                                                        {
+                                                            <span class="fn-badge fn-badge-info me-1 mb-1">
+                                                                @producto.NombreProducto
+                                                                @if (producto.Cantidad != null)
+                                                                {
+                                                                    <text>
+                                                                        · @producto.Cantidad @producto.Unidad
+                                                                    </text>
+                                                                }
+                                                            </span>
+                                                        }
+
+                                                    </div>
+                                                }
+
+                                            </div>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">
+                                            Sin tratamiento registrado
+                                        </span>
+                                    }
+
+                                </td>
+
+                                <td>
+
+                                    @if (enfermedad.Atendida)
+                                    {
+                                        <span class="fn-badge fn-badge-success">
+                                            Atendida
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="fn-badge fn-badge-danger">
+                                            Pendiente
+                                        </span>
+                                    }
+
+                                </td>
+
+                                <td>
+
+                                    @if (!enfermedad.Atendida)
+                                    {
+                                        <form asp-action="MarcarAtendida"
+                                              method="post">
+
+                                            <input type="hidden"
+                                                   name="id"
+                                                   value="@enfermedad.Id" />
+
+                                            <button type="submit"
+                                                    class="fn-btn fn-btn-primary">
+                                                Marcar atendida
+                                            </button>
+
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">
+                                            Completada
+                                        </span>
+                                    }
+
+                                </td>
+
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    }
+
+</div>
