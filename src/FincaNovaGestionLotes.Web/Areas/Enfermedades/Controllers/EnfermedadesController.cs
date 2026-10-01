@@ -144,7 +144,10 @@ public class EnfermedadesController : Controller
             FechaDeteccion = model.FechaDeteccion,
             Severidad = model.Severidad.Trim(),
             Descripcion = model.Descripcion.Trim(),
-            Observaciones = model.Observaciones?.Trim()
+            Observaciones = model.Observaciones?.Trim(),
+            Atendida = false,
+            FechaAtendida = null,
+            AtendidaPor = null
         };
 
         _db.Enfermedades.Add(enfermedad);
@@ -164,7 +167,80 @@ public class EnfermedadesController : Controller
             nameof(Detalle),
             new { id = enfermedad.Id });
     }
+    [HttpGet]
+    public async Task<IActionResult> Editar(int id)
+    {
+        var enfermedad = await _db.Enfermedades
+            .AsNoTracking()
+            .FirstOrDefaultAsync(e => e.Id == id);
 
+        if (enfermedad is null)
+            return NotFound();
+
+        var model = new EnfermedadEditarViewModel
+        {
+            Id = enfermedad.Id,
+            LoteId = enfermedad.LoteId,
+            Nombre = enfermedad.Nombre,
+            FechaDeteccion = enfermedad.FechaDeteccion,
+            Severidad = enfermedad.Severidad,
+            Descripcion = enfermedad.Descripcion,
+            Observaciones = enfermedad.Observaciones,
+            Lotes = await ObtenerLotesAsync()
+        };
+
+        return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Editar(
+        EnfermedadEditarViewModel model)
+    {
+        model.Lotes = await ObtenerLotesAsync();
+
+        var enfermedad = await _db.Enfermedades
+            .FirstOrDefaultAsync(e => e.Id == model.Id);
+
+        if (enfermedad is null)
+            return NotFound();
+
+        var loteExiste = await _db.Lotes.AnyAsync(
+            l => l.Id == model.LoteId &&
+                 !l.Eliminado);
+
+        if (!loteExiste)
+        {
+            ModelState.AddModelError(
+                nameof(model.LoteId),
+                "El lote seleccionado no existe.");
+        }
+
+        if (!ModelState.IsValid)
+            return View(model);
+
+        enfermedad.LoteId = model.LoteId;
+        enfermedad.Nombre = model.Nombre.Trim();
+        enfermedad.FechaDeteccion = model.FechaDeteccion;
+        enfermedad.Severidad = model.Severidad.Trim();
+        enfermedad.Descripcion = model.Descripcion.Trim();
+        enfermedad.Observaciones = model.Observaciones?.Trim();
+
+        await _db.SaveChangesAsync();
+
+        await _audit.RegistrarAsync(
+            AccionAuditoria.Modificar,
+            nameof(Enfermedad),
+            enfermedad.Id.ToString(),
+            $"Modificación de la enfermedad {enfermedad.Nombre}");
+
+        TempData["Ok"] =
+            "La información de la enfermedad fue actualizada correctamente.";
+
+        return RedirectToAction(
+            nameof(Detalle),
+            new { id = enfermedad.Id });
+    }
 
     [HttpGet]
     public async Task<IActionResult> Detalle(int id)
@@ -276,23 +352,22 @@ public class EnfermedadesController : Controller
             .OrderBy(e => e.LoteId)
             .ThenBy(e => e.Nombre)
             .ThenBy(e => e.FechaDeteccion)
+            .ThenBy(e => e.Id)
             .ToListAsync();
 
-        var alertas = new List<Enfermedad>();
-
-        foreach (var enfermedad in enfermedades)
-        {
-            var anterior = enfermedades.Any(e =>
-                e.Id != enfermedad.Id &&
-                e.LoteId == enfermedad.LoteId &&
-                e.Nombre.Equals(
-                    enfermedad.Nombre,
-                    StringComparison.OrdinalIgnoreCase) &&
-                e.FechaDeteccion < enfermedad.FechaDeteccion);
-
-            if (anterior)
-                alertas.Add(enfermedad);
-        }
+        var alertas = enfermedades
+            .GroupBy(e => new
+            {
+                e.LoteId,
+                Nombre = e.Nombre.Trim().ToLower()
+            })
+            .SelectMany(grupo =>
+                grupo
+                    .OrderBy(e => e.FechaDeteccion)
+                    .ThenBy(e => e.Id)
+                    .Skip(1))
+            .OrderByDescending(e => e.FechaDeteccion)
+            .ToList();
 
         return View(alertas);
     }

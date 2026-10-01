@@ -58,6 +58,12 @@
 
         </dl>
 
+        <a asp-action="Editar"
+           asp-route-id="@Model.Id"
+           class="btn btn-primary">
+            Editar enfermedad
+        </a>
+
         <a asp-action="CrearTratamiento"
            asp-route-enfermedadId="@Model.Id"
            class="btn btn-primary">

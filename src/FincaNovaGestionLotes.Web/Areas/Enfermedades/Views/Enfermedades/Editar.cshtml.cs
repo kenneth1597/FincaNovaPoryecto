@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace FincaNovaGestionLotes.Web.Areas.Produccion.Views.Periodos
+namespace FincaNovaGestionLotes.Web.Areas.Enfermedades.Views.Enfermedades
 {
-    public class CrearModel : PageModel
+    public class EditarModel : PageModel
     {
         public void OnGet()
         {
