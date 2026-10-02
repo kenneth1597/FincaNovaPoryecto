@@ -1,0 +1,159 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "D:\\FincaNOVADocs\\FINCA Git DESTOk\\FincaNovaPoryecto\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{8A44D1AC-59C7-13D5-0657-F398984E606B}|src\\FincaNovaGestionLotes.Web\\FincaNovaGestionLotes.Web.csproj|d:\\fincanovadocs\\finca git destok\\fincanovaporyecto\\src\\fincanovagestionlotes.web\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{8A44D1AC-59C7-13D5-0657-F398984E606B}|src\\FincaNovaGestionLotes.Web\\FincaNovaGestionLotes.Web.csproj|solutionrelative:src\\fincanovagestionlotes.web\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8A44D1AC-59C7-13D5-0657-F398984E606B}|src\\FincaNovaGestionLotes.Web\\FincaNovaGestionLotes.Web.csproj|d:\\fincanovadocs\\finca git destok\\fincanovaporyecto\\src\\fincanovagestionlotes.web\\areas\\enfermedades\\views\\enfermedades\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{8A44D1AC-59C7-13D5-0657-F398984E606B}|src\\FincaNovaGestionLotes.Web\\FincaNovaGestionLotes.Web.csproj|solutionrelative:src\\fincanovagestionlotes.web\\areas\\enfermedades\\views\\enfermedades\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8A44D1AC-59C7-13D5-0657-F398984E606B}|src\\FincaNovaGestionLotes.Web\\FincaNovaGestionLotes.Web.csproj|d:\\fincanovadocs\\finca git destok\\fincanovaporyecto\\src\\fincanovagestionlotes.web\\areas\\enfermedades\\views\\enfermedades\\editar.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{8A44D1AC-59C7-13D5-0657-F398984E606B}|src\\FincaNovaGestionLotes.Web\\FincaNovaGestionLotes.Web.csproj|solutionrelative:src\\fincanovagestionlotes.web\\areas\\enfermedades\\views\\enfermedades\\editar.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8A44D1AC-59C7-13D5-0657-F398984E606B}|src\\FincaNovaGestionLotes.Web\\FincaNovaGestionLotes.Web.csproj|d:\\fincanovadocs\\finca git destok\\fincanovaporyecto\\src\\fincanovagestionlotes.web\\areas\\enfermedades\\views\\enfermedades\\index.cshtml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8A44D1AC-59C7-13D5-0657-F398984E606B}|src\\FincaNovaGestionLotes.Web\\FincaNovaGestionLotes.Web.csproj|solutionrelative:src\\fincanovagestionlotes.web\\areas\\enfermedades\\views\\enfermedades\\index.cshtml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8A44D1AC-59C7-13D5-0657-F398984E606B}|src\\FincaNovaGestionLotes.Web\\FincaNovaGestionLotes.Web.csproj|d:\\fincanovadocs\\finca git destok\\fincanovaporyecto\\src\\fincanovagestionlotes.web\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{8A44D1AC-59C7-13D5-0657-F398984E606B}|src\\FincaNovaGestionLotes.Web\\FincaNovaGestionLotes.Web.csproj|solutionrelative:src\\fincanovagestionlotes.web\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8A44D1AC-59C7-13D5-0657-F398984E606B}|src\\FincaNovaGestionLotes.Web\\FincaNovaGestionLotes.Web.csproj|d:\\fincanovadocs\\finca git destok\\fincanovaporyecto\\src\\fincanovagestionlotes.web\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8A44D1AC-59C7-13D5-0657-F398984E606B}|src\\FincaNovaGestionLotes.Web\\FincaNovaGestionLotes.Web.csproj|solutionrelative:src\\fincanovagestionlotes.web\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8A44D1AC-59C7-13D5-0657-F398984E606B}|src\\FincaNovaGestionLotes.Web\\FincaNovaGestionLotes.Web.csproj|d:\\fincanovadocs\\finca git destok\\fincanovaporyecto\\src\\fincanovagestionlotes.web\\data\\dbseeder.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8A44D1AC-59C7-13D5-0657-F398984E606B}|src\\FincaNovaGestionLotes.Web\\FincaNovaGestionLotes.Web.csproj|solutionrelative:src\\fincanovagestionlotes.web\\data\\dbseeder.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8A44D1AC-59C7-13D5-0657-F398984E606B}|src\\FincaNovaGestionLotes.Web\\FincaNovaGestionLotes.Web.csproj|d:\\fincanovadocs\\finca git destok\\fincanovaporyecto\\src\\fincanovagestionlotes.web\\data\\migrations\\appdbcontextmodelsnapshot.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8A44D1AC-59C7-13D5-0657-F398984E606B}|src\\FincaNovaGestionLotes.Web\\FincaNovaGestionLotes.Web.csproj|solutionrelative:src\\fincanovagestionlotes.web\\data\\migrations\\appdbcontextmodelsnapshot.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 4,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "DbSeeder.cs",
+              "DocumentMoniker": "D:\\FincaNOVADocs\\FINCA Git DESTOk\\FincaNovaPoryecto\\src\\FincaNovaGestionLotes.Web\\Data\\DbSeeder.cs",
+              "RelativeDocumentMoniker": "src\\FincaNovaGestionLotes.Web\\Data\\DbSeeder.cs",
+              "ToolTip": "D:\\FincaNOVADocs\\FINCA Git DESTOk\\FincaNovaPoryecto\\src\\FincaNovaGestionLotes.Web\\Data\\DbSeeder.cs",
+              "RelativeToolTip": "src\\FincaNovaGestionLotes.Web\\Data\\DbSeeder.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-25T02:24:02.228Z",
+              "IsPinned": true
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "AppDbContextModelSnapshot.cs",
+              "DocumentMoniker": "D:\\FincaNOVADocs\\FINCA Git DESTOk\\FincaNovaPoryecto\\src\\FincaNovaGestionLotes.Web\\Data\\Migrations\\AppDbContextModelSnapshot.cs",
+              "RelativeDocumentMoniker": "src\\FincaNovaGestionLotes.Web\\Data\\Migrations\\AppDbContextModelSnapshot.cs",
+              "ToolTip": "D:\\FincaNOVADocs\\FINCA Git DESTOk\\FincaNovaPoryecto\\src\\FincaNovaGestionLotes.Web\\Data\\Migrations\\AppDbContextModelSnapshot.cs",
+              "RelativeToolTip": "src\\FincaNovaGestionLotes.Web\\Data\\Migrations\\AppDbContextModelSnapshot.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAMBAAAOAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-24T05:20:28.063Z",
+              "IsPinned": true
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{fbcae063-e2c0-4ab1-a516-996ea3dafb72}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "_Layout.cshtml",
+              "DocumentMoniker": "D:\\FincaNOVADocs\\FINCA Git DESTOk\\FincaNovaPoryecto\\src\\FincaNovaGestionLotes.Web\\Views\\Shared\\_Layout.cshtml",
+              "RelativeDocumentMoniker": "src\\FincaNovaGestionLotes.Web\\Views\\Shared\\_Layout.cshtml",
+              "ToolTip": "D:\\FincaNOVADocs\\FINCA Git DESTOk\\FincaNovaPoryecto\\src\\FincaNovaGestionLotes.Web\\Views\\Shared\\_Layout.cshtml",
+              "RelativeToolTip": "src\\FincaNovaGestionLotes.Web\\Views\\Shared\\_Layout.cshtml",
+              "ViewState": "AgIAAJ0AAAAAAAAAAAAowMgAAAAdAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-10-02T02:24:21.824Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Editar.cshtml",
+              "DocumentMoniker": "D:\\FincaNOVADocs\\FINCA Git DESTOk\\FincaNovaPoryecto\\src\\FincaNovaGestionLotes.Web\\Areas\\Enfermedades\\Views\\Enfermedades\\Editar.cshtml",
+              "RelativeDocumentMoniker": "src\\FincaNovaGestionLotes.Web\\Areas\\Enfermedades\\Views\\Enfermedades\\Editar.cshtml",
+              "ToolTip": "D:\\FincaNOVADocs\\FINCA Git DESTOk\\FincaNovaPoryecto\\src\\FincaNovaGestionLotes.Web\\Areas\\Enfermedades\\Views\\Enfermedades\\Editar.cshtml",
+              "RelativeToolTip": "src\\FincaNovaGestionLotes.Web\\Areas\\Enfermedades\\Views\\Enfermedades\\Editar.cshtml",
+              "ViewState": "AgIAACoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-10-02T02:24:12.15Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "D:\\FincaNOVADocs\\FINCA Git DESTOk\\FincaNovaPoryecto\\src\\FincaNovaGestionLotes.Web\\Areas\\Enfermedades\\Views\\Enfermedades\\Index.cshtml",
+              "RelativeDocumentMoniker": "src\\FincaNovaGestionLotes.Web\\Areas\\Enfermedades\\Views\\Enfermedades\\Index.cshtml",
+              "ToolTip": "D:\\FincaNOVADocs\\FINCA Git DESTOk\\FincaNovaPoryecto\\src\\FincaNovaGestionLotes.Web\\Areas\\Enfermedades\\Views\\Enfermedades\\Index.cshtml",
+              "RelativeToolTip": "src\\FincaNovaGestionLotes.Web\\Areas\\Enfermedades\\Views\\Enfermedades\\Index.cshtml",
+              "ViewState": "AgIAAGMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-10-02T02:24:04.977Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "D:\\FincaNOVADocs\\FINCA Git DESTOk\\FincaNovaPoryecto\\src\\FincaNovaGestionLotes.Web\\appsettings.json",
+              "RelativeDocumentMoniker": "src\\FincaNovaGestionLotes.Web\\appsettings.json",
+              "ToolTip": "D:\\FincaNOVADocs\\FINCA Git DESTOk\\FincaNovaPoryecto\\src\\FincaNovaGestionLotes.Web\\appsettings.json",
+              "RelativeToolTip": "src\\FincaNovaGestionLotes.Web\\appsettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAfAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-10-01T06:29:55.681Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "Index.cshtml.cs",
+              "DocumentMoniker": "D:\\FincaNOVADocs\\FINCA Git DESTOk\\FincaNovaPoryecto\\src\\FincaNovaGestionLotes.Web\\Areas\\Enfermedades\\Views\\Enfermedades\\Index.cshtml.cs",
+              "RelativeDocumentMoniker": "src\\FincaNovaGestionLotes.Web\\Areas\\Enfermedades\\Views\\Enfermedades\\Index.cshtml.cs",
+              "ToolTip": "D:\\FincaNOVADocs\\FINCA Git DESTOk\\FincaNovaPoryecto\\src\\FincaNovaGestionLotes.Web\\Areas\\Enfermedades\\Views\\Enfermedades\\Index.cshtml.cs",
+              "RelativeToolTip": "src\\FincaNovaGestionLotes.Web\\Areas\\Enfermedades\\Views\\Enfermedades\\Index.cshtml.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-10-02T02:25:55.414Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "Program.cs",
+              "DocumentMoniker": "D:\\FincaNOVADocs\\FINCA Git DESTOk\\FincaNovaPoryecto\\src\\FincaNovaGestionLotes.Web\\Program.cs",
+              "RelativeDocumentMoniker": "src\\FincaNovaGestionLotes.Web\\Program.cs",
+              "ToolTip": "D:\\FincaNOVADocs\\FINCA Git DESTOk\\FincaNovaPoryecto\\src\\FincaNovaGestionLotes.Web\\Program.cs",
+              "RelativeToolTip": "src\\FincaNovaGestionLotes.Web\\Program.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-10-01T06:30:51.49Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
