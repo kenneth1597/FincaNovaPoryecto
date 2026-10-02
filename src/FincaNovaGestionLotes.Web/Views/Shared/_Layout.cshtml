@@ -21,10 +21,19 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
+                    <ul class="navbar-nav me-auto">
                         <li class="nav-item">
                             <a class="nav-link text-white" asp-area="Lotes" asp-controller="Lotes" asp-action="Index">Lotes y micro lotes</a>
                         </li>
+                        @{
+                            var usuarioRol = Context.Session.GetString("UsuarioRol");
+                        }
+                        @if (usuarioRol == "Administrador" || usuarioRol == "Dueño")
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-white" asp-area="" asp-controller="Usuarios" asp-action="Index">Gestión de Usuarios</a>
+                            </li>
+                        }
                     </ul>
 
                     <ul class="navbar-nav">
@@ -46,23 +55,7 @@
                                 <a class="nav-link text-white" asp-area="" asp-controller="Account" asp-action="Login">Iniciar Sesión</a>
                             </li>
                         }
-                        @{
-    var usuarioRol = Context.Session.GetString("UsuarioRol");
-}
-
-<ul class="navbar-nav me-auto">
-    <li class="nav-item">
-        <a class="nav-link text-white" asp-area="Lotes" asp-controller="Lotes" asp-action="Index">Lotes y micro lotes</a>
-    </li>
-    @if (usuarioRol == "Administrador" || usuarioRol == "Dueño")
-    {
-        <li class="nav-item">
-            <a class="nav-link text-white" asp-area="" asp-controller="Usuarios" asp-action="Index">Gestión de Usuarios</a>
-        </li>
-    }
-</ul>
                     </ul>
-                   
                 </div>
             </div>
         </nav>
@@ -73,16 +66,217 @@
         </main>
     </div>
 
-    <footer class="border-top footer text-muted mt-4">
-        <div class="container py-2">
+<head>
+
+    <meta charset="utf-8" />
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0" />
+
+    <title>
+        @ViewData["Title"] - FincaNova
+    </title>
+
+    <link rel="stylesheet"
+          href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+    <link rel="stylesheet"
+          href="~/css/site.css"
+          asp-append-version="true" />
+
+</head>
+
+<body>
+
+    <header>
+
+        <nav class="navbar navbar-expand-lg fn-navbar">
+
+            <div class="container-fluid px-4">
+
+                <!-- LOGO -->
+
+                <a class="navbar-brand"
+                   asp-area="Lotes"
+                   asp-controller="Lotes"
+                   asp-action="Index">
+
+                    <span class="fn-logo">
+                        ●
+                    </span>
+
+                    <span>
+                        FincaNova · Lotes
+                    </span>
+
+                </a>
+
+
+                <!-- BOTÓN MÓVIL -->
+
+                <button class="navbar-toggler"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#navbarFincaNova">
+
+                    <span class="navbar-toggler-icon"></span>
+
+                </button>
+
+
+                <!-- MENÚ -->
+
+                <div class="collapse navbar-collapse"
+                     id="navbarFincaNova">
+
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
+
+                        <!-- LOTES -->
+
+                        <li class="nav-item">
+
+                            <a class="nav-link"
+                               asp-area="Lotes"
+                               asp-controller="Lotes"
+                               asp-action="Index">
+
+                                Lotes y micro lotes
+
+                            </a>
+
+                        </li>
+
+
+                        <!-- ENFERMEDADES -->
+
+                        <li class="nav-item">
+
+                            <a class="nav-link"
+                               asp-area="Enfermedades"
+                               asp-controller="Enfermedades"
+                               asp-action="Index">
+
+                                Enfermedades
+
+                            </a>
+
+                        </li>
+
+
+                        <!-- ALERTAS -->
+
+                        <li class="nav-item">
+
+                            <a class="nav-link"
+                               asp-area="Enfermedades"
+                               asp-controller="Enfermedades"
+                               asp-action="Alertas">
+
+                                Alertas
+
+                            </a>
+
+                        </li>
+
+
+                        <!-- PANEL -->
+
+                        <li class="nav-item">
+
+                            <a class="nav-link"
+                               asp-area="Lotes"
+                               asp-controller="Lotes"
+                               asp-action="Panel">
+
+                                Panel por estado
+
+                            </a>
+
+                        </li>
+
+
+                        <!-- PERIODOS -->
+
+                        <li class="nav-item">
+
+                            <a class="nav-link"
+                               asp-area="Produccion"
+                               asp-controller="Periodos"
+                               asp-action="Index">
+
+                                Períodos productivos
+
+                            </a>
+
+                        </li>
+
+
+                        <!-- BITÁCORA -->
+
+                        <li class="nav-item">
+
+                            <a class="nav-link"
+                               asp-area="Bitacora"
+                               asp-controller="Bitacora"
+                               asp-action="Index">
+
+                                Bitácora
+
+                            </a>
+
+                        </li>
+
+                    </ul>
+
+                </div>
+
+            </div>
+
+        </nav>
+
+    </header>
+
+
+    <!-- CONTENIDO -->
+
+    <main class="fn-main">
+
+        @RenderBody()
+
+    </main>
+
+
+    <!-- FOOTER -->
+
+    <footer class="fn-footer">
+
+        <div class="container">
+
             FincaNova · Gestión de Lotes y Micro lotes
+
         </div>
+
     </footer>
+
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
+
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
     <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+
     <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    @await RenderSectionAsync("Scripts", required: false)
+
+    <script src="~/js/site.js"
+            asp-append-version="true">
+    </script>
+
+    @await RenderSectionAsync(
+        "Scripts",
+        required: false
+    )
+
 </body>
+
 </html>
