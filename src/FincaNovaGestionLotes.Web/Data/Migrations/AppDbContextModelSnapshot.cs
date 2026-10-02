@@ -337,21 +337,12 @@ namespace FincaNovaGestionLotes.Web.Data.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<bool>("Cerrado")
                         .HasColumnType("bit");
-                        .HasColumnType("bit");
-
-                    b.Property<string>("CreadoPor")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CreadoPor")
                         .HasColumnType("nvarchar(max)");
@@ -385,53 +376,37 @@ namespace FincaNovaGestionLotes.Web.Data.Migrations
                     b.ToTable("PeriodosProductivos");
                 });
 
-            modelBuilder.Entity("FincaNovaGestionLotes.Web.Domain.Usuarios.Usuario", b =>
+            modelBuilder.Entity("FincaNovaGestionLotes.Web.Domain.Enfermedades.Enfermedad", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                    b.HasOne("FincaNovaGestionLotes.Web.Domain.Lotes.Lote", "Lote")
+                        .WithMany()
+                        .HasForeignKey("LoteId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
-                    b.Property<bool>("Activo")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime>("FechaCreacion")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("FechaModificacion")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("ModificadoPor")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Nombre")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PasswordHash")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ResetPasswordToken")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("ResetPasswordTokenExpiration")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Rol")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Email")
-                        .IsUnique();
-
-                    b.ToTable("Usuarios");
+                    b.Navigation("Lote");
                 });
+
+            modelBuilder.Entity("FincaNovaGestionLotes.Web.Domain.Enfermedades.ProductoTratamiento", b =>
+                {
+                    b.HasOne("FincaNovaGestionLotes.Web.Domain.Enfermedades.TratamientoEnfermedad", "TratamientoEnfermedad")
+                        .WithMany("Productos")
+                        .HasForeignKey("TratamientoEnfermedadId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TratamientoEnfermedad");
+                });
+
+            modelBuilder.Entity("FincaNovaGestionLotes.Web.Domain.Enfermedades.TratamientoEnfermedad", b =>
+                {
+                    b.HasOne("FincaNovaGestionLotes.Web.Domain.Enfermedades.Enfermedad", "Enfermedad")
+                        .WithMany("Tratamientos")
+                        .HasForeignKey("EnfermedadId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Enfermedad");
                 });
 
             modelBuilder.Entity("FincaNovaGestionLotes.Web.Domain.Lotes.Lote", b =>
