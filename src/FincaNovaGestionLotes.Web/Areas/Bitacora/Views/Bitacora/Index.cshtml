@@ -1,0 +1,293 @@
+﻿@model IEnumerable<FincaNovaGestionLotes.Web.Domain.Auditoria.AuditLog>
+
+@{
+    ViewData["Title"] = "Bitácora";
+}
+
+<div class="fn-page-header">
+
+    <div>
+
+        <h1 class="fn-page-title">
+
+            <span class="fn-page-title-icon">
+                <svg viewBox="0 0 24 24">
+                    <rect x="5" y="3" width="14" height="18" rx="2" />
+                    <path d="M9 8h6M9 12h6M9 16h4" />
+                </svg>
+            </span>
+
+            Bitácora del sistema
+
+        </h1>
+
+        <p class="fn-page-subtitle">
+            Historial de acciones realizadas dentro del sistema.
+        </p>
+
+    </div>
+
+</div>
+
+
+<!-- FILTROS -->
+
+<div class="fn-card">
+
+    <div class="fn-card-header">
+
+        <h2 class="fn-card-title fn-filter-title">
+
+            <span class="fn-filter-icon">
+                <svg viewBox="0 0 24 24">
+                    <path d="M4 5h16l-6 7v5l-4 2v-7L4 5Z" />
+                </svg>
+            </span>
+
+            Filtros de búsqueda
+
+        </h2>
+
+    </div>
+
+    <div class="fn-card-body">
+
+        <form method="get"
+              asp-action="Index">
+
+            <div class="row g-3">
+
+                <div class="col-md-3">
+
+                    <label class="fn-form-label">
+                        Entidad
+                    </label>
+
+                    <input type="text"
+                           name="entidad"
+                           value="@ViewBag.Entidad"
+                           class="fn-form-control"
+                           placeholder="Ej. Lote" />
+
+                </div>
+
+
+                <div class="col-md-3">
+
+                    <label class="fn-form-label">
+                        Usuario
+                    </label>
+
+                    <input type="text"
+                           name="usuario"
+                           value="@ViewBag.Usuario"
+                           class="fn-form-control"
+                           placeholder="Buscar usuario" />
+
+                </div>
+
+
+                <div class="col-md-2">
+
+                    <label class="fn-form-label">
+                        Desde
+                    </label>
+
+                    <input type="date"
+                           name="desde"
+                           value="@ViewBag.Desde"
+                           class="fn-form-control" />
+
+                </div>
+
+
+                <div class="col-md-2">
+
+                    <label class="fn-form-label">
+                        Hasta
+                    </label>
+
+                    <input type="date"
+                           name="hasta"
+                           value="@ViewBag.Hasta"
+                           class="fn-form-control" />
+
+                </div>
+
+
+                <div class="col-md-2 d-flex align-items-end gap-2">
+
+                    <button type="submit"
+                            class="fn-btn fn-btn-primary">
+                        Filtrar
+                    </button>
+
+                    <a asp-action="Index"
+                       class="fn-btn fn-btn-outline">
+                        Limpiar
+                    </a>
+
+                </div>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- REGISTROS -->
+
+<div class="fn-card">
+
+    <div class="fn-card-header d-flex justify-content-between align-items-center">
+
+        <h2 class="fn-card-title">
+            Actividad registrada
+        </h2>
+
+        <span class="fn-count">
+            @Model.Count() registro(s)
+        </span>
+
+    </div>
+
+
+    @if (!Model.Any())
+    {
+        <div class="fn-empty">
+
+            <div class="fn-empty-title">
+                No existen registros en la bitácora.
+            </div>
+
+            <div class="fn-empty-text">
+                Las acciones realizadas aparecerán aquí.
+            </div>
+
+        </div>
+    }
+    else
+    {
+
+        <div class="fn-card-body">
+
+            <div class="fn-table-wrapper">
+
+                <table class="fn-table">
+
+                    <thead>
+
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Usuario</th>
+                            <th>Acción</th>
+                            <th>Entidad</th>
+                            <th>ID</th>
+                            <th>Descripción</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        @foreach (var registro in Model)
+                        {
+                            <tr>
+
+                                <td>
+                                    @registro.FechaHora.ToLocalTime().ToString("dd/MM/yyyy HH:mm")
+                                </td>
+
+                                <td>
+
+                                    @if (string.IsNullOrWhiteSpace(registro.Usuario))
+                                    {
+                                        <span class="text-muted">
+                                            Sistema
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        @registro.Usuario
+                                    }
+
+                                </td>
+
+                                <td>
+
+                                    @switch (registro.Accion)
+                                    {
+                                        case AccionAuditoria.Crear:
+
+                                            <span class="fn-badge fn-badge-success">
+                                                Crear
+                                            </span>
+
+                                            break;
+
+                                        case AccionAuditoria.Modificar:
+
+                                            <span class="fn-badge fn-badge-info">
+                                                Modificar
+                                            </span>
+
+                                            break;
+
+                                        case AccionAuditoria.Inactivar:
+
+                                            <span class="fn-badge fn-badge-warning">
+                                                Inactivar
+                                            </span>
+
+                                            break;
+
+                                        case AccionAuditoria.Eliminar:
+
+                                            <span class="fn-badge fn-badge-danger">
+                                                Eliminar
+                                            </span>
+
+                                            break;
+
+                                        default:
+
+                                            <span class="fn-badge fn-badge-neutral">
+                                                @registro.Accion
+                                            </span>
+
+                                            break;
+                                    }
+
+                                </td>
+
+                                <td>
+                                    <strong>
+                                        @registro.Entidad
+                                    </strong>
+                                </td>
+
+                                <td>
+                                    @registro.EntidadId
+                                </td>
+
+                                <td>
+                                    @registro.Descripcion
+                                </td>
+
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    }
+
+</div>
