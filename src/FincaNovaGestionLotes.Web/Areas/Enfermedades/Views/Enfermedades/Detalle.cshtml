@@ -1,0 +1,133 @@
+﻿@model FincaNovaGestionLotes.Web.Domain.Enfermedades.Enfermedad
+
+@{
+    ViewData["Title"] = "Detalle de enfermedad";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1>@Model.Nombre</h1>
+
+        <p class="text-muted mb-0">
+            Lote: @Model.Lote.Codigo — @Model.Lote.Nombre
+        </p>
+    </div>
+
+    <a asp-action="Index"
+       class="btn btn-outline-secondary">
+        Volver
+    </a>
+</div>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+
+        <dl class="row">
+
+            <dt class="col-sm-3">
+                Fecha de detección
+            </dt>
+
+            <dd class="col-sm-9">
+                @Model.FechaDeteccion.ToString("dd/MM/yyyy")
+            </dd>
+
+            <dt class="col-sm-3">
+                Severidad
+            </dt>
+
+            <dd class="col-sm-9">
+                @Model.Severidad
+            </dd>
+
+            <dt class="col-sm-3">
+                Descripción
+            </dt>
+
+            <dd class="col-sm-9">
+                @Model.Descripcion
+            </dd>
+
+            <dt class="col-sm-3">
+                Observaciones
+            </dt>
+
+            <dd class="col-sm-9">
+                @(Model.Observaciones ?? "Sin observaciones")
+            </dd>
+
+        </dl>
+
+        <a asp-action="Editar"
+           asp-route-id="@Model.Id"
+           class="btn btn-primary">
+            Editar enfermedad
+        </a>
+
+        <a asp-action="CrearTratamiento"
+           asp-route-enfermedadId="@Model.Id"
+           class="btn btn-primary">
+            Crear tratamiento
+        </a>
+
+    </div>
+</div>
+
+<h3>Tratamientos aplicados</h3>
+
+@if (!Model.Tratamientos.Any())
+{
+    <div class="alert alert-info">
+        No existen tratamientos registrados para esta enfermedad.
+    </div>
+}
+else
+{
+    foreach (var tratamiento in Model.Tratamientos)
+    {
+        <div class="card mb-3">
+            <div class="card-body">
+
+                <h5>@tratamiento.Tratamiento</h5>
+
+                <p>
+                    <strong>Fecha:</strong>
+                    @tratamiento.FechaAplicacion.ToString("dd/MM/yyyy")
+                </p>
+
+                <p>
+                    <strong>Responsable:</strong>
+                    @(tratamiento.Responsable ?? "No indicado")
+                </p>
+
+                <p>
+                    <strong>Resultado:</strong>
+                    @(tratamiento.Resultado ?? "No indicado")
+                </p>
+
+                <h6>Productos utilizados</h6>
+
+                @if (!tratamiento.Productos.Any())
+                {
+                    <p class="text-muted">
+                        No se registraron productos.
+                    </p>
+                }
+                else
+                {
+                    <ul>
+                        @foreach (var producto in tratamiento.Productos)
+                        {
+                            <li>
+                                @producto.NombreProducto -
+                                @producto.Cantidad
+                                @producto.Unidad
+                            </li>
+                        }
+                    </ul>
+                }
+
+            </div>
+        </div>
+    }
+}
