@@ -23,6 +23,10 @@ build_property._RazorSourceGeneratorDebug =
 build_property.EffectiveAnalysisLevelStyle = 8.0
 build_property.EnableCodeStyleSeverity = 
 
+[D:/FincaNOVADocs/FINCA Git DESTOk/FincaNovaPoryecto/src/FincaNovaGestionLotes.Web/Areas/Bitacora/Views/Bitacora/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXNcQml0YWNvcmFcVmlld3NcQml0YWNvcmFcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
 [D:/FincaNOVADocs/FINCA Git DESTOk/FincaNovaPoryecto/src/FincaNovaGestionLotes.Web/Areas/Lotes/Views/Lotes/Crear.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcTG90ZXNcVmlld3NcTG90ZXNcQ3JlYXIuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
