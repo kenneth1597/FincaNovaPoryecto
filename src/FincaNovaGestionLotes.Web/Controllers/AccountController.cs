@@ -2,10 +2,12 @@
 using FincaNovaGestionLotes.Web.Data;
 using FincaNovaGestionLotes.Web.Domain.Usuarios;
 using FincaNovaGestionLotes.Web.Models;
-using FincaNovaGestionLotes.Web.Services; // <-- Asegúrate de tener la referencia a tus servicios
+using FincaNovaGestionLotes.Web.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FincaNovaGestionLotes.Web.Controllers;
 
@@ -88,7 +90,6 @@ public class AccountController : Controller
     }
     #endregion
 
-
     #region Olvidé mi Contraseña
     [HttpGet]
     public IActionResult ForgotPassword()
@@ -102,36 +103,32 @@ public class AccountController : Controller
         if (!ModelState.IsValid)
             return View(model);
 
+        var emailLimpio = model.Email.Trim().ToLower();
         var usuario = await _context.Usuarios
-            .FirstOrDefaultAsync(u => u.Email.ToLower() == model.Email.Trim().ToLower());
+            .FirstOrDefaultAsync(u => u.Email.ToLower() == emailLimpio);
 
         if (usuario == null)
         {
-            // Por seguridad o retroalimentación en pruebas
             ModelState.AddModelError("Email", "No existe una cuenta asociada a este correo.");
             return View(model);
         }
 
-        // 1. Generar token único de seguridad
-        string token = Convert.ToBase64String(Guid.NewGuid().ToByteArray())
-            .Replace("+", "")
-            .Replace("/", "")
-            .Replace("=", "");
+        // 1. Generar token limpio seguro
+        string token = Guid.NewGuid().ToString("N");
 
-        // 2. Guardar el token y su vencimiento en el usuario (30 min)
+        // 2. Guardar expiración en UTC
         usuario.ResetPasswordToken = token;
-        usuario.ResetPasswordTokenExpiration = DateTime.Now.AddMinutes(30);
+        usuario.ResetPasswordTokenExpiration = DateTime.UtcNow.AddMinutes(30);
 
         _context.Usuarios.Update(usuario);
         await _context.SaveChangesAsync();
 
-        // 3. Crear el enlace que irá dentro del correo
+        // 3. Crear enlace de restablecimiento
         var resetLink = Url.Action("ResetPassword", "Account", new { token = token, email = usuario.Email }, Request.Scheme);
 
-        // 4. Enviar el correo electrónico
+        // 4. Enviar correo
         await emailService.SendPasswordResetEmailAsync(usuario.Email, resetLink!);
 
-        // 5. Redirigir AL LOGIN (no a ResetPassword) con mensaje de éxito
         TempData["SuccessMessage"] = "Te hemos enviado un correo electrónico con el enlace para restablecer tu contraseña.";
         return RedirectToAction("Login");
     }
@@ -160,12 +157,13 @@ public class AccountController : Controller
         if (!ModelState.IsValid)
             return View(model);
 
-        // Buscar al usuario por correo y validar que el token coincida y no haya expirado
+        var emailLimpio = model.Email.Trim().ToLower();
+
         var usuario = await _context.Usuarios
             .FirstOrDefaultAsync(u =>
-                u.Email.ToLower() == model.Email.Trim().ToLower() &&
+                u.Email.ToLower() == emailLimpio &&
                 u.ResetPasswordToken == model.Token &&
-                u.ResetPasswordTokenExpiration > DateTime.Now);
+                u.ResetPasswordTokenExpiration > DateTime.UtcNow);
 
         if (usuario == null)
         {
@@ -173,12 +171,11 @@ public class AccountController : Controller
             return View(model);
         }
 
-        // 1. Encriptar la NUEVA contraseña con BCrypt
         usuario.PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.NewPassword);
-
-        // 2. Anular el token para que no se pueda reutilizar
         usuario.ResetPasswordToken = null;
         usuario.ResetPasswordTokenExpiration = null;
+        usuario.FechaModificacion = DateTime.UtcNow;
+        usuario.ModificadoPor = "Restablecimiento de Contraseña";
 
         _context.Usuarios.Update(usuario);
         await _context.SaveChangesAsync();
@@ -200,20 +197,124 @@ public class AccountController : Controller
     [HttpPost]
     public async Task<IActionResult> CambiarRol(int usuarioId, string nuevoRol)
     {
-        // Verificar que quien hace el cambio sea Administrador o Dueño
         var rolActual = HttpContext.Session.GetString("UsuarioRol");
         if (rolActual != "Administrador" && rolActual != "Dueño")
         {
-            return Forbid(); // Acceso denegado si es un Trabajador
+            return Forbid();
         }
 
         var usuario = await _context.Usuarios.FindAsync(usuarioId);
         if (usuario != null)
         {
-            usuario.Rol = nuevoRol; // "Administrador", "Dueño" o "Trabajador"
+            usuario.Rol = nuevoRol;
             await _context.SaveChangesAsync();
         }
 
         return RedirectToAction("Index", "Usuarios");
+    }
+
+    #region Mi Perfil
+
+    [HttpGet]
+    public async Task<IActionResult> Perfil()
+    {
+        // Obtener el ID del usuario desde la Sesión
+        var usuarioId = HttpContext.Session.GetInt32("UsuarioId");
+        if (usuarioId == null)
+        {
+            return RedirectToAction("Login");
+        }
+
+        var usuario = await _context.Usuarios
+            .FirstOrDefaultAsync(u => u.Id == usuarioId.Value);
+
+        if (usuario == null)
+        {
+            return NotFound();
+        }
+
+        var model = new PerfilViewModel
+        {
+            Id = usuario.Id,
+            NombreCompleto = usuario.Nombre, // Se asigna la propiedad Nombre
+            Email = usuario.Email,
+            RolNombre = string.IsNullOrEmpty(usuario.Rol) ? "Sin Rol" : usuario.Rol
+        };
+
+        return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Perfil(PerfilViewModel model)
+    {
+        var usuarioId = HttpContext.Session.GetInt32("UsuarioId");
+        if (usuarioId == null || usuarioId.Value != model.Id)
+        {
+            return RedirectToAction("Login");
+        }
+
+        var usuario = await _context.Usuarios
+            .FirstOrDefaultAsync(u => u.Id == usuarioId.Value);
+
+        if (usuario == null)
+        {
+            return NotFound();
+        }
+
+        model.RolNombre = string.IsNullOrEmpty(usuario.Rol) ? "Sin Rol" : usuario.Rol;
+
+        var emailLimpio = model.Email.Trim().ToLower();
+        bool emailExistente = await _context.Usuarios
+            .AnyAsync(u => u.Email.ToLower() == emailLimpio && u.Id != usuarioId.Value);
+
+        if (emailExistente)
+        {
+            ModelState.AddModelError("Email", "El correo ingresado ya pertenece a otra cuenta.");
+        }
+
+        bool deseaCambiarPassword = !string.IsNullOrWhiteSpace(model.NewPassword);
+
+        if (deseaCambiarPassword)
+        {
+            if (string.IsNullOrWhiteSpace(model.CurrentPassword))
+            {
+                ModelState.AddModelError("CurrentPassword", "Debe ingresar su contraseña actual para autorizar el cambio.");
+            }
+            else if (!BCrypt.Net.BCrypt.Verify(model.CurrentPassword, usuario.PasswordHash))
+            {
+                ModelState.AddModelError("CurrentPassword", "La contraseña actual es incorrecta.");
+            }
+        }
+
+        if (!ModelState.IsValid)
+        {
+            return View(model);
+        }
+
+        // Actualizar datos del usuario
+        usuario.Nombre = model.NombreCompleto.Trim();
+        usuario.Email = emailLimpio;
+
+        if (deseaCambiarPassword && !string.IsNullOrWhiteSpace(model.NewPassword))
+        {
+            usuario.PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.NewPassword);
+        }
+
+        _context.Usuarios.Update(usuario);
+        await _context.SaveChangesAsync();
+
+        // Actualizar el nombre en la sesión
+        HttpContext.Session.SetString("UsuarioNombre", usuario.Nombre);
+
+        TempData["SuccessMessage"] = "Tu perfil ha sido actualizado correctamente.";
+        return RedirectToAction("Perfil");
+    }
+
+    #endregion
+    [HttpGet]
+    public IActionResult AccessDenied()
+    {
+        return View();
     }
 }

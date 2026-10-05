@@ -332,8 +332,9 @@ namespace FincaNovaGestionLotes.Web.Data.Migrations
 
                     b.ToTable("Lotes");
                 });
+            modelBuilder.Entity("FincaNovaGestionLotes.Web.Domain.Usuarios.Usuario", b =>
 
-            modelBuilder.Entity("FincaNovaGestionLotes.Web.Domain.Produccion.PeriodoProductivo", b =>
+          modelBuilder.Entity("FincaNovaGestionLotes.Web.Domain.Produccion.PeriodoProductivo", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -374,7 +375,7 @@ namespace FincaNovaGestionLotes.Web.Data.Migrations
                     b.HasIndex("LoteId", "FechaInicio");
 
                     b.ToTable("PeriodosProductivos");
-                });
+                }));
 
             modelBuilder.Entity("FincaNovaGestionLotes.Web.Domain.Enfermedades.Enfermedad", b =>
                 {
@@ -386,6 +387,8 @@ namespace FincaNovaGestionLotes.Web.Data.Migrations
 
                     b.Navigation("Lote");
                 });
+            
+        
 
             modelBuilder.Entity("FincaNovaGestionLotes.Web.Domain.Enfermedades.ProductoTratamiento", b =>
                 {

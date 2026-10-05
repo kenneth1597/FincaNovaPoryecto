@@ -8,12 +8,8 @@ using FincaNovaGestionLotes.Web.Domain.Produccion;
 
 namespace FincaNovaGestionLotes.Web.Data;
 
-public class AppDbContext : DbContext
+public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
 {
-    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
-    {
-    }
-
     public DbSet<Finca> Fincas => Set<Finca>();
     public DbSet<Lote> Lotes => Set<Lote>();
     public DbSet<AuditLog> AuditLogs => Set<AuditLog>();

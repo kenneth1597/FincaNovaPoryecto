@@ -161,11 +161,68 @@
                             </a>
 
                         </li>
-
                     </ul>
-
                 </div>
+                @using Microsoft.AspNetCore.Http
 
+@{
+    var usuarioNombre = Context.Session.GetString("UsuarioNombre");
+    var usuarioRol = Context.Session.GetString("UsuarioRol");
+}
+
+<div class="collapse navbar-collapse" id="navbarMain">
+
+    
+    <!-- Menú Derecho: Saludo, Mi Perfil y Cerrar Sesión -->
+    <ul class="navbar-nav ms-auto align-items-center">
+        @if (!string.IsNullOrEmpty(usuarioNombre))
+        {
+                            <ul class="navbar-nav me-auto">
+                                @if (usuarioRol == "Administrador" || usuarioRol == "Dueño")
+                                {
+                                    <li class="nav-item">
+                                        <a class="nav-link text-white" asp-area="" asp-controller="Usuarios" asp-action="Index">
+                                            <i class="bi bi-people-fill me-1"></i>Gestión de Usuarios
+                                        </a>
+                                    </li>
+                                }
+                            </ul>
+
+            <!-- Saludo al usuario -->
+            <li class="nav-item me-2">
+                <span class="nav-link text-white fw-bold">
+                    <i class="bi bi-person-circle me-1"></i>Hola, @usuarioNombre
+                </span>
+            </li>
+
+            <!-- Botón Mi Perfil -->
+            <li class="nav-item me-2">
+                <a class="btn btn-outline-light btn-sm d-inline-flex align-items-center gap-1" asp-area="" asp-controller="Account" asp-action="Perfil">
+                    <i class="bi bi-person-gear"></i>
+                    <span>Mi Perfil</span>
+                </a>
+            </li>
+
+            <!-- Botón Cerrar Sesión -->
+            <li class="nav-item">
+                <a class="btn btn-danger btn-sm d-inline-flex align-items-center gap-1" asp-area="" asp-controller="Account" asp-action="Logout">
+                    <i class="bi bi-box-arrow-right"></i>
+                    <span>Cerrar Sesión</span>
+                </a>
+            </li>
+        }
+        else
+        {
+            <!-- Iniciar Sesión (Si no hay sesión activa) -->
+            <li class="nav-item">
+                <a class="btn btn-outline-light btn-sm" asp-area="" asp-controller="Account" asp-action="Login">
+                    <i class="bi bi-box-arrow-in-right me-1"></i>Iniciar Sesión
+                </a>
+            </li>
+        }
+    </ul>
+</div>
+                    
             </div>
 
         </nav>

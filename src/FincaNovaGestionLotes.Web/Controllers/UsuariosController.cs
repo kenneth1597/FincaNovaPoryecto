@@ -26,12 +26,16 @@ public class UsuariosController : Controller
     // GET: /Usuarios
     public async Task<IActionResult> Index()
     {
-        if (!EsAdminODueno()) return Forbid();
+        var rolActual = HttpContext.Session.GetString("UsuarioRol");
 
-        var usuarios = await _context.Usuarios
-            .OrderByDescending(u => u.FechaCreacion)
-            .ToListAsync();
+        // Si no tiene el rol permitido, redirige directamente a AccessDenied
+        if (rolActual != "Administrador" && rolActual != "Dueño")
+        {
+            return RedirectToAction("AccessDenied", "Account");
+        }
 
+        // Código habitual para cargar los usuarios...
+        var usuarios = await _context.Usuarios.ToListAsync();
         return View(usuarios);
     }
 
