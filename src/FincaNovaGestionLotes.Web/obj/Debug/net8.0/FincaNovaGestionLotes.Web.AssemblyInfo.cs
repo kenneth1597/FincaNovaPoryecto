@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("FincaNovaGestionLotes.Web")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+de0fe29a659391a1165b5dcc0ec224f10b6f83ab")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+0a1b572671223b895a0151838982f9be6c7eae26")]
 [assembly: System.Reflection.AssemblyProductAttribute("FincaNovaGestionLotes.Web")]
 [assembly: System.Reflection.AssemblyTitleAttribute("FincaNovaGestionLotes.Web")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
