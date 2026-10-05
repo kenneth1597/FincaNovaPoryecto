@@ -14,10 +14,12 @@ namespace FincaNovaGestionLotes.Web.Controllers;
 public class AccountController : Controller
 {
     private readonly AppDbContext _context;
+    private readonly IEmailService _emailService; 
 
-    public AccountController(AppDbContext context)
+    public AccountController(AppDbContext context, IEmailService emailService)
     {
         _context = context;
+        _emailService = emailService;
     }
 
     #region Login
@@ -98,48 +100,67 @@ public class AccountController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model, [FromServices] IEmailService emailService)
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ForgotPassword(string email)
     {
-        if (!ModelState.IsValid)
-            return View(model);
+        if (string.IsNullOrWhiteSpace(email))
+        {
+            TempData["ErrorMessage"] = "Por favor, ingresa un correo electrónico.";
+            return View();
+        }
 
-        var emailLimpio = model.Email.Trim().ToLower();
         var usuario = await _context.Usuarios
-            .FirstOrDefaultAsync(u => u.Email.ToLower() == emailLimpio);
+            .FirstOrDefaultAsync(u => u.Email.ToLower() == email.Trim().ToLower());
 
         if (usuario == null)
         {
-            ModelState.AddModelError("Email", "No existe una cuenta asociada a este correo.");
-            return View(model);
+            // Por seguridad, no revelamos si el correo existe o no
+            TempData["SuccessMessage"] = "Si el correo existe en nuestro sistema, hemos enviado un enlace de recuperación.";
+            return RedirectToAction("Login");
         }
 
-        // 1. Generar token limpio seguro
+        // 1. Generar token único
         string token = Guid.NewGuid().ToString("N");
 
-        // 2. Guardar expiración en UTC
-        usuario.ResetPasswordToken = token;
-        usuario.ResetPasswordTokenExpiration = DateTime.UtcNow.AddMinutes(30);
+        // 2. Definir expiración a 5 minutos a partir de este instante
+        usuario.PasswordResetToken = token;
+        usuario.PasswordResetTokenExpiration = DateTime.Now.AddMinutes(5);
 
         _context.Usuarios.Update(usuario);
         await _context.SaveChangesAsync();
 
-        // 3. Crear enlace de restablecimiento
-        var resetLink = Url.Action("ResetPassword", "Account", new { token = token, email = usuario.Email }, Request.Scheme);
+  
+        // 3. Generar URL Restablecer Contraseña
+        var resetLink = Url.Action("ResetPassword", "Account",
+            new { token = token, email = usuario.Email },
+            protocol: Request.Scheme) ?? string.Empty;
 
-        // 4. Enviar correo
-        await emailService.SendPasswordResetEmailAsync(usuario.Email, resetLink!);
+        // 4. Enviar el correo usando SmtpEmailService
+        await _emailService.SendPasswordResetEmailAsync(usuario.Email, resetLink);
 
-        TempData["SuccessMessage"] = "Te hemos enviado un correo electrónico con el enlace para restablecer tu contraseña.";
+        TempData["SuccessMessage"] = "Si el correo existe en nuestro sistema, hemos enviado un enlace de recuperación.";
         return RedirectToAction("Login");
     }
 
+
+    // GET: Token de vencimiento de pasword
     [HttpGet]
-    public IActionResult ResetPassword(string token, string email)
+    public async Task<IActionResult> ResetPassword(string token, string email)
     {
         if (string.IsNullOrEmpty(token) || string.IsNullOrEmpty(email))
         {
-            TempData["ErrorMessage"] = "El enlace de recuperación es inválido.";
-            return RedirectToAction("ForgotPassword");
+            TempData["ErrorMessage"] = "El enlace de recuperación no es válido.";
+            return RedirectToAction("Login");
+        }
+
+        var usuario = await _context.Usuarios
+            .FirstOrDefaultAsync(u => u.Email.ToLower() == email.ToLower() && u.PasswordResetToken == token);
+
+        // Validar si el usuario/token existe y si aún NO ha expirado
+        if (usuario == null || usuario.PasswordResetTokenExpiration == null || usuario.PasswordResetTokenExpiration < DateTime.Now)
+        {
+            TempData["ErrorMessage"] = "El enlace de recuperación ha expirado o ya no es válido. Solicita uno nuevo.";
+            return RedirectToAction("Login");
         }
 
         var model = new ResetPasswordViewModel
@@ -152,38 +173,36 @@ public class AccountController : Controller
     }
 
     [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
     {
-        if (!ModelState.IsValid)
-            return View(model);
-
-        var emailLimpio = model.Email.Trim().ToLower();
+        if (!ModelState.IsValid) return View(model);
 
         var usuario = await _context.Usuarios
-            .FirstOrDefaultAsync(u =>
-                u.Email.ToLower() == emailLimpio &&
-                u.ResetPasswordToken == model.Token &&
-                u.ResetPasswordTokenExpiration > DateTime.UtcNow);
+            .FirstOrDefaultAsync(u => u.Email.ToLower() == model.Email.ToLower() && u.PasswordResetToken == model.Token);
 
-        if (usuario == null)
+        // Validar nuevamente la expiración al procesar el formulario
+        if (usuario == null || usuario.PasswordResetTokenExpiration == null || usuario.PasswordResetTokenExpiration < DateTime.Now)
         {
-            ModelState.AddModelError(string.Empty, "El enlace es inválido o ya ha expirado. Por favor solicita uno nuevo.");
-            return View(model);
+            TempData["ErrorMessage"] = "El plazo de 5 minutos ha expirado. Por favor solicita un nuevo enlace.";
+            return RedirectToAction("Login");
         }
 
+        // Actualizar contraseña hash (usando BCrypt)
         usuario.PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.NewPassword);
-        usuario.ResetPasswordToken = null;
-        usuario.ResetPasswordTokenExpiration = null;
-        usuario.FechaModificacion = DateTime.UtcNow;
-        usuario.ModificadoPor = "Restablecimiento de Contraseña";
+
+        // Invalidate/Limpiar el token para que no se vuelva a usar
+        usuario.PasswordResetToken = null;
+        usuario.PasswordResetTokenExpiration = null;
+        usuario.FechaModificacion = DateTime.Now;
+        usuario.ModificadoPor = usuario.Nombre;
 
         _context.Usuarios.Update(usuario);
         await _context.SaveChangesAsync();
 
-        TempData["SuccessMessage"] = "Tu contraseña ha sido restablecida con éxito. Ya puedes iniciar sesión.";
+        TempData["SuccessMessage"] = "Tu contraseña ha sido restablecida con éxito. Puedes iniciar sesión.";
         return RedirectToAction("Login");
     }
-    #endregion
 
     #region Logout
     [HttpGet]
@@ -317,4 +336,5 @@ public class AccountController : Controller
     {
         return View();
     }
-}
+    #endregion
+} 

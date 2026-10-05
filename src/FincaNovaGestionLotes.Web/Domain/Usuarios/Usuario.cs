@@ -11,4 +11,6 @@ public class Usuario : AuditableEntity
     public bool Activo { get; set; } = true;
     public string? ResetPasswordToken { get; set; }
     public DateTime? ResetPasswordTokenExpiration { get; set; }
+    public string? PasswordResetToken { get; set; }
+    public DateTime? PasswordResetTokenExpiration { get; set; }
 }

@@ -30,8 +30,10 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     {
         base.OnModelCreating(builder);
 
+        // --- Mapeo de Usuarios ---
         builder.Entity<Usuario>(e =>
         {
+            e.ToTable("Usuarios"); 
             e.HasIndex(u => u.Email).IsUnique();
         });
 
