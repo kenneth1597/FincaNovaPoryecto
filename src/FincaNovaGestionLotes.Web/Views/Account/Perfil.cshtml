@@ -1,0 +1,82 @@
+﻿@model FincaNovaGestionLotes.Web.Models.PerfilViewModel
+
+@{
+    ViewData["Title"] = "Mi Perfil";
+}
+
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-7">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center py-3">
+                    <h4 class="mb-0"><i class="bi bi-person-circle me-2"></i>Mi Perfil</h4>
+                    <span class="badge bg-light text-primary fs-6">@Model.RolNombre</span>
+                </div>
+                <div class="card-body p-4">
+
+                    @if (TempData["SuccessMessage"] != null)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="bi bi-check-circle-fill me-2"></i>@TempData["SuccessMessage"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                    <form asp-action="Perfil" method="post">
+                        <input type="hidden" asp-for="Id" />
+
+                        <h5 class="text-secondary mb-3 border-bottom pb-2">Información de la Cuenta</h5>
+                        
+                        <div class="mb-3">
+                            <label asp-for="NombreCompleto" class="form-label fw-bold"></label>
+                            <input asp-for="NombreCompleto" class="form-control" />
+                            <span asp-validation-for="NombreCompleto" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="Email" class="form-label fw-bold"></label>
+                            <input asp-for="Email" class="form-control" />
+                            <span asp-validation-for="Email" class="text-danger small"></span>
+                        </div>
+
+                        <h5 class="text-secondary mb-3 border-bottom pb-2">Cambio de Contraseña (Opcional)</h5>
+                        <p class="text-muted small mb-3">Si deseas cambiar tu contraseña, completa los campos a continuación.</p>
+
+                        <div class="mb-3">
+                            <label asp-for="CurrentPassword" class="form-label fw-bold"></label>
+                            <input asp-for="CurrentPassword" class="form-control" placeholder="Ingresa tu clave actual para autorizar cambios" />
+                            <span asp-validation-for="CurrentPassword" class="text-danger small"></span>
+                        </div>
+
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label asp-for="NewPassword" class="form-label fw-bold"></label>
+                                <input asp-for="NewPassword" class="form-control" />
+                                <span asp-validation-for="NewPassword" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="ConfirmPassword" class="form-label fw-bold"></label>
+                                <input asp-for="ConfirmPassword" class="form-control" />
+                                <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-2">
+                            <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary">Cancelar</a>
+                            <button type="submit" class="btn btn-primary px-4">
+                                <i class="bi bi-save me-1"></i> Guardar Cambios
+                            </button>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
