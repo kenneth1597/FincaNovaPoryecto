@@ -26,16 +26,6 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<ProductoTratamiento> ProductosTratamiento
         => Set<ProductoTratamiento>();
 
-    public DbSet<PeriodoProductivo> PeriodosProductivos
-    => Set<PeriodoProductivo>();
-
-    public DbSet<Enfermedad> Enfermedades => Set<Enfermedad>();
-
-    public DbSet<TratamientoEnfermedad> TratamientosEnfermedad
-        => Set<TratamientoEnfermedad>();
-
-    public DbSet<ProductoTratamiento> ProductosTratamiento
-        => Set<ProductoTratamiento>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
