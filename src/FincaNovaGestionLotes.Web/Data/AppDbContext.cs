@@ -1,21 +1,19 @@
 using FincaNovaGestionLotes.Web.Domain;
 using FincaNovaGestionLotes.Web.Domain.Auditoria;
 using FincaNovaGestionLotes.Web.Domain.Lotes;
+using FincaNovaGestionLotes.Web.Domain.Usuarios;
 using Microsoft.EntityFrameworkCore;
 using FincaNovaGestionLotes.Web.Domain.Enfermedades;
 using FincaNovaGestionLotes.Web.Domain.Produccion;
 
 namespace FincaNovaGestionLotes.Web.Data;
 
-public class AppDbContext : DbContext
+public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
 {
-    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
-    {
-    }
-
     public DbSet<Finca> Fincas => Set<Finca>();
     public DbSet<Lote> Lotes => Set<Lote>();
     public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
+    public DbSet<Usuario> Usuarios => Set<Usuario>();
 
     public DbSet<PeriodoProductivo> PeriodosProductivos
     => Set<PeriodoProductivo>();
@@ -28,9 +26,17 @@ public class AppDbContext : DbContext
     public DbSet<ProductoTratamiento> ProductosTratamiento
         => Set<ProductoTratamiento>();
 
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
+
+        // --- Mapeo de Usuarios ---
+        builder.Entity<Usuario>(e =>
+        {
+            e.ToTable("Usuarios"); 
+            e.HasIndex(u => u.Email).IsUnique();
+        });
 
         builder.Entity<Lote>(e =>
         {
