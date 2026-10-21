@@ -1,0 +1,38 @@
+@model TerrenoFormViewModel
+@{
+    ViewData["Title"] = Model.Tipo == TipoTerreno.Lote ? "Nuevo lote" : "Nueva finca";
+}
+
+<div class="fn-page-header">
+    <div>
+        <h1 class="fn-page-title">@ViewData["Title"]</h1>
+        <p class="fn-page-subtitle">
+            @(Model.Tipo == TipoTerreno.Lote
+                ? "Todo lote pertenece a una finca y su área no puede superar el área libre de esa finca."
+                : "Registra una finca; después podrás dividirla en lotes.")
+        </p>
+    </div>
+    <a asp-action="Index" class="fn-btn fn-btn-outline">Volver</a>
+</div>
+
+@if (TempData["Error"] is string error)
+{
+    <div class="alert alert-danger">@error</div>
+}
+
+<div class="card">
+    <div class="card-body">
+        <form asp-action="Crear" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+            <partial name="_FormFields" />
+            <div class="mt-4 d-flex gap-2">
+                <button type="submit" class="btn btn-success">Guardar</button>
+                <a asp-action="Index" class="btn btn-outline-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

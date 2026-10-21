@@ -20,7 +20,8 @@ public class AuditService : IAuditService
         _db.AuditLogs.Add(new AuditLog
         {
             FechaHora = DateTime.UtcNow,
-            Usuario = _httpContextAccessor.HttpContext?.User?.Identity?.Name,
+            Usuario = _httpContextAccessor.HttpContext?.Session.GetString("UsuarioNombre")
+                      ?? _httpContextAccessor.HttpContext?.User?.Identity?.Name,
             Accion = accion,
             Entidad = entidad,
             EntidadId = entidadId,

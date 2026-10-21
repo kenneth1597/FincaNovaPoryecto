@@ -1,0 +1,63 @@
+@model FincaNovaGestionLotes.Web.ViewSupport.PaginaInfo
+@{
+    string Url(int pagina)
+    {
+        var parametros = Context.Request.Query
+            .Where(q => !string.Equals(q.Key, "pagina", StringComparison.OrdinalIgnoreCase))
+            .SelectMany(q => q.Value.Select(v => $"{Uri.EscapeDataString(q.Key)}={Uri.EscapeDataString(v ?? "")}"))
+            .Append($"pagina={pagina}");
+        return $"{Context.Request.Path}?{string.Join("&", parametros)}";
+    }
+
+    var inicio = Math.Max(1, Model.Pagina - 2);
+    var fin = Math.Min(Model.TotalPaginas, Model.Pagina + 2);
+}
+
+@if (Model.Total > 0)
+{
+    <div class="fn-paginacion">
+        <span class="fn-paginacion-info">
+            Mostrando @Model.Desde–@Model.Hasta de @Model.Total
+        </span>
+
+        @if (Model.TotalPaginas > 1)
+        {
+            <nav aria-label="Paginación">
+                <ul class="pagination pagination-sm mb-0">
+                    <li class="page-item @(Model.TieneAnterior ? "" : "disabled")">
+                        <a class="page-link" href="@(Model.TieneAnterior ? Url(Model.Pagina - 1) : "#")" aria-label="Página anterior">Anterior</a>
+                    </li>
+
+                    @if (inicio > 1)
+                    {
+                        <li class="page-item"><a class="page-link" href="@Url(1)">1</a></li>
+                        @if (inicio > 2)
+                        {
+                            <li class="page-item disabled"><span class="page-link">…</span></li>
+                        }
+                    }
+
+                    @for (var p = inicio; p <= fin; p++)
+                    {
+                        <li class="page-item @(p == Model.Pagina ? "active" : "")">
+                            <a class="page-link" href="@Url(p)" aria-current="@(p == Model.Pagina ? "page" : null)">@p</a>
+                        </li>
+                    }
+
+                    @if (fin < Model.TotalPaginas)
+                    {
+                        @if (fin < Model.TotalPaginas - 1)
+                        {
+                            <li class="page-item disabled"><span class="page-link">…</span></li>
+                        }
+                        <li class="page-item"><a class="page-link" href="@Url(Model.TotalPaginas)">@Model.TotalPaginas</a></li>
+                    }
+
+                    <li class="page-item @(Model.TieneSiguiente ? "" : "disabled")">
+                        <a class="page-link" href="@(Model.TieneSiguiente ? Url(Model.Pagina + 1) : "#")" aria-label="Página siguiente">Siguiente</a>
+                    </li>
+                </ul>
+            </nav>
+        }
+    </div>
+}

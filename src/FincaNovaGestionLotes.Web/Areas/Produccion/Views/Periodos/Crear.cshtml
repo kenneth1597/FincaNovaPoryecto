@@ -44,18 +44,18 @@
 
             <div class="mb-3">
 
-                <label asp-for="LoteId"
+                <label asp-for="TerrenoId"
                        class="fn-form-label">
                 </label>
 
-                <select asp-for="LoteId"
+                <select asp-for="TerrenoId"
                         class="fn-form-select">
 
                     <option value="0">
-                        -- Seleccione un lote --
+                        -- Seleccione la finca o el lote --
                     </option>
 
-                    @foreach (var lote in Model.Lotes)
+                    @foreach (var lote in Model.Terrenos)
                     {
                         <option value="@lote.Id">
                             @lote.Texto
@@ -64,7 +64,7 @@
 
                 </select>
 
-                <span asp-validation-for="LoteId"
+                <span asp-validation-for="TerrenoId"
                       class="text-danger">
                 </span>
 

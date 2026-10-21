@@ -52,7 +52,7 @@
         </h2>
 
         <span class="fn-count">
-            @Model.Count() período(s)
+            @(((PaginaInfo)ViewBag.Paginacion).Total) período(s)
         </span>
 
     </div>
@@ -84,7 +84,7 @@
                     <thead>
 
                         <tr>
-                            <th>Lote</th>
+                            <th>Finca / lote</th>
                             <th>Fecha de inicio</th>
                             <th>Fecha de finalización</th>
                             <th>Estado</th>
@@ -102,11 +102,11 @@
                                 <td>
 
                                     <strong>
-                                        @periodo.Lote.Codigo
+                                        @periodo.Terreno.Codigo
                                     </strong>
 
                                     <div class="small text-muted">
-                                        @periodo.Lote.Nombre
+                                        @periodo.Terreno.Nombre
                                     </div>
 
                                 </td>
@@ -163,6 +163,8 @@
             </div>
 
         </div>
+
+        <partial name="_Paginacion" model="(PaginaInfo)ViewBag.Paginacion" />
 
     }
 

@@ -54,6 +54,110 @@ namespace FincaNovaGestionLotes.Web.Data.Migrations
                     b.ToTable("AuditLogs");
                 });
 
+            modelBuilder.Entity("FincaNovaGestionLotes.Web.Domain.Colaboradores.Colaborador", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Activo")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Cargo")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("CreadoPor")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("FechaCreacion")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("FechaModificacion")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Identificacion")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<string>("ModificadoPor")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<decimal>("TarifaJornada")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Telefono")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<int?>("UsuarioId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Identificacion")
+                        .IsUnique();
+
+                    b.HasIndex("UsuarioId")
+                        .IsUnique()
+                        .HasFilter("[UsuarioId] IS NOT NULL");
+
+                    b.ToTable("Colaboradores");
+                });
+
+            modelBuilder.Entity("FincaNovaGestionLotes.Web.Domain.Empresa", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CreadoPor")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("FechaCreacion")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("FechaModificacion")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ModificadoPor")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("Propietario")
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("Telefono")
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<string>("Ubicacion")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Empresas");
+                });
+
             modelBuilder.Entity("FincaNovaGestionLotes.Web.Domain.Enfermedades.Enfermedad", b =>
                 {
                     b.Property<int>("Id")
@@ -68,6 +172,14 @@ namespace FincaNovaGestionLotes.Web.Data.Migrations
                     b.Property<string>("AtendidaPor")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("CerradaPor")
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("ComentarioCierre")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
                     b.Property<string>("CreadoPor")
                         .HasColumnType("nvarchar(max)");
 
@@ -76,7 +188,13 @@ namespace FincaNovaGestionLotes.Web.Data.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
+                    b.Property<int>("Estado")
+                        .HasColumnType("int");
+
                     b.Property<DateTime?>("FechaAtendida")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("FechaCierre")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime>("FechaCreacion")
@@ -87,9 +205,6 @@ namespace FincaNovaGestionLotes.Web.Data.Migrations
 
                     b.Property<DateTime?>("FechaModificacion")
                         .HasColumnType("datetime2");
-
-                    b.Property<int>("LoteId")
-                        .HasColumnType("int");
 
                     b.Property<string>("ModificadoPor")
                         .HasColumnType("nvarchar(max)");
@@ -103,14 +218,25 @@ namespace FincaNovaGestionLotes.Web.Data.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
+                    b.Property<int?>("ResultadoCierre")
+                        .HasColumnType("int");
+
                     b.Property<string>("Severidad")
                         .IsRequired()
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)");
 
+                    b.Property<int>("TerrenoId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("TratamientoEfectivoId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("LoteId", "Nombre", "FechaDeteccion");
+                    b.HasIndex("TratamientoEfectivoId");
+
+                    b.HasIndex("TerrenoId", "Nombre", "FechaDeteccion");
 
                     b.ToTable("Enfermedades");
                 });
@@ -170,6 +296,9 @@ namespace FincaNovaGestionLotes.Web.Data.Migrations
                     b.Property<string>("CreadoPor")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("Efectividad")
+                        .HasColumnType("int");
+
                     b.Property<int>("EnfermedadId")
                         .HasColumnType("int");
 
@@ -209,7 +338,7 @@ namespace FincaNovaGestionLotes.Web.Data.Migrations
                     b.ToTable("TratamientosEnfermedad");
                 });
 
-            modelBuilder.Entity("FincaNovaGestionLotes.Web.Domain.Finca", b =>
+            modelBuilder.Entity("FincaNovaGestionLotes.Web.Domain.Labores.Labor", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -217,72 +346,25 @@ namespace FincaNovaGestionLotes.Web.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("CreadoPor")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("FechaCreacion")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("FechaModificacion")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("ModificadoPor")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Nombre")
-                        .IsRequired()
+                    b.Property<string>("CerradaPor")
                         .HasMaxLength(150)
                         .HasColumnType("nvarchar(150)");
 
-                    b.Property<string>("Propietario")
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
-
-                    b.Property<string>("Telefono")
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
-
-                    b.Property<string>("Ubicacion")
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Fincas");
-                });
-
-            modelBuilder.Entity("FincaNovaGestionLotes.Web.Domain.Lotes.Lote", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int?>("AnioSiembra")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("AreaHectareas")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("Codigo")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
+                    b.Property<string>("ComentarioCierre")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<string>("CreadoPor")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("Eliminado")
-                        .HasColumnType("bit");
 
                     b.Property<int>("Estado")
                         .HasColumnType("int");
 
-                    b.Property<string>("EstadoCambiadoPor")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                    b.Property<DateTime>("Fecha")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("FechaCierre")
+                        .HasColumnType("datetime2");
 
                     b.Property<DateTime>("FechaCreacion")
                         .HasColumnType("datetime2");
@@ -290,47 +372,99 @@ namespace FincaNovaGestionLotes.Web.Data.Migrations
                     b.Property<DateTime?>("FechaModificacion")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("FechaUltimoCambioEstado")
-                        .HasColumnType("datetime2");
+                    b.Property<decimal>("HorasTotales")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("FincaId")
+                    b.Property<string>("ModificadoPor")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Observaciones")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("RegistradoPor")
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<int>("TerrenoId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("LotePadreId")
+                    b.Property<int>("Tipo")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TerrenoId", "Fecha");
+
+                    b.ToTable("Labores");
+                });
+
+            modelBuilder.Entity("FincaNovaGestionLotes.Web.Domain.Labores.LaborAvance", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ColaboradorId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Comentario")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("CreadoPor")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("Fecha")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("FechaCreacion")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("FechaModificacion")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("Horas")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("LaborId")
                         .HasColumnType("int");
 
                     b.Property<string>("ModificadoPor")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Nombre")
-                        .IsRequired()
-                        .HasMaxLength(120)
-                        .HasColumnType("nvarchar(120)");
-
-                    b.Property<string>("Observaciones")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<int>("Tipo")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Ubicacion")
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<string>("VariedadCafe")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                    b.Property<string>("RegistradoPor")
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("LotePadreId");
+                    b.HasIndex("ColaboradorId");
 
-                    b.HasIndex("FincaId", "Codigo")
-                        .IsUnique()
-                        .HasFilter("[Eliminado] = 0");
+                    b.HasIndex("LaborId", "Fecha");
 
-                    b.ToTable("Lotes");
+                    b.ToTable("LaboresAvances");
+                });
+
+            modelBuilder.Entity("FincaNovaGestionLotes.Web.Domain.Labores.LaborColaborador", b =>
+                {
+                    b.Property<int>("LaborId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ColaboradorId")
+                        .HasColumnType("int");
+
+                    b.HasKey("LaborId", "ColaboradorId");
+
+                    b.HasIndex("ColaboradorId");
+
+                    b.ToTable("LaboresColaboradores");
                 });
 
             modelBuilder.Entity("FincaNovaGestionLotes.Web.Domain.Produccion.PeriodoProductivo", b =>
@@ -359,9 +493,6 @@ namespace FincaNovaGestionLotes.Web.Data.Migrations
                     b.Property<DateTime?>("FechaModificacion")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("LoteId")
-                        .HasColumnType("int");
-
                     b.Property<string>("ModificadoPor")
                         .HasColumnType("nvarchar(max)");
 
@@ -369,11 +500,96 @@ namespace FincaNovaGestionLotes.Web.Data.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
+                    b.Property<int>("TerrenoId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("LoteId", "FechaInicio");
+                    b.HasIndex("TerrenoId", "FechaInicio");
 
                     b.ToTable("PeriodosProductivos");
+                });
+
+            modelBuilder.Entity("FincaNovaGestionLotes.Web.Domain.Terrenos.Terreno", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("AnioSiembra")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("AreaHectareas")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Codigo")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<string>("CreadoPor")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Eliminado")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("EmpresaId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Estado")
+                        .HasColumnType("int");
+
+                    b.Property<string>("EstadoCambiadoPor")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<DateTime>("FechaCreacion")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("FechaModificacion")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("FechaUltimoCambioEstado")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("FincaPadreId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ModificadoPor")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("nvarchar(120)");
+
+                    b.Property<string>("Observaciones")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("Tipo")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Ubicacion")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("VariedadCafe")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FincaPadreId");
+
+                    b.HasIndex("EmpresaId", "Codigo")
+                        .IsUnique()
+                        .HasFilter("[Eliminado] = 0");
+
+                    b.ToTable("Terrenos");
                 });
 
             modelBuilder.Entity("FincaNovaGestionLotes.Web.Domain.Usuarios.Usuario", b =>
@@ -435,15 +651,32 @@ namespace FincaNovaGestionLotes.Web.Data.Migrations
                     b.ToTable("Usuarios", (string)null);
                 });
 
+            modelBuilder.Entity("FincaNovaGestionLotes.Web.Domain.Colaboradores.Colaborador", b =>
+                {
+                    b.HasOne("FincaNovaGestionLotes.Web.Domain.Usuarios.Usuario", "Usuario")
+                        .WithMany()
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Usuario");
+                });
+
             modelBuilder.Entity("FincaNovaGestionLotes.Web.Domain.Enfermedades.Enfermedad", b =>
                 {
-                    b.HasOne("FincaNovaGestionLotes.Web.Domain.Lotes.Lote", "Lote")
+                    b.HasOne("FincaNovaGestionLotes.Web.Domain.Terrenos.Terreno", "Terreno")
                         .WithMany()
-                        .HasForeignKey("LoteId")
+                        .HasForeignKey("TerrenoId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("Lote");
+                    b.HasOne("FincaNovaGestionLotes.Web.Domain.Enfermedades.TratamientoEnfermedad", "TratamientoEfectivo")
+                        .WithMany()
+                        .HasForeignKey("TratamientoEfectivoId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.Navigation("Terreno");
+
+                    b.Navigation("TratamientoEfectivo");
                 });
 
             modelBuilder.Entity("FincaNovaGestionLotes.Web.Domain.Enfermedades.ProductoTratamiento", b =>
@@ -468,33 +701,92 @@ namespace FincaNovaGestionLotes.Web.Data.Migrations
                     b.Navigation("Enfermedad");
                 });
 
-            modelBuilder.Entity("FincaNovaGestionLotes.Web.Domain.Lotes.Lote", b =>
+            modelBuilder.Entity("FincaNovaGestionLotes.Web.Domain.Labores.Labor", b =>
                 {
-                    b.HasOne("FincaNovaGestionLotes.Web.Domain.Finca", "Finca")
-                        .WithMany("Lotes")
-                        .HasForeignKey("FincaId")
+                    b.HasOne("FincaNovaGestionLotes.Web.Domain.Terrenos.Terreno", "Terreno")
+                        .WithMany()
+                        .HasForeignKey("TerrenoId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Terreno");
+                });
+
+            modelBuilder.Entity("FincaNovaGestionLotes.Web.Domain.Labores.LaborAvance", b =>
+                {
+                    b.HasOne("FincaNovaGestionLotes.Web.Domain.Colaboradores.Colaborador", "Colaborador")
+                        .WithMany()
+                        .HasForeignKey("ColaboradorId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("FincaNovaGestionLotes.Web.Domain.Labores.Labor", "Labor")
+                        .WithMany("Avances")
+                        .HasForeignKey("LaborId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("FincaNovaGestionLotes.Web.Domain.Lotes.Lote", "LotePadre")
-                        .WithMany("MicroLotes")
-                        .HasForeignKey("LotePadreId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                    b.Navigation("Colaborador");
 
-                    b.Navigation("Finca");
+                    b.Navigation("Labor");
+                });
 
-                    b.Navigation("LotePadre");
+            modelBuilder.Entity("FincaNovaGestionLotes.Web.Domain.Labores.LaborColaborador", b =>
+                {
+                    b.HasOne("FincaNovaGestionLotes.Web.Domain.Colaboradores.Colaborador", "Colaborador")
+                        .WithMany("Labores")
+                        .HasForeignKey("ColaboradorId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("FincaNovaGestionLotes.Web.Domain.Labores.Labor", "Labor")
+                        .WithMany("Colaboradores")
+                        .HasForeignKey("LaborId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Colaborador");
+
+                    b.Navigation("Labor");
                 });
 
             modelBuilder.Entity("FincaNovaGestionLotes.Web.Domain.Produccion.PeriodoProductivo", b =>
                 {
-                    b.HasOne("FincaNovaGestionLotes.Web.Domain.Lotes.Lote", "Lote")
+                    b.HasOne("FincaNovaGestionLotes.Web.Domain.Terrenos.Terreno", "Terreno")
                         .WithMany()
-                        .HasForeignKey("LoteId")
+                        .HasForeignKey("TerrenoId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("Lote");
+                    b.Navigation("Terreno");
+                });
+
+            modelBuilder.Entity("FincaNovaGestionLotes.Web.Domain.Terrenos.Terreno", b =>
+                {
+                    b.HasOne("FincaNovaGestionLotes.Web.Domain.Empresa", "Empresa")
+                        .WithMany("Terrenos")
+                        .HasForeignKey("EmpresaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("FincaNovaGestionLotes.Web.Domain.Terrenos.Terreno", "FincaPadre")
+                        .WithMany("Lotes")
+                        .HasForeignKey("FincaPadreId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Empresa");
+
+                    b.Navigation("FincaPadre");
+                });
+
+            modelBuilder.Entity("FincaNovaGestionLotes.Web.Domain.Colaboradores.Colaborador", b =>
+                {
+                    b.Navigation("Labores");
+                });
+
+            modelBuilder.Entity("FincaNovaGestionLotes.Web.Domain.Empresa", b =>
+                {
+                    b.Navigation("Terrenos");
                 });
 
             modelBuilder.Entity("FincaNovaGestionLotes.Web.Domain.Enfermedades.Enfermedad", b =>
@@ -507,14 +799,16 @@ namespace FincaNovaGestionLotes.Web.Data.Migrations
                     b.Navigation("Productos");
                 });
 
-            modelBuilder.Entity("FincaNovaGestionLotes.Web.Domain.Finca", b =>
+            modelBuilder.Entity("FincaNovaGestionLotes.Web.Domain.Labores.Labor", b =>
                 {
-                    b.Navigation("Lotes");
+                    b.Navigation("Avances");
+
+                    b.Navigation("Colaboradores");
                 });
 
-            modelBuilder.Entity("FincaNovaGestionLotes.Web.Domain.Lotes.Lote", b =>
+            modelBuilder.Entity("FincaNovaGestionLotes.Web.Domain.Terrenos.Terreno", b =>
                 {
-                    b.Navigation("MicroLotes");
+                    b.Navigation("Lotes");
                 });
 #pragma warning restore 612, 618
         }

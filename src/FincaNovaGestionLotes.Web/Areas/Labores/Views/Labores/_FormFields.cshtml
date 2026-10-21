@@ -1,0 +1,82 @@
+@model LaborFormViewModel
+
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="alert alert-danger">
+        <strong>No se guardó la labor.</strong> Revise los siguientes campos pendientes:
+        <div asp-validation-summary="All" class="mb-0 mt-2"></div>
+    </div>
+}
+
+<div class="row g-3">
+    <div class="col-md-6">
+        <label asp-for="TerrenoId" class="fn-form-label"></label>
+        <select asp-for="TerrenoId" class="fn-form-select">
+            <option value="">-- Seleccione la finca o el lote --</option>
+            @foreach (var lote in Model.Terrenos)
+            {
+                <option value="@lote.Id">@lote.Texto</option>
+            }
+        </select>
+        <span asp-validation-for="TerrenoId" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-3">
+        <label asp-for="Tipo" class="fn-form-label"></label>
+        <select asp-for="Tipo" class="fn-form-select">
+            <option value="">-- Seleccione --</option>
+            @foreach (TipoLabor t in Enum.GetValues<TipoLabor>())
+            {
+                <option value="@t">@Ui.TipoLaborTexto(t)</option>
+            }
+        </select>
+        <span asp-validation-for="Tipo" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-3">
+        <label asp-for="Fecha" class="fn-form-label"></label>
+        <input asp-for="Fecha" type="date" class="fn-form-control" />
+        <span asp-validation-for="Fecha" class="text-danger"></span>
+    </div>
+
+    <div class="col-12">
+        <label asp-for="ColaboradoresIds" class="fn-form-label"></label>
+        @if (!Model.PuedeElegirColaboradores)
+        {
+            <div class="alert alert-secondary mb-0">
+                La labor quedará asignada a ti: <strong>@Model.ColaboradorPropio</strong>
+            </div>
+        }
+        else if (!Model.ColaboradoresDisponibles.Any())
+        {
+            <div class="alert alert-warning mb-0">
+                No hay colaboradores activos.
+                <a asp-area="Colaboradores" asp-controller="Colaboradores" asp-action="Crear">Registrar un colaborador</a>
+            </div>
+        }
+        else
+        {
+            <div class="row row-cols-1 row-cols-md-3 g-2">
+                @foreach (var c in Model.ColaboradoresDisponibles)
+                {
+                    <div class="col">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="ColaboradoresIds"
+                                   id="col-@c.Id" value="@c.Id"
+                                   checked="@Model.ColaboradoresIds.Contains(c.Id)" />
+                            <label class="form-check-label" for="col-@c.Id">@c.Texto</label>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        <span asp-validation-for="ColaboradoresIds" class="text-danger"></span>
+    </div>
+
+    <div class="col-12">
+        <label asp-for="Observaciones" class="fn-form-label"></label>
+        <textarea asp-for="Observaciones" class="fn-form-control" rows="3"
+                  placeholder="Ej. Poda de formación en las calles 1 a 10."></textarea>
+        <span asp-validation-for="Observaciones" class="text-danger"></span>
+    </div>
+</div>

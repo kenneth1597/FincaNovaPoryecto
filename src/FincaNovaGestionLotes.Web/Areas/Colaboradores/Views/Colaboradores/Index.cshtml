@@ -1,0 +1,135 @@
+@model ColaboradorFiltroViewModel
+
+@{
+    ViewData["Title"] = "Colaboradores";
+}
+
+<div class="fn-page-header">
+    <div>
+        <h1 class="fn-page-title">
+            <span class="fn-page-title-icon">
+                <svg viewBox="0 0 24 24">
+                    <circle cx="9" cy="8" r="3" />
+                    <path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6" />
+                    <circle cx="17" cy="9" r="2.5" />
+                    <path d="M15.5 14.2c2.9.4 5.5 2.8 5.5 5.8" />
+                </svg>
+            </span>
+            Colaboradores
+        </h1>
+        <p class="fn-page-subtitle">
+            Trabajadores de la finca disponibles para asignar a las labores agrícolas.
+        </p>
+    </div>
+
+    <a asp-action="Crear" class="fn-btn fn-btn-primary">
+        + Nuevo colaborador
+    </a>
+</div>
+
+@if (TempData["Ok"] is string ok)
+{
+    <div class="alert alert-success border-0 shadow-sm">@ok</div>
+}
+@if (TempData["Error"] is string error)
+{
+    <div class="alert alert-danger border-0 shadow-sm">@error</div>
+}
+
+<div class="fn-card">
+    <div class="fn-card-body">
+        <form method="get" asp-action="Index">
+            <div class="row g-3 align-items-end">
+                <div class="col-md-7">
+                    <label class="fn-form-label">Buscar</label>
+                    <input type="text" name="Q" value="@Model.Q" class="fn-form-control"
+                           placeholder="Nombre, identificación o cargo..." />
+                </div>
+                <div class="col-md-3">
+                    <label class="fn-form-label">Estado</label>
+                    <select name="Activo" class="fn-form-select">
+                        <option value="">Todos</option>
+                        <option value="true" selected="@(Model.Activo == true)">Activos</option>
+                        <option value="false" selected="@(Model.Activo == false)">Inactivos</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="fn-btn fn-btn-primary w-100">Filtrar</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="fn-card">
+    <div class="fn-card-header d-flex justify-content-between align-items-center">
+        <h2 class="fn-card-title">Colaboradores registrados</h2>
+        <span class="fn-count">@Model.Paginacion.Total colaborador(es)</span>
+    </div>
+
+    @if (!Model.Resultados.Any())
+    {
+        <div class="fn-empty">
+            <div class="fn-empty-title">No se encontraron colaboradores.</div>
+            <div class="fn-empty-text">Registra un colaborador para poder asignarlo a las labores.</div>
+        </div>
+    }
+    else
+    {
+        <div class="fn-card-body">
+            <div class="fn-table-wrapper">
+                <table class="fn-table">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Identificación</th>
+                            <th>Teléfono</th>
+                            <th>Cargo</th>
+                            <th>Usuario</th>
+                            <th>Tarifa jornada</th>
+                            <th>Labores</th>
+                            <th>Estado</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var c in Model.Resultados)
+                        {
+                            <tr>
+                                <td><strong>@c.Nombre</strong></td>
+                                <td>@c.Identificacion</td>
+                                <td>@c.Telefono</td>
+                                <td>@c.Cargo</td>
+                                <td>@(c.UsuarioEmail ?? "—")</td>
+                                <td>₡@c.TarifaJornada.ToString("N2")</td>
+                                <td>@c.Labores</td>
+                                <td>
+                                    @if (c.Activo)
+                                    {
+                                        <span class="fn-badge fn-badge-success">Activo</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="fn-badge fn-badge-neutral">Inactivo</span>
+                                    }
+                                </td>
+                                <td class="text-end">
+                                    <div class="d-flex gap-2 justify-content-end">
+                                        <a asp-action="Editar" asp-route-id="@c.Id" class="fn-btn fn-btn-outline">Editar</a>
+                                        <form asp-action="CambiarEstado" method="post">
+                                            <input type="hidden" name="id" value="@c.Id" />
+                                            <button type="submit" class="fn-btn fn-btn-outline">
+                                                @(c.Activo ? "Inactivar" : "Activar")
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <partial name="_Paginacion" model="Model.Paginacion" />
+    }
+</div>

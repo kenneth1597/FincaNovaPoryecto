@@ -48,7 +48,7 @@
         </h2>
 
         <span class="fn-count">
-            @Model.Count() alerta(s)
+            @(((PaginaInfo)ViewBag.Paginacion).Total) alerta(s)
         </span>
 
     </div>
@@ -81,7 +81,7 @@
 
                         <tr>
                             <th>Enfermedad</th>
-                            <th>Lote</th>
+                            <th>Finca / lote</th>
                             <th>Fecha</th>
                             <th>Severidad</th>
                             <th>Tratamientos</th>
@@ -105,11 +105,11 @@
 
                                 <td>
                                     <strong>
-                                        @enfermedad.Lote.Codigo
+                                        @enfermedad.Terreno.Codigo
                                     </strong>
 
                                     <div class="small text-muted">
-                                        @enfermedad.Lote.Nombre
+                                        @enfermedad.Terreno.Nombre
                                     </div>
                                 </td>
 
@@ -248,6 +248,8 @@
             </div>
 
         </div>
+
+        <partial name="_Paginacion" model="(PaginaInfo)ViewBag.Paginacion" />
 
     }
 

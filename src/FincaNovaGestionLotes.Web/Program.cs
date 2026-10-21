@@ -2,11 +2,14 @@ using FincaNovaGestionLotes.Web.Data;
 using FincaNovaGestionLotes.Web.Services.Auditoria;
 using Microsoft.EntityFrameworkCore;
 using FincaNovaGestionLotes.Web.Services;
+using FincaNovaGestionLotes.Web.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllersWithViews();
-builder.Services.AddHttpContextAccessor();
+builder.Services.AddControllersWithViews(options =>
+{
+    options.Filters.Add<RequiereSesionFilter>();
+});
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddSession();
 

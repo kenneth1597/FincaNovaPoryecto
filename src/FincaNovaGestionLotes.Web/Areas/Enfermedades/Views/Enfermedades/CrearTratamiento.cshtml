@@ -64,6 +64,23 @@
             </div>
 
             <div class="mb-3">
+                <label asp-for="Efectividad"
+                       class="form-label"></label>
+
+                <select asp-for="Efectividad"
+                        class="form-select">
+                    <option value="">-- ¿Cómo respondió la enfermedad? --</option>
+                    @foreach (EfectividadTratamiento e in Enum.GetValues<EfectividadTratamiento>())
+                    {
+                        <option value="@e">@Ui.EfectividadTexto(e)</option>
+                    }
+                </select>
+
+                <span asp-validation-for="Efectividad"
+                      class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
                 <label asp-for="Observaciones"
                        class="form-label"></label>
 

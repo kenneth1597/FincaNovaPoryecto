@@ -1,0 +1,30 @@
+@model LaborFormViewModel
+
+@{
+    ViewData["Title"] = "Editar labor";
+}
+
+<div class="fn-page-header">
+    <div>
+        <h1 class="fn-page-title">Editar labor</h1>
+        <p class="fn-page-subtitle">Los avances ya registrados se conservan.</p>
+    </div>
+    <a asp-action="Detalle" asp-route-id="@Model.Id" class="fn-btn fn-btn-outline">Volver</a>
+</div>
+
+<div class="fn-card">
+    <div class="fn-card-body">
+        <form asp-action="Editar" method="post">
+            <input type="hidden" asp-for="Id" />
+            <partial name="_FormFields" />
+            <div class="d-flex gap-2 mt-4">
+                <button type="submit" class="fn-btn fn-btn-primary">Actualizar</button>
+                <a asp-action="Detalle" asp-route-id="@Model.Id" class="fn-btn fn-btn-outline">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

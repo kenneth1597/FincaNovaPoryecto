@@ -149,7 +149,7 @@
         </h2>
 
         <span class="fn-count">
-            @Model.Count() registro(s)
+            @(((PaginaInfo)ViewBag.Paginacion).Total) registro(s)
         </span>
 
     </div>
@@ -287,6 +287,8 @@
             </div>
 
         </div>
+
+        <partial name="_Paginacion" model="(PaginaInfo)ViewBag.Paginacion" />
 
     }
 

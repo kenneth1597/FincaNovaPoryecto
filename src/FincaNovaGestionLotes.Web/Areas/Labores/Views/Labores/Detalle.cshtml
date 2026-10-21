@@ -1,0 +1,220 @@
+@model LaborDetalleViewModel
+
+@{
+    ViewData["Title"] = $"Labor {Ui.TipoLaborTexto(Model.Tipo)} — {Model.TerrenoCodigo}";
+    var errorCierre = ViewData.ModelState["Cierre"]?.Errors.FirstOrDefault()?.ErrorMessage;
+}
+
+<div class="fn-page-header">
+    <div>
+        <h1 class="fn-page-title">
+            @Ui.TipoLaborTexto(Model.Tipo) · @Model.TerrenoCodigo
+            <span class="fn-badge @Ui.EstadoLaborBadge(Model.Estado)">@Ui.EstadoLaborTexto(Model.Estado)</span>
+        </h1>
+        <p class="fn-page-subtitle">@Model.TerrenoNombre · @Model.Fecha.ToString("dd/MM/yyyy")</p>
+    </div>
+    <div class="d-flex gap-2 flex-wrap">
+        <a asp-action="Index" class="fn-btn fn-btn-outline">Volver a la bitácora</a>
+        @if (Model.EsAdmin)
+        {
+            <a asp-area="Terrenos" asp-controller="Terrenos" asp-action="Detalle" asp-route-id="@Model.TerrenoId" class="fn-btn fn-btn-outline">Ver lote</a>
+            @if (Model.Estado != EstadoLabor.Finalizada)
+            {
+                <a asp-action="Editar" asp-route-id="@Model.Id" class="fn-btn fn-btn-outline">Editar</a>
+            }
+        }
+    </div>
+</div>
+
+@if (TempData["Ok"] is string ok)
+{
+    <div class="alert alert-success border-0 shadow-sm">@ok</div>
+}
+@if (TempData["Error"] is string error)
+{
+    <div class="alert alert-danger border-0 shadow-sm">@error</div>
+}
+
+<div class="row g-3">
+    <div class="col-lg-7">
+        <div class="fn-card h-100">
+            <div class="fn-card-header"><h2 class="fn-card-title">Datos de la labor</h2></div>
+            <div class="fn-card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-4">Finca / lote</dt>
+                    <dd class="col-sm-8">@Model.TerrenoCodigo — @Model.TerrenoNombre</dd>
+                    <dt class="col-sm-4">Tipo de labor</dt>
+                    <dd class="col-sm-8">@Ui.TipoLaborTexto(Model.Tipo)</dd>
+                    <dt class="col-sm-4">Fecha</dt>
+                    <dd class="col-sm-8">@Model.Fecha.ToString("dd/MM/yyyy")</dd>
+                    <dt class="col-sm-4">Horas acumuladas</dt>
+                    <dd class="col-sm-8"><strong>@Model.HorasTotales.ToString("N2") h</strong></dd>
+                    <dt class="col-sm-4">Registrada por</dt>
+                    <dd class="col-sm-8">@(Model.RegistradoPor ?? "—")</dd>
+                    <dt class="col-sm-4">Observaciones</dt>
+                    <dd class="col-sm-8">@Model.Observaciones</dd>
+                    @if (Model.Estado == EstadoLabor.Finalizada)
+                    {
+                        <dt class="col-sm-4">Cerrada</dt>
+                        <dd class="col-sm-8">
+                            @Model.FechaCierre?.ToLocalTime().ToString("dd/MM/yyyy HH:mm") por @(Model.CerradaPor ?? "—")
+                        </dd>
+                        <dt class="col-sm-4">Comentario de cierre</dt>
+                        <dd class="col-sm-8">@Model.ComentarioCierre</dd>
+                    }
+                </dl>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-5">
+        <div class="fn-card h-100">
+            <div class="fn-card-header d-flex justify-content-between align-items-center">
+                <h2 class="fn-card-title">Colaboradores asignados</h2>
+                <span class="fn-count">@Model.Colaboradores.Count</span>
+            </div>
+            <div class="fn-card-body">
+                <table class="table table-sm mb-0">
+                    <thead><tr><th>Nombre</th><th class="text-end">Horas</th></tr></thead>
+                    <tbody>
+                        @foreach (var c in Model.Colaboradores)
+                        {
+                            <tr>
+                                <td>
+                                    @c.Nombre
+                                    @if (c.Id == Model.MiColaboradorId)
+                                    {
+                                        <span class="fn-badge fn-badge-success ms-1">Tú</span>
+                                    }
+                                    <div class="small text-muted">@c.Cargo</div>
+                                </td>
+                                <td class="text-end">@c.Horas.ToString("N2")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (Model.PuedeActualizar)
+{
+    <div class="row g-3 mt-0">
+        <div class="col-lg-7">
+            <div class="fn-card h-100">
+                <div class="fn-card-header"><h2 class="fn-card-title">Registrar avance</h2></div>
+                <div class="fn-card-body">
+                    <form asp-action="RegistrarAvance" asp-route-id="@Model.Id" method="post">
+                        <div class="row g-3">
+                            @if (Model.EsAdmin)
+                            {
+                                <div class="col-md-12">
+                                    <label asp-for="NuevoAvance.ColaboradorId" class="fn-form-label"></label>
+                                    <select asp-for="NuevoAvance.ColaboradorId" class="fn-form-select">
+                                        <option value="">-- Seleccione --</option>
+                                        @foreach (var c in Model.Colaboradores)
+                                        {
+                                            <option value="@c.Id">@c.Nombre</option>
+                                        }
+                                    </select>
+                                    <span asp-validation-for="NuevoAvance.ColaboradorId" class="text-danger"></span>
+                                </div>
+                            }
+                            else
+                            {
+                                <span asp-validation-for="NuevoAvance.ColaboradorId" class="text-danger"></span>
+                            }
+                            <div class="col-md-6">
+                                <label asp-for="NuevoAvance.Fecha" class="fn-form-label"></label>
+                                <input asp-for="NuevoAvance.Fecha" type="date" max="@DateTime.Today.ToString("yyyy-MM-dd")" class="fn-form-control" />
+                                <span asp-validation-for="NuevoAvance.Fecha" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="NuevoAvance.Horas" class="fn-form-label"></label>
+                                <input asp-for="NuevoAvance.Horas" type="number" step="0.25" min="0.25" max="24" class="fn-form-control" />
+                                <span asp-validation-for="NuevoAvance.Horas" class="text-danger"></span>
+                            </div>
+                            <div class="col-12">
+                                <label asp-for="NuevoAvance.Comentario" class="fn-form-label"></label>
+                                <textarea asp-for="NuevoAvance.Comentario" class="fn-form-control" rows="2"
+                                          placeholder="Ej. Se podaron las calles 1 a 5."></textarea>
+                                <span asp-validation-for="NuevoAvance.Comentario" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <button type="submit" class="fn-btn fn-btn-primary mt-3">Registrar avance</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="fn-card h-100">
+                <div class="fn-card-header"><h2 class="fn-card-title">Cerrar labor</h2></div>
+                <div class="fn-card-body">
+                    @if (errorCierre is not null)
+                    {
+                        <div class="alert alert-danger py-2">@errorCierre</div>
+                    }
+                    <form asp-action="Cerrar" asp-route-id="@Model.Id" method="post">
+                        <label asp-for="Cierre.ComentarioCierre" class="fn-form-label"></label>
+                        <textarea asp-for="Cierre.ComentarioCierre" class="fn-form-control" rows="2"
+                                  placeholder="Ej. Se completó la poda de todo el lote."></textarea>
+                        <span asp-validation-for="Cierre.ComentarioCierre" class="text-danger"></span>
+
+                        <div class="form-check mt-3">
+                            <input asp-for="Cierre.Confirmo" class="form-check-input" />
+                            <label asp-for="Cierre.Confirmo" class="form-check-label"></label>
+                        </div>
+                        <span asp-validation-for="Cierre.Confirmo" class="text-danger"></span>
+
+                        <div class="small text-muted mt-2">Al cerrarla ya no se podrán registrar más avances.</div>
+                        <button type="submit" class="fn-btn fn-btn-outline mt-3">Cerrar labor</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<div class="fn-card mt-3">
+    <div class="fn-card-header d-flex justify-content-between align-items-center">
+        <h2 class="fn-card-title">Historial de avances</h2>
+        <span class="fn-count">@Model.Avances.Count avance(s)</span>
+    </div>
+    @if (!Model.Avances.Any())
+    {
+        <div class="fn-empty">
+            <div class="fn-empty-title">Todavía no hay avances registrados.</div>
+            <div class="fn-empty-text">Los colaboradores asignados registran aquí sus horas y comentarios.</div>
+        </div>
+    }
+    else
+    {
+        <div class="fn-card-body">
+            <div class="fn-table-wrapper">
+                <table class="fn-table">
+                    <thead>
+                        <tr><th>Fecha</th><th>Colaborador</th><th>Horas</th><th>Comentario</th><th>Registrado por</th></tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var a in Model.Avances)
+                        {
+                            <tr>
+                                <td>@a.Fecha.ToString("dd/MM/yyyy")</td>
+                                <td>@a.Colaborador</td>
+                                <td>@a.Horas.ToString("N2")</td>
+                                <td>@a.Comentario</td>
+                                <td>@(a.RegistradoPor ?? "—")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

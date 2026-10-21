@@ -1,0 +1,30 @@
+@model ColaboradorFormViewModel
+
+@{
+    ViewData["Title"] = "Nuevo colaborador";
+}
+
+<div class="fn-page-header">
+    <div>
+        <h1 class="fn-page-title">Nuevo colaborador</h1>
+        <p class="fn-page-subtitle">Registra un trabajador para poder asignarlo a las labores agrícolas.</p>
+    </div>
+    <a asp-action="Index" class="fn-btn fn-btn-outline">Volver</a>
+</div>
+
+<div class="fn-card">
+    <div class="fn-card-body">
+        <form asp-action="Crear" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+            <partial name="_FormFields" />
+            <div class="d-flex gap-2 mt-4">
+                <button type="submit" class="fn-btn fn-btn-primary">Guardar</button>
+                <a asp-action="Index" class="fn-btn fn-btn-outline">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

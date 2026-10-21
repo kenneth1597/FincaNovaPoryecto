@@ -1,0 +1,132 @@
+@model TerrenoFormViewModel
+
+<div class="row g-3">
+    <div class="col-md-4">
+        <label asp-for="Codigo" class="form-label"></label>
+        @if (Model.EsEdicion)
+        {
+            <input class="form-control" value="@Model.Codigo" disabled />
+            <input type="hidden" asp-for="Codigo" />
+        }
+        else
+        {
+            <input asp-for="Codigo" class="form-control" placeholder="@(Model.Tipo == TipoTerreno.Lote ? "Ej. LOTE-01" : "Ej. FINCA-01")" />
+        }
+        <span asp-validation-for="Codigo" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-4">
+        <label asp-for="Tipo" class="form-label"></label>
+        @if (Model.EsEdicion)
+        {
+            <input class="form-control" value="@Ui.TipoTerrenoTexto(Model.Tipo)" disabled />
+            <input type="hidden" asp-for="Tipo" />
+        }
+        else
+        {
+            <select asp-for="Tipo" class="form-select" id="tipoSelect">
+                @foreach (TipoTerreno t in Enum.GetValues<TipoTerreno>())
+                {
+                    <option value="@t" selected="@(Model.Tipo == t)">@Ui.TipoTerrenoTexto(t)</option>
+                }
+            </select>
+        }
+    </div>
+
+    <div class="col-md-4" id="padreBlock" style="@(Model.Tipo != TipoTerreno.Lote ? "display:none" : "")">
+        <label asp-for="FincaPadreId" class="form-label"></label>
+        @if (Model.EsEdicion)
+        {
+            var texto = Model.FincasPadre.FirstOrDefault(p => p.Id == Model.FincaPadreId)?.Texto ?? "—";
+            <input class="form-control" value="@texto" disabled />
+            <input type="hidden" asp-for="FincaPadreId" />
+        }
+        else
+        {
+            <select asp-for="FincaPadreId" class="form-select" id="fincaSelect">
+                <option value="">-- Seleccione la finca --</option>
+                @foreach (var f in Model.FincasPadre)
+                {
+                    <option value="@f.Id" data-disponible="@f.AreaDisponible.ToString("N2")"
+                            selected="@(Model.FincaPadreId == f.Id)">@f.Texto (@f.AreaDisponible.ToString("N2") ha libres)</option>
+                }
+            </select>
+            <div class="form-text" id="fincaAyuda"></div>
+        }
+        <span asp-validation-for="FincaPadreId" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="Nombre" class="form-label"></label>
+        <input asp-for="Nombre" class="form-control" />
+        <span asp-validation-for="Nombre" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-3">
+        <label asp-for="AreaHectareas" class="form-label"></label>
+        <input asp-for="AreaHectareas" class="form-control" type="number" step="0.01" min="0.01" />
+        <span asp-validation-for="AreaHectareas" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-3">
+        <label asp-for="AnioSiembra" class="form-label"></label>
+        <input asp-for="AnioSiembra" class="form-control" type="number" min="1900" max="2100" />
+        <span asp-validation-for="AnioSiembra" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="VariedadCafe" class="form-label"></label>
+        <input asp-for="VariedadCafe" class="form-control" list="variedades" />
+        <datalist id="variedades">
+            <option value="Caturra" />
+            <option value="Catuaí" />
+            <option value="Typica" />
+            <option value="Bourbon" />
+            <option value="Geisha" />
+            <option value="Villa Sarchí" />
+            <option value="Obatá" />
+            <option value="Marsellesa" />
+        </datalist>
+        <span asp-validation-for="VariedadCafe" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="Ubicacion" class="form-label"></label>
+        <input asp-for="Ubicacion" class="form-control" placeholder="Ej. Poás, La abuela" />
+        <span asp-validation-for="Ubicacion" class="text-danger"></span>
+    </div>
+
+    <div class="col-12">
+        <label asp-for="Observaciones" class="form-label"></label>
+        <textarea asp-for="Observaciones" class="form-control" rows="3"></textarea>
+    </div>
+</div>
+
+<script>
+    (function () {
+        var tipoSelect = document.getElementById('tipoSelect');
+        var padreBlock = document.getElementById('padreBlock');
+        var fincaSelect = document.getElementById('fincaSelect');
+        var fincaAyuda = document.getElementById('fincaAyuda');
+        var valorLote = '@TipoTerreno.Lote';
+
+        function actualizarTipo() {
+            if (!tipoSelect || !padreBlock) return;
+            padreBlock.style.display = tipoSelect.value === valorLote ? '' : 'none';
+        }
+
+        function actualizarAyuda() {
+            if (!fincaSelect || !fincaAyuda) return;
+            var opcion = fincaSelect.options[fincaSelect.selectedIndex];
+            var disponible = opcion ? opcion.getAttribute('data-disponible') : null;
+            fincaAyuda.textContent = disponible
+                ? 'El área del lote no puede superar ' + disponible + ' ha disponibles en esta finca.'
+                : '';
+        }
+
+        if (tipoSelect) tipoSelect.addEventListener('change', actualizarTipo);
+        if (fincaSelect) fincaSelect.addEventListener('change', actualizarAyuda);
+        actualizarTipo();
+        actualizarAyuda();
+    })();
+</script>

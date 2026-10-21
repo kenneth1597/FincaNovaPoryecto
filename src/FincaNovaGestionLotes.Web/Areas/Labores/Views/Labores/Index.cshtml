@@ -1,0 +1,162 @@
+@model LaborFiltroViewModel
+
+@{
+    ViewData["Title"] = "Bitácora de labores";
+    var hayFiltros = Model.TerrenoId != null || Model.Tipo != null || Model.Estado != null
+                     || Model.Desde != null || Model.Hasta != null || Model.SoloMias;
+}
+
+<div class="fn-page-header">
+    <div>
+        <h1 class="fn-page-title">
+            <span class="fn-page-title-icon">
+                <svg viewBox="0 0 24 24">
+                    <path d="M8 4h11v16H8z" />
+                    <path d="M5 4h3v16H5zM11 8h5M11 12h5M11 16h3" />
+                </svg>
+            </span>
+            Bitácora de labores
+        </h1>
+        <p class="fn-page-subtitle">Historial cronológico de las labores agrícolas realizadas en cada lote.</p>
+    </div>
+
+    <a asp-action="Crear" asp-route-terrenoId="@Model.TerrenoId" class="fn-btn fn-btn-primary">
+        + Registrar labor
+    </a>
+</div>
+
+@if (TempData["Ok"] is string ok)
+{
+    <div class="alert alert-success border-0 shadow-sm">@ok</div>
+}
+@if (TempData["Error"] is string error)
+{
+    <div class="alert alert-danger border-0 shadow-sm">@error</div>
+}
+
+<div class="fn-card">
+    <div class="fn-card-body">
+        <form method="get" asp-action="Index">
+            <div class="row g-3 align-items-end">
+                <div class="col-md-3">
+                    <label class="fn-form-label">Finca / lote</label>
+                    <select name="TerrenoId" class="fn-form-select">
+                        <option value="">Todas las fincas y lotes</option>
+                        @foreach (var lote in Model.Terrenos)
+                        {
+                            <option value="@lote.Id" selected="@(Model.TerrenoId == lote.Id)">@lote.Texto</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="fn-form-label">Tipo</label>
+                    <select name="Tipo" class="fn-form-select">
+                        <option value="">Todos</option>
+                        @foreach (TipoLabor t in Enum.GetValues<TipoLabor>())
+                        {
+                            <option value="@t" selected="@(Model.Tipo == t)">@Ui.TipoLaborTexto(t)</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="fn-form-label">Estado</label>
+                    <select name="Estado" class="fn-form-select">
+                        <option value="">Todos</option>
+                        @foreach (EstadoLabor e in Enum.GetValues<EstadoLabor>())
+                        {
+                            <option value="@e" selected="@(Model.Estado == e)">@Ui.EstadoLaborTexto(e)</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="fn-form-label">Desde</label>
+                    <input type="date" name="Desde" value="@Model.Desde?.ToString("yyyy-MM-dd")" class="fn-form-control" />
+                </div>
+                <div class="col-md-2">
+                    <label class="fn-form-label">Hasta</label>
+                    <input type="date" name="Hasta" value="@Model.Hasta?.ToString("yyyy-MM-dd")" class="fn-form-control" />
+                </div>
+                <div class="col-md-1">
+                    <button type="submit" class="fn-btn fn-btn-primary w-100">Filtrar</button>
+                </div>
+                @if (Model.TieneColaborador)
+                {
+                    <div class="col-12">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="SoloMias" value="true" id="soloMias"
+                                   checked="@Model.SoloMias" onchange="this.form.submit()" />
+                            <label class="form-check-label" for="soloMias">Ver solo las labores asignadas a mí</label>
+                        </div>
+                    </div>
+                }
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="fn-card">
+    <div class="fn-card-header d-flex justify-content-between align-items-center">
+        <h2 class="fn-card-title">Labores registradas</h2>
+        <span class="fn-count">
+            @Model.Paginacion.Total labor(es)
+        </span>
+    </div>
+
+    @if (!Model.Resultados.Any())
+    {
+        <div class="fn-empty">
+            <div class="fn-empty-title">
+                @(hayFiltros ? "No hay labores que coincidan con los filtros." : "Todavía no hay labores registradas.")
+            </div>
+            <div class="fn-empty-text">Registra una labor para comenzar la bitácora.</div>
+        </div>
+    }
+    else
+    {
+        <div class="fn-card-body">
+            <div class="fn-table-wrapper">
+                <table class="fn-table">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Finca / lote</th>
+                            <th>Labor</th>
+                            <th>Estado</th>
+                            <th>Horas</th>
+                            <th>Colaboradores</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var l in Model.Resultados)
+                        {
+                            <tr>
+                                <td>@l.Fecha.ToString("dd/MM/yyyy")</td>
+                                <td>
+                                    <strong>@l.TerrenoCodigo</strong>
+                                    <div class="small text-muted">@l.TerrenoNombre</div>
+                                </td>
+                                <td>@Ui.TipoLaborTexto(l.Tipo)</td>
+                                <td><span class="fn-badge @Ui.EstadoLaborBadge(l.Estado)">@Ui.EstadoLaborTexto(l.Estado)</span></td>
+                                <td>@l.HorasTotales.ToString("N2") h</td>
+                                <td>
+                                    @string.Join(", ", l.Colaboradores)
+                                    @if (l.EsMia)
+                                    {
+                                        <span class="fn-badge fn-badge-success ms-1">Asignada a ti</span>
+                                    }
+                                </td>
+                                <td class="text-end">
+                                    <a asp-action="Detalle" asp-route-id="@l.Id" class="fn-btn fn-btn-outline">
+                                        @(l.EsMia && l.Estado != EstadoLabor.Finalizada ? "Actualizar" : "Ver")
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <partial name="_Paginacion" model="Model.Paginacion" />
+    }
+</div>

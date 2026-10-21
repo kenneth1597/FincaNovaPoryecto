@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
+using FincaNovaGestionLotes.Web.Filters;
 
 namespace FincaNovaGestionLotes.Web.Controllers;
 
@@ -24,12 +25,17 @@ public class AccountController : Controller
 
     #region Login
     [HttpGet]
+    [PermitirSinSesion]
     public IActionResult Login()
     {
+        if (HttpContext.Session.GetInt32("UsuarioId") is not null)
+            return RedirectToAction("Index", "Home");
+
         return View();
     }
 
     [HttpPost]
+    [PermitirSinSesion]
     public async Task<IActionResult> Login(LoginViewModel model)
     {
         if (!ModelState.IsValid)
@@ -52,54 +58,16 @@ public class AccountController : Controller
     }
     #endregion
 
-    #region Registro
-    [HttpGet]
-    public IActionResult Register()
-    {
-        return View();
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> Register(RegisterViewModel model)
-    {
-        if (!ModelState.IsValid)
-            return View(model);
-
-        var existeEmail = await _context.Usuarios
-            .AnyAsync(u => u.Email.ToLower() == model.Email.ToLower());
-
-        if (existeEmail)
-        {
-            ModelState.AddModelError("Email", "El correo electrónico ya está registrado.");
-            return View(model);
-        }
-
-        var nuevoUsuario = new Usuario
-        {
-            Nombre = model.Nombre,
-            Email = model.Email.ToLower(),
-            PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.Password),
-            Rol = "Trabajador", // Rol por defecto al registrarse
-            Activo = true,
-            FechaCreacion = DateTime.Now
-        };
-
-        _context.Usuarios.Add(nuevoUsuario);
-        await _context.SaveChangesAsync();
-
-        TempData["SuccessMessage"] = "Cuenta creada exitosamente. Ya puedes iniciar sesión.";
-        return RedirectToAction("Login");
-    }
-    #endregion
-
     #region Olvidé mi Contraseña
     [HttpGet]
+    [PermitirSinSesion]
     public IActionResult ForgotPassword()
     {
         return View();
     }
 
     [HttpPost]
+    [PermitirSinSesion]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> ForgotPassword(string email)
     {
@@ -145,6 +113,7 @@ public class AccountController : Controller
 
     // GET: Token de vencimiento de pasword
     [HttpGet]
+    [PermitirSinSesion]
     public async Task<IActionResult> ResetPassword(string token, string email)
     {
         if (string.IsNullOrEmpty(token) || string.IsNullOrEmpty(email))
@@ -173,6 +142,7 @@ public class AccountController : Controller
     }
 
     [HttpPost]
+    [PermitirSinSesion]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
     {
@@ -206,6 +176,7 @@ public class AccountController : Controller
 
     #region Logout
     [HttpGet]
+    [PermitirSinSesion]
     public IActionResult Logout()
     {
         HttpContext.Session.Clear();
@@ -332,6 +303,7 @@ public class AccountController : Controller
 
     #endregion
     [HttpGet]
+    [PermitirSinSesion]
     public IActionResult AccessDenied()
     {
         return View();

@@ -3,10 +3,13 @@ using FincaNovaGestionLotes.Web.Domain.Usuarios;
 using FincaNovaGestionLotes.Web.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using FincaNovaGestionLotes.Web.Filters;
+using FincaNovaGestionLotes.Web.ViewSupport;
 using Microsoft.EntityFrameworkCore;
 
 namespace FincaNovaGestionLotes.Web.Controllers;
 
+[RequiereRol(Roles.Administrador, Roles.Duenio)]
 public class UsuariosController(AppDbContext context) : Controller
 {
     private readonly AppDbContext _context = context;
@@ -20,7 +23,7 @@ public class UsuariosController(AppDbContext context) : Controller
     }
 
     // GET: /Usuarios
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(int pagina = 1)
     {
         var rolActual = HttpContext.Session.GetString("UsuarioRol");
 
@@ -29,7 +32,11 @@ public class UsuariosController(AppDbContext context) : Controller
             return RedirectToAction("AccessDenied", "Account");
         }
 
-        var usuarios = await _context.Usuarios.ToListAsync();
+        var (usuarios, paginacion) = await _context.Usuarios
+            .OrderBy(u => u.Nombre)
+            .PaginarAsync(pagina);
+
+        ViewBag.Paginacion = paginacion;
         return View(usuarios);
     }
 
