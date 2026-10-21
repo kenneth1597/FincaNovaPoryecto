@@ -38,11 +38,52 @@ public class AccountController : Controller
         var usuario = await _context.Usuarios
             .FirstOrDefaultAsync(u => u.Email.ToLower() == model.Email.ToLower() && u.Activo);
 
-        if (usuario == null || !BCrypt.Net.BCrypt.Verify(model.Password, usuario.PasswordHash))
+        // 1. Verificar si el usuario existe
+        if (usuario == null)
         {
             ModelState.AddModelError(string.Empty, "Credenciales incorrectas.");
             return View(model);
         }
+
+        // 2. Verificar si la cuenta ya está bloqueada por intentos fallidos
+        if (usuario.Bloqueado)
+        {
+            TempData["ErrorMessage"] = "Tu cuenta ha sido bloqueada por superar el límite de intentos fallidos. Por favor, restablece tu contraseña para desbloquearla.";
+            return RedirectToAction("ForgotPassword");
+        }
+
+        // 3. Validar la contraseña con BCrypt
+        if (!BCrypt.Net.BCrypt.Verify(model.Password, usuario.PasswordHash))
+        {
+            // Incrementar el contador de intentos fallidos
+            usuario.IntentosFallidos++;
+
+            if (usuario.IntentosFallidos >= 3)
+            {
+                usuario.Bloqueado = true;
+                _context.Usuarios.Update(usuario);
+                await _context.SaveChangesAsync();
+
+                TempData["ErrorMessage"] = "Has superado el límite de 3 intentos fallidos. Tu cuenta ha sido bloqueada; restablece tu contraseña para recuperar el acceso.";
+                return RedirectToAction("ForgotPassword");
+            }
+
+            _context.Usuarios.Update(usuario);
+            await _context.SaveChangesAsync();
+
+            int intentosRestantes = 3 - usuario.IntentosFallidos;
+            ModelState.AddModelError(string.Empty, $"Credenciales incorrectas. Te quedan {intentosRestantes} intento(s) antes de bloquear la cuenta.");
+            return View(model);
+        }
+
+        // 4. Si la contraseña es correcta, reiniciar contador de intentos fallidos
+        if (usuario.IntentosFallidos > 0)
+        {
+            usuario.IntentosFallidos = 0;
+            _context.Usuarios.Update(usuario);
+            await _context.SaveChangesAsync();
+        }
+
 
         HttpContext.Session.SetString("UsuarioNombre", usuario.Nombre);
         HttpContext.Session.SetInt32("UsuarioId", usuario.Id);
@@ -194,6 +235,8 @@ public class AccountController : Controller
         // Invalidate/Limpiar el token para que no se vuelva a usar
         usuario.PasswordResetToken = null;
         usuario.PasswordResetTokenExpiration = null;
+        usuario.Bloqueado = false;
+        usuario.IntentosFallidos = 0;
         usuario.FechaModificacion = DateTime.Now;
         usuario.ModificadoPor = usuario.Nombre;
 
