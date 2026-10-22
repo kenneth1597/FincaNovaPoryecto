@@ -4,9 +4,11 @@ using FincaNovaGestionLotes.Web.Domain;
 using FincaNovaGestionLotes.Web.Domain.Colaboradores;
 using FincaNovaGestionLotes.Web.Filters;
 using FincaNovaGestionLotes.Web.Services.Auditoria;
+using FincaNovaGestionLotes.Web.Services.Labores;
 using Microsoft.AspNetCore.Mvc;
 using FincaNovaGestionLotes.Web.ViewSupport;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace FincaNovaGestionLotes.Web.Areas.Colaboradores.Controllers;
 
@@ -16,11 +18,13 @@ public class ColaboradoresController : Controller
 {
     private readonly AppDbContext _db;
     private readonly IAuditService _audit;
+    private readonly ParametrosJornada _jornada;
 
-    public ColaboradoresController(AppDbContext db, IAuditService audit)
+    public ColaboradoresController(AppDbContext db, IAuditService audit, IOptions<ParametrosJornada> jornada)
     {
         _db = db;
         _audit = audit;
+        _jornada = jornada.Value;
     }
 
     [HttpGet]
@@ -65,7 +69,7 @@ public class ColaboradoresController : Controller
     [HttpGet]
     public async Task<IActionResult> Crear()
     {
-        var model = new ColaboradorFormViewModel();
+        var model = new ColaboradorFormViewModel { TarifaJornada = _jornada.TarifaPorDefecto };
         await CargarUsuariosAsync(model);
         return View(model);
     }

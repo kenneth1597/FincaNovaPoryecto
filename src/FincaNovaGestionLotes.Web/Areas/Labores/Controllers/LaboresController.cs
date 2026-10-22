@@ -4,9 +4,11 @@ using FincaNovaGestionLotes.Web.Domain;
 using FincaNovaGestionLotes.Web.Domain.Labores;
 using FincaNovaGestionLotes.Web.Filters;
 using FincaNovaGestionLotes.Web.Services.Auditoria;
+using FincaNovaGestionLotes.Web.Services.Labores;
 using FincaNovaGestionLotes.Web.ViewSupport;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace FincaNovaGestionLotes.Web.Areas.Labores.Controllers;
 
@@ -16,11 +18,13 @@ public class LaboresController : Controller
 {
     private readonly AppDbContext _db;
     private readonly IAuditService _audit;
+    private readonly ParametrosJornada _jornada;
 
-    public LaboresController(AppDbContext db, IAuditService audit)
+    public LaboresController(AppDbContext db, IAuditService audit, IOptions<ParametrosJornada> jornada)
     {
         _db = db;
         _audit = audit;
+        _jornada = jornada.Value;
     }
 
     private bool EsAdmin => Roles.EsAdmin(HttpContext);
@@ -32,6 +36,7 @@ public class LaboresController : Controller
     {
         var miColaboradorId = await MiColaboradorIdAsync();
         filtro.TieneColaborador = miColaboradorId is not null;
+        filtro.EsAdmin = EsAdmin;
 
         var query = _db.Labores.AsNoTracking();
 
@@ -69,6 +74,8 @@ public class LaboresController : Controller
                 Fecha = l.Fecha,
                 Estado = l.Estado,
                 HorasTotales = l.HorasTotales,
+                CostoTotal = l.CostoTotal,
+                MiMonto = l.Avances.Where(a => a.ColaboradorId == miColaboradorId).Sum(a => (decimal?)a.Costo) ?? 0,
                 RegistradoPor = l.RegistradoPor,
                 Colaboradores = l.Colaboradores
                     .OrderBy(c => c.Colaborador.Nombre)
@@ -253,6 +260,17 @@ public class LaboresController : Controller
         if (avance.Fecha is { } fecha && fecha.Date > DateTime.Today)
             ModelState.AddModelError("NuevoAvance.Fecha", "La fecha del avance no puede ser futura.");
 
+        if (colaboradorId is { } idColaborador && avance.Fecha is { } dia && avance.Horas is { } horasNuevas)
+        {
+            var horasDelDia = await _db.LaboresAvances
+                .Where(a => a.ColaboradorId == idColaborador && a.Fecha == dia.Date)
+                .SumAsync(a => (decimal?)a.Horas) ?? 0;
+
+            if (horasDelDia + horasNuevas > 24)
+                ModelState.AddModelError("NuevoAvance.Horas",
+                    $"El colaborador ya tiene {horasDelDia:N2} h registradas el {dia:dd/MM/yyyy}; el día no puede superar 24 h.");
+        }
+
         if (!ModelState.IsValid)
         {
             var vm = await ConstruirDetalleAsync(id);
@@ -261,18 +279,30 @@ public class LaboresController : Controller
             return View(nameof(Detalle), vm);
         }
 
+        var tarifa = await _db.Colaboradores
+            .Where(c => c.Id == colaboradorId!.Value)
+            .Select(c => c.TarifaJornada)
+            .FirstAsync();
+        var horas = avance.Horas!.Value;
+        var horasPorJornada = _jornada.HorasPorJornada;
+        var costo = Math.Round(horas / horasPorJornada * tarifa, 2);
+
         _db.LaboresAvances.Add(new LaborAvance
         {
             LaborId = labor.Id,
             ColaboradorId = colaboradorId!.Value,
             Fecha = avance.Fecha!.Value.Date,
-            Horas = avance.Horas!.Value,
+            Horas = horas,
+            HorasPorJornada = horasPorJornada,
+            TarifaJornada = tarifa,
+            Costo = costo,
             Comentario = avance.Comentario!.Trim(),
             RegistradoPor = NombreUsuario,
             CreadoPor = NombreUsuario
         });
 
-        labor.HorasTotales += avance.Horas!.Value;
+        labor.HorasTotales += horas;
+        labor.CostoTotal += costo;
         labor.Estado = EstadoLabor.EnProceso;
         labor.ModificadoPor = NombreUsuario;
 
@@ -281,7 +311,7 @@ public class LaboresController : Controller
         await _audit.RegistrarAsync(AccionAuditoria.Modificar, nameof(Labor), labor.Id.ToString(),
             $"Avance de {avance.Horas:N2} h registrado en la labor {Ui.TipoLaborTexto(labor.Tipo)}");
 
-        TempData["Ok"] = $"Avance de {avance.Horas:N2} horas registrado.";
+        TempData["Ok"] = $"Avance de {horas:N2} h registrado ({horas / horasPorJornada:N2} jornada(s), ₡{costo:N2}).";
         return RedirectToAction(nameof(Detalle), new { id });
     }
 
@@ -365,6 +395,7 @@ public class LaboresController : Controller
                 RegistradoPor = l.RegistradoPor,
                 Estado = l.Estado,
                 HorasTotales = l.HorasTotales,
+                CostoTotal = l.CostoTotal,
                 FechaCierre = l.FechaCierre,
                 CerradaPor = l.CerradaPor,
                 ComentarioCierre = l.ComentarioCierre,
@@ -375,7 +406,11 @@ public class LaboresController : Controller
                         Id = c.ColaboradorId,
                         Nombre = c.Colaborador.Nombre,
                         Cargo = c.Colaborador.Cargo,
-                        Horas = l.Avances.Where(a => a.ColaboradorId == c.ColaboradorId).Sum(a => a.Horas)
+                        TarifaJornada = c.Colaborador.TarifaJornada,
+                        Horas = l.Avances.Where(a => a.ColaboradorId == c.ColaboradorId).Sum(a => a.Horas),
+                        Jornadas = l.Avances.Where(a => a.ColaboradorId == c.ColaboradorId)
+                            .Sum(a => a.HorasPorJornada > 0 ? a.Horas / a.HorasPorJornada : 0),
+                        Costo = l.Avances.Where(a => a.ColaboradorId == c.ColaboradorId).Sum(a => a.Costo)
                     })
                     .ToList(),
                 Avances = l.Avances
@@ -384,8 +419,12 @@ public class LaboresController : Controller
                     .Select(a => new AvanceItemViewModel
                     {
                         Fecha = a.Fecha,
+                        ColaboradorId = a.ColaboradorId,
                         Colaborador = a.Colaborador.Nombre,
                         Horas = a.Horas,
+                        Jornadas = a.HorasPorJornada > 0 ? a.Horas / a.HorasPorJornada : 0,
+                        TarifaJornada = a.TarifaJornada,
+                        Costo = a.Costo,
                         Comentario = a.Comentario,
                         RegistradoPor = a.RegistradoPor
                     })
@@ -395,6 +434,7 @@ public class LaboresController : Controller
 
         if (vm is null) return null;
 
+        vm.HorasPorJornada = _jornada.HorasPorJornada;
         vm.EsAdmin = EsAdmin;
         vm.MiColaboradorId = await MiColaboradorIdAsync();
         vm.PuedeActualizar = vm.Estado != EstadoLabor.Finalizada &&

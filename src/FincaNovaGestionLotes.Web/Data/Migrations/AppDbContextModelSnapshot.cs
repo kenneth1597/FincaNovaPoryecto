@@ -354,6 +354,10 @@ namespace FincaNovaGestionLotes.Web.Data.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
+                    b.Property<decimal>("CostoTotal")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<string>("CreadoPor")
                         .HasColumnType("nvarchar(max)");
 
@@ -417,6 +421,10 @@ namespace FincaNovaGestionLotes.Web.Data.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
+                    b.Property<decimal>("Costo")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<string>("CreadoPor")
                         .HasColumnType("nvarchar(max)");
 
@@ -433,6 +441,10 @@ namespace FincaNovaGestionLotes.Web.Data.Migrations
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<decimal>("HorasPorJornada")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<int>("LaborId")
                         .HasColumnType("int");
 
@@ -442,6 +454,10 @@ namespace FincaNovaGestionLotes.Web.Data.Migrations
                     b.Property<string>("RegistradoPor")
                         .HasMaxLength(150)
                         .HasColumnType("nvarchar(150)");
+
+                    b.Property<decimal>("TarifaJornada")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 

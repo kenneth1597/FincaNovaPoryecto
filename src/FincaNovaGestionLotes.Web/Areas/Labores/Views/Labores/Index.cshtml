@@ -123,6 +123,7 @@
                             <th>Labor</th>
                             <th>Estado</th>
                             <th>Horas</th>
+                            <th>@(Model.EsAdmin ? "Costo" : "Mi monto")</th>
                             <th>Colaboradores</th>
                             <th></th>
                         </tr>
@@ -139,6 +140,20 @@
                                 <td>@Ui.TipoLaborTexto(l.Tipo)</td>
                                 <td><span class="fn-badge @Ui.EstadoLaborBadge(l.Estado)">@Ui.EstadoLaborTexto(l.Estado)</span></td>
                                 <td>@l.HorasTotales.ToString("N2") h</td>
+                                <td>
+                                    @if (Model.EsAdmin)
+                                    {
+                                        <span>₡@l.CostoTotal.ToString("N2")</span>
+                                    }
+                                    else if (l.EsMia)
+                                    {
+                                        <span>₡@l.MiMonto.ToString("N2")</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">—</span>
+                                    }
+                                </td>
                                 <td>
                                     @string.Join(", ", l.Colaboradores)
                                     @if (l.EsMia)

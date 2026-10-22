@@ -26,6 +26,8 @@ public class LaborFiltroViewModel
 
     public bool TieneColaborador { get; set; }
 
+    public bool EsAdmin { get; set; }
+
     public int Pagina { get; set; } = 1;
 
     public PaginaInfo Paginacion { get; set; } = new();
@@ -47,6 +49,8 @@ public class LaborListItemViewModel
     public DateTime Fecha { get; set; }
     public EstadoLabor Estado { get; set; }
     public decimal HorasTotales { get; set; }
+    public decimal CostoTotal { get; set; }
+    public decimal MiMonto { get; set; }
     public string? RegistradoPor { get; set; }
     public List<string> Colaboradores { get; set; } = new();
     public bool EsMia { get; set; }
@@ -127,14 +131,21 @@ public class ColaboradorLaborViewModel
     public int Id { get; set; }
     public string Nombre { get; set; } = string.Empty;
     public string Cargo { get; set; } = string.Empty;
+    public decimal TarifaJornada { get; set; }
     public decimal Horas { get; set; }
+    public decimal Jornadas { get; set; }
+    public decimal Costo { get; set; }
 }
 
 public class AvanceItemViewModel
 {
     public DateTime Fecha { get; set; }
+    public int ColaboradorId { get; set; }
     public string Colaborador { get; set; } = string.Empty;
     public decimal Horas { get; set; }
+    public decimal Jornadas { get; set; }
+    public decimal TarifaJornada { get; set; }
+    public decimal Costo { get; set; }
     public string Comentario { get; set; } = string.Empty;
     public string? RegistradoPor { get; set; }
 }
@@ -151,6 +162,8 @@ public class LaborDetalleViewModel
     public string? RegistradoPor { get; set; }
     public EstadoLabor Estado { get; set; }
     public decimal HorasTotales { get; set; }
+    public decimal CostoTotal { get; set; }
+    public decimal HorasPorJornada { get; set; }
     public DateTime? FechaCierre { get; set; }
     public string? CerradaPor { get; set; }
     public string? ComentarioCierre { get; set; }
@@ -161,6 +174,10 @@ public class LaborDetalleViewModel
     public bool EsAdmin { get; set; }
     public bool PuedeActualizar { get; set; }
     public int? MiColaboradorId { get; set; }
+
+    public bool PuedeVerMonto(int colaboradorId) => EsAdmin || colaboradorId == MiColaboradorId;
+
+    public decimal TotalJornadas => HorasPorJornada <= 0 ? 0 : HorasTotales / HorasPorJornada;
 
     public AvanceFormViewModel NuevoAvance { get; set; } = new();
     public CierreFormViewModel Cierre { get; set; } = new();

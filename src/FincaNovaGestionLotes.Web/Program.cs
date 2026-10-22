@@ -3,6 +3,7 @@ using FincaNovaGestionLotes.Web.Services.Auditoria;
 using Microsoft.EntityFrameworkCore;
 using FincaNovaGestionLotes.Web.Services;
 using FincaNovaGestionLotes.Web.Filters;
+using FincaNovaGestionLotes.Web.Services.Labores;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +19,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddTransient<IEmailService, SmtpEmailService>();
 
 builder.Services.AddScoped<IAuditService, AuditService>();
+
+builder.Services.Configure<ParametrosJornada>(builder.Configuration.GetSection("Jornada"));
 
 var app = builder.Build();
 

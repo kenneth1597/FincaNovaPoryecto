@@ -103,6 +103,18 @@ public class TerrenoDetalleViewModel
         ? 0
         : (int)Math.Min(100, Math.Round(AreaAsignada * 100 / Terreno.AreaHectareas));
     public IReadOnlyList<LaborBitacoraViewModel> Labores { get; set; } = Array.Empty<LaborBitacoraViewModel>();
+    public IReadOnlyList<IndicadorMantenimientoViewModel> Indicadores { get; set; } = Array.Empty<IndicadorMantenimientoViewModel>();
+    public decimal HorasPorJornada { get; set; }
+    public bool IncluyeLotes { get; set; }
+}
+
+public class IndicadorMantenimientoViewModel
+{
+    public TipoLabor Tipo { get; set; }
+    public int Labores { get; set; }
+    public decimal Horas { get; set; }
+    public decimal Jornadas { get; set; }
+    public decimal Costo { get; set; }
 }
 
 public class LaborBitacoraViewModel

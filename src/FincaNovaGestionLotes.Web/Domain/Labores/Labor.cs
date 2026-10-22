@@ -23,6 +23,8 @@ public class Labor : AuditableEntity
 
     public decimal HorasTotales { get; set; }
 
+    public decimal CostoTotal { get; set; }
+
     public DateTime? FechaCierre { get; set; }
 
     [StringLength(150)]

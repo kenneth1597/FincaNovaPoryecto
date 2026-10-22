@@ -148,6 +148,65 @@
 
 <div class="card mt-3">
     <div class="card-header d-flex justify-content-between align-items-center">
+        <span>Indicadores de mantenimiento</span>
+        @if (Model.IncluyeLotes)
+        {
+            <span class="small text-muted">Incluye las labores de los lotes de esta finca</span>
+        }
+    </div>
+    <div class="card-body">
+        @if (!Model.Indicadores.Any())
+        {
+            <p class="text-muted mb-0">Todavía no hay horas de trabajo registradas.</p>
+        }
+        else
+        {
+            var totalHoras = Model.Indicadores.Sum(i => i.Horas);
+            var totalJornadas = Model.Indicadores.Sum(i => i.Jornadas);
+            var totalCosto = Model.Indicadores.Sum(i => i.Costo);
+
+            <div class="row row-cols-1 row-cols-md-3 g-2 mb-3">
+                <div class="col">
+                    <div class="card text-center"><div class="card-body py-2">
+                        <div class="fs-4 fw-bold">@totalHoras.ToString("N2")</div>
+                        <div class="small text-muted">Horas trabajadas</div>
+                    </div></div>
+                </div>
+                <div class="col">
+                    <div class="card text-center"><div class="card-body py-2">
+                        <div class="fs-4 fw-bold">@totalJornadas.ToString("N2")</div>
+                        <div class="small text-muted">Jornadas (@Model.HorasPorJornada.ToString("0.##") h)</div>
+                    </div></div>
+                </div>
+                <div class="col">
+                    <div class="card text-center"><div class="card-body py-2">
+                        <div class="fs-4 fw-bold">₡@totalCosto.ToString("N0")</div>
+                        <div class="small text-muted">Costo operativo</div>
+                    </div></div>
+                </div>
+            </div>
+
+            <table class="table table-sm mb-0">
+                <thead><tr><th>Labor</th><th class="text-end">Registros</th><th class="text-end">Horas</th><th class="text-end">Jornadas</th><th class="text-end">Costo</th></tr></thead>
+                <tbody>
+                    @foreach (var i in Model.Indicadores)
+                    {
+                        <tr>
+                            <td>@Ui.TipoLaborTexto(i.Tipo)</td>
+                            <td class="text-end">@i.Labores</td>
+                            <td class="text-end">@i.Horas.ToString("N2")</td>
+                            <td class="text-end">@i.Jornadas.ToString("N2")</td>
+                            <td class="text-end">₡@i.Costo.ToString("N2")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+</div>
+
+<div class="card mt-3">
+    <div class="card-header d-flex justify-content-between align-items-center">
         <span>Bitácora de labores de @terreno.Codigo</span>
         <div class="d-flex gap-2">
             <a asp-area="Labores" asp-controller="Labores" asp-action="Index" asp-route-terrenoId="@terreno.Id" class="btn btn-sm btn-outline-secondary">Ver bitácora completa</a>

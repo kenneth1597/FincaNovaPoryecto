@@ -4,9 +4,11 @@ using FincaNovaGestionLotes.Web.Domain;
 using FincaNovaGestionLotes.Web.Domain.Terrenos;
 using FincaNovaGestionLotes.Web.Filters;
 using FincaNovaGestionLotes.Web.Services.Auditoria;
+using FincaNovaGestionLotes.Web.Services.Labores;
 using FincaNovaGestionLotes.Web.ViewSupport;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace FincaNovaGestionLotes.Web.Areas.Terrenos.Controllers;
 
@@ -16,11 +18,13 @@ public class TerrenosController : Controller
 {
     private readonly AppDbContext _db;
     private readonly IAuditService _audit;
+    private readonly ParametrosJornada _jornada;
 
-    public TerrenosController(AppDbContext db, IAuditService audit)
+    public TerrenosController(AppDbContext db, IAuditService audit, IOptions<ParametrosJornada> jornada)
     {
         _db = db;
         _audit = audit;
+        _jornada = jornada.Value;
     }
 
     private string? NombreUsuario => HttpContext.Session.GetString("UsuarioNombre");
@@ -118,12 +122,33 @@ public class TerrenosController : Controller
             })
             .ToListAsync();
 
+        var idsIndicadores = lotes.Select(l => l.Id).Append(id).ToList();
+        var horasPorJornada = _jornada.HorasPorJornada;
+
+        var indicadores = await _db.Labores.AsNoTracking()
+            .Where(l => idsIndicadores.Contains(l.TerrenoId))
+            .GroupBy(l => l.Tipo)
+            .Select(g => new IndicadorMantenimientoViewModel
+            {
+                Tipo = g.Key,
+                Labores = g.Count(),
+                Horas = g.Sum(l => l.HorasTotales),
+                Costo = g.Sum(l => l.CostoTotal)
+            })
+            .ToListAsync();
+
+        foreach (var indicador in indicadores)
+            indicador.Jornadas = horasPorJornada <= 0 ? 0 : indicador.Horas / horasPorJornada;
+
         return View(new TerrenoDetalleViewModel
         {
             Terreno = terreno,
             Lotes = lotes,
             AreaAsignada = lotes.Sum(l => l.AreaHectareas),
-            Labores = labores
+            Labores = labores,
+            Indicadores = indicadores.OrderByDescending(i => i.Horas).ToList(),
+            HorasPorJornada = horasPorJornada,
+            IncluyeLotes = lotes.Any()
         });
     }
 
