@@ -55,6 +55,8 @@ public class UsuariosController(AppDbContext context) : Controller
     {
         if (!EsAdminODueno()) return Forbid();
 
+        if (!Roles.EsValido(model.Rol)) ModelState.AddModelError(nameof(model.Rol), "Seleccione un rol válido.");
+
         if (!ModelState.IsValid) return View(model);
 
         var existeEmail = await _context.Usuarios
@@ -112,6 +114,8 @@ public class UsuariosController(AppDbContext context) : Controller
     public async Task<IActionResult> Edit(UsuarioEditViewModel model)
     {
         if (!EsAdminODueno()) return Forbid();
+
+        if (!Roles.EsValido(model.Rol)) ModelState.AddModelError(nameof(model.Rol), "Seleccione un rol válido.");
 
         if (!ModelState.IsValid) return View(model);
 

@@ -41,12 +41,50 @@ public class ColaboradoresController : Controller
                 c.Cargo.Contains(t));
         }
 
-        if (filtro.Activo is { } activo)
-            query = query.Where(c => c.Activo == activo);
+        if (filtro.Estado == "Activos")
+            query = query.Where(c => c.Activo);
+        else if (filtro.Estado == "Inactivos")
+            query = query.Where(c => !c.Activo);
 
-        var (resultados, paginacion) = await query
-            .OrderBy(c => c.Nombre)
-            .Select(c => new ColaboradorListItemViewModel
+        var proyeccion = query.Select(c => new ColaboradorListItemViewModel
+        {
+            Id = c.Id,
+            Nombre = c.Nombre,
+            Identificacion = c.Identificacion,
+            Telefono = c.Telefono,
+            Cargo = c.Cargo,
+            TarifaJornada = c.TarifaJornada,
+            Activo = c.Activo,
+            Labores = c.Labores.Count(),
+            Horas = _db.LaboresAvances.Where(a => a.ColaboradorId == c.Id).Sum(a => (decimal?)a.Horas) ?? 0,
+            UltimaLabor = c.Labores.Max(lc => (DateTime?)lc.Labor.Fecha),
+            UsuarioEmail = c.Usuario != null ? c.Usuario.Email : null
+        });
+
+        proyeccion = filtro.Orden switch
+        {
+            "nombre_desc" => proyeccion.OrderByDescending(c => c.Nombre),
+            "cargo" => proyeccion.OrderBy(c => c.Cargo).ThenBy(c => c.Nombre),
+            "labores" => proyeccion.OrderByDescending(c => c.Labores).ThenBy(c => c.Nombre),
+            "horas" => proyeccion.OrderByDescending(c => c.Horas).ThenBy(c => c.Nombre),
+            "reciente" => proyeccion.OrderByDescending(c => c.UltimaLabor).ThenBy(c => c.Nombre),
+            _ => proyeccion.OrderBy(c => c.Nombre)
+        };
+
+        var (resultados, paginacion) = await proyeccion.PaginarAsync(filtro.Pagina);
+
+        filtro.Resultados = resultados;
+        filtro.Paginacion = paginacion;
+
+        return View(filtro);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Historial(int id, int? terrenoId, DateTime? desde, DateTime? hasta, int pagina = 1)
+    {
+        var vm = await _db.Colaboradores.AsNoTracking()
+            .Where(c => c.Id == id)
+            .Select(c => new ColaboradorHistorialViewModel
             {
                 Id = c.Id,
                 Nombre = c.Nombre,
@@ -55,15 +93,73 @@ public class ColaboradoresController : Controller
                 Cargo = c.Cargo,
                 TarifaJornada = c.TarifaJornada,
                 Activo = c.Activo,
-                Labores = c.Labores.Count(),
                 UsuarioEmail = c.Usuario != null ? c.Usuario.Email : null
             })
-            .PaginarAsync(filtro.Pagina);
+            .FirstOrDefaultAsync();
 
-        filtro.Resultados = resultados;
-        filtro.Paginacion = paginacion;
+        if (vm is null) return NotFound();
 
-        return View(filtro);
+        vm.TerrenoId = terrenoId;
+        vm.Desde = desde;
+        vm.Hasta = hasta;
+        vm.Pagina = pagina;
+        vm.HorasPorJornada = _jornada.HorasPorJornada;
+
+        var participaciones = _db.LaboresColaboradores.AsNoTracking()
+            .Where(lc => lc.ColaboradorId == id);
+
+        if (terrenoId is { } idTerreno)
+            participaciones = participaciones.Where(lc => lc.Labor.TerrenoId == idTerreno);
+        if (desde is { } d)
+            participaciones = participaciones.Where(lc => lc.Labor.Fecha >= d.Date);
+        if (hasta is { } h)
+        {
+            var limite = h.Date.AddDays(1);
+            participaciones = participaciones.Where(lc => lc.Labor.Fecha < limite);
+        }
+
+        var avances = _db.LaboresAvances.AsNoTracking()
+            .Where(a => a.ColaboradorId == id && participaciones.Any(lc => lc.LaborId == a.LaborId));
+
+        vm.TotalLabores = await participaciones.CountAsync();
+        vm.TotalDias = await avances.Select(a => a.Fecha).Distinct().CountAsync();
+        vm.TotalHoras = await avances.SumAsync(a => (decimal?)a.Horas) ?? 0;
+        vm.TotalJornadas = await avances.SumAsync(a => (decimal?)(a.HorasPorJornada > 0 ? a.Horas / a.HorasPorJornada : 0)) ?? 0;
+        vm.TotalMonto = await avances.SumAsync(a => (decimal?)a.Costo) ?? 0;
+
+        var (historial, paginacion) = await participaciones
+            .OrderByDescending(lc => lc.Labor.Fecha)
+            .ThenByDescending(lc => lc.LaborId)
+            .Select(lc => new HistorialLaborViewModel
+            {
+                LaborId = lc.LaborId,
+                Fecha = lc.Labor.Fecha,
+                TerrenoCodigo = lc.Labor.Terreno.Codigo,
+                TerrenoNombre = lc.Labor.Terreno.Nombre,
+                Tipo = lc.Labor.Tipo,
+                TipoOtro = lc.Labor.TipoOtro,
+                Estado = lc.Labor.Estado,
+                Dias = lc.Labor.Avances.Where(a => a.ColaboradorId == id).Select(a => a.Fecha).Distinct().Count(),
+                Horas = lc.Labor.Avances.Where(a => a.ColaboradorId == id).Sum(a => (decimal?)a.Horas) ?? 0,
+                Jornadas = lc.Labor.Avances.Where(a => a.ColaboradorId == id)
+                    .Sum(a => (decimal?)(a.HorasPorJornada > 0 ? a.Horas / a.HorasPorJornada : 0)) ?? 0,
+                Monto = lc.Labor.Avances.Where(a => a.ColaboradorId == id).Sum(a => (decimal?)a.Costo) ?? 0
+            })
+            .PaginarAsync(pagina);
+
+        vm.Historial = historial;
+        vm.Paginacion = paginacion;
+
+        vm.Terrenos = (await _db.LaboresColaboradores.AsNoTracking()
+                .Where(lc => lc.ColaboradorId == id)
+                .Select(lc => new { lc.Labor.TerrenoId, lc.Labor.Terreno.Codigo, lc.Labor.Terreno.Nombre })
+                .Distinct()
+                .OrderBy(t => t.Codigo)
+                .ToListAsync())
+            .Select(t => (t.TerrenoId, $"{t.Codigo} — {t.Nombre}"))
+            .ToList();
+
+        return View(vm);
     }
 
     [HttpGet]

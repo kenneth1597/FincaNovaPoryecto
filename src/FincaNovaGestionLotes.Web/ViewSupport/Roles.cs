@@ -4,7 +4,12 @@ public static class Roles
 {
     public const string Administrador = "Administrador";
     public const string Duenio = "Dueño";
+    public const string Capataz = "Capataz";
     public const string Trabajador = "Trabajador";
+
+    public static readonly string[] Todos = { Duenio, Administrador, Capataz, Trabajador };
+
+    public static bool EsValido(string? rol) => rol is not null && Todos.Contains(rol);
 
     public static bool EsAdmin(string? rol) =>
         string.Equals(rol, Administrador, StringComparison.OrdinalIgnoreCase) ||

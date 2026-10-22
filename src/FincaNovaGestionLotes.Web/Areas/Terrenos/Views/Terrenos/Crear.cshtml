@@ -12,7 +12,17 @@
                 : "Registra una finca; después podrás dividirla en lotes.")
         </p>
     </div>
-    <a asp-action="Index" class="fn-btn fn-btn-outline">Volver</a>
+    <div class="d-flex gap-2 flex-wrap">
+        @if (Model.Tipo == TipoTerreno.Lote)
+        {
+            <a asp-action="Crear" asp-route-tipo="Finca" class="fn-btn fn-btn-outline">¿Quería registrar una finca?</a>
+        }
+        else
+        {
+            <a asp-action="Crear" asp-route-tipo="Lote" class="fn-btn fn-btn-outline">¿Quería registrar un lote?</a>
+        }
+        <a asp-action="Index" class="fn-btn fn-btn-outline">Volver</a>
+    </div>
 </div>
 
 @if (TempData["Error"] is string error)

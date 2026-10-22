@@ -1,6 +1,36 @@
 @model TerrenoFormViewModel
 
+<input type="hidden" asp-for="Tipo" />
+
 <div class="row g-3">
+    @if (Model.Tipo == TipoTerreno.Lote)
+    {
+        <div class="col-md-8">
+            <label asp-for="FincaPadreId" class="form-label fw-semibold"></label>
+            @if (Model.EsEdicion)
+            {
+                var texto = Model.FincasPadre.FirstOrDefault(p => p.Id == Model.FincaPadreId)?.Texto ?? "—";
+                <input class="form-control" value="@texto" disabled />
+                <input type="hidden" asp-for="FincaPadreId" />
+                <div class="form-text">Un lote no puede cambiarse de finca.</div>
+            }
+            else
+            {
+                <select asp-for="FincaPadreId" class="form-select" id="fincaSelect" required>
+                    <option value="">-- Seleccione la finca --</option>
+                    @foreach (var f in Model.FincasPadre)
+                    {
+                        <option value="@f.Id" data-disponible="@f.AreaDisponible.ToString("N2")"
+                                data-codigo="@f.SiguienteCodigoLote" data-ubicacion="@f.Ubicacion"
+                                selected="@(Model.FincaPadreId == f.Id)">@f.Texto (@f.AreaDisponible.ToString("N2") ha libres)</option>
+                    }
+                </select>
+                <div class="form-text" id="fincaAyuda">Todo lote pertenece a una finca; su área no puede superar el área libre de esa finca.</div>
+            }
+            <span asp-validation-for="FincaPadreId" class="text-danger"></span>
+        </div>
+    }
+
     <div class="col-md-4">
         <label asp-for="Codigo" class="form-label"></label>
         @if (Model.EsEdicion)
@@ -8,52 +38,16 @@
             <input class="form-control" value="@Model.Codigo" disabled />
             <input type="hidden" asp-for="Codigo" />
         }
+        else if (Model.Tipo == TipoTerreno.Lote)
+        {
+            <input class="form-control" id="codigoLote" value="Se asigna al elegir la finca" disabled />
+            <div class="form-text">Se genera solo a partir del código de la finca.</div>
+        }
         else
         {
-            <input asp-for="Codigo" class="form-control" placeholder="@(Model.Tipo == TipoTerreno.Lote ? "Ej. LOTE-01" : "Ej. FINCA-01")" />
+            <input asp-for="Codigo" class="form-control" maxlength="25" placeholder="Ej. FINCA-01" />
         }
         <span asp-validation-for="Codigo" class="text-danger"></span>
-    </div>
-
-    <div class="col-md-4">
-        <label asp-for="Tipo" class="form-label"></label>
-        @if (Model.EsEdicion)
-        {
-            <input class="form-control" value="@Ui.TipoTerrenoTexto(Model.Tipo)" disabled />
-            <input type="hidden" asp-for="Tipo" />
-        }
-        else
-        {
-            <select asp-for="Tipo" class="form-select" id="tipoSelect">
-                @foreach (TipoTerreno t in Enum.GetValues<TipoTerreno>())
-                {
-                    <option value="@t" selected="@(Model.Tipo == t)">@Ui.TipoTerrenoTexto(t)</option>
-                }
-            </select>
-        }
-    </div>
-
-    <div class="col-md-4" id="padreBlock" style="@(Model.Tipo != TipoTerreno.Lote ? "display:none" : "")">
-        <label asp-for="FincaPadreId" class="form-label"></label>
-        @if (Model.EsEdicion)
-        {
-            var texto = Model.FincasPadre.FirstOrDefault(p => p.Id == Model.FincaPadreId)?.Texto ?? "—";
-            <input class="form-control" value="@texto" disabled />
-            <input type="hidden" asp-for="FincaPadreId" />
-        }
-        else
-        {
-            <select asp-for="FincaPadreId" class="form-select" id="fincaSelect">
-                <option value="">-- Seleccione la finca --</option>
-                @foreach (var f in Model.FincasPadre)
-                {
-                    <option value="@f.Id" data-disponible="@f.AreaDisponible.ToString("N2")"
-                            selected="@(Model.FincaPadreId == f.Id)">@f.Texto (@f.AreaDisponible.ToString("N2") ha libres)</option>
-                }
-            </select>
-            <div class="form-text" id="fincaAyuda"></div>
-        }
-        <span asp-validation-for="FincaPadreId" class="text-danger"></span>
     </div>
 
     <div class="col-md-6">
@@ -104,29 +98,36 @@
 
 <script>
     (function () {
-        var tipoSelect = document.getElementById('tipoSelect');
-        var padreBlock = document.getElementById('padreBlock');
         var fincaSelect = document.getElementById('fincaSelect');
         var fincaAyuda = document.getElementById('fincaAyuda');
-        var valorLote = '@TipoTerreno.Lote';
-
-        function actualizarTipo() {
-            if (!tipoSelect || !padreBlock) return;
-            padreBlock.style.display = tipoSelect.value === valorLote ? '' : 'none';
-        }
+        if (!fincaSelect || !fincaAyuda) return;
+        var codigoLote = document.getElementById('codigoLote');
+        var ubicacion = document.getElementById('Ubicacion');
+        var textoInicial = fincaAyuda.textContent;
+        var ubicacionSugerida = '';
 
         function actualizarAyuda() {
-            if (!fincaSelect || !fincaAyuda) return;
             var opcion = fincaSelect.options[fincaSelect.selectedIndex];
             var disponible = opcion ? opcion.getAttribute('data-disponible') : null;
             fincaAyuda.textContent = disponible
                 ? 'El área del lote no puede superar ' + disponible + ' ha disponibles en esta finca.'
-                : '';
+                : textoInicial;
+
+            if (codigoLote) {
+                var codigo = opcion ? opcion.getAttribute('data-codigo') : null;
+                codigoLote.value = codigo ? codigo : 'Se asigna al elegir la finca';
+            }
+
+            if (ubicacion) {
+                var nueva = opcion ? (opcion.getAttribute('data-ubicacion') || '') : '';
+                if (ubicacion.value === '' || ubicacion.value === ubicacionSugerida) {
+                    ubicacion.value = nueva;
+                    ubicacionSugerida = nueva;
+                }
+            }
         }
 
-        if (tipoSelect) tipoSelect.addEventListener('change', actualizarTipo);
-        if (fincaSelect) fincaSelect.addEventListener('change', actualizarAyuda);
-        actualizarTipo();
+        fincaSelect.addEventListener('change', actualizarAyuda);
         actualizarAyuda();
     })();
 </script>

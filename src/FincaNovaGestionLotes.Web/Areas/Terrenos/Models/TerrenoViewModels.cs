@@ -90,6 +90,8 @@ public class FincaOpcionViewModel
     public int Id { get; set; }
     public string Texto { get; set; } = string.Empty;
     public decimal AreaDisponible { get; set; }
+    public string SiguienteCodigoLote { get; set; } = string.Empty;
+    public string? Ubicacion { get; set; }
 }
 
 
@@ -111,6 +113,8 @@ public class TerrenoDetalleViewModel
 public class IndicadorMantenimientoViewModel
 {
     public TipoLabor Tipo { get; set; }
+    public string? TipoOtro { get; set; }
+    public string NombreLabor => Ui.NombreLabor(Tipo, TipoOtro);
     public int Labores { get; set; }
     public decimal Horas { get; set; }
     public decimal Jornadas { get; set; }
@@ -122,6 +126,8 @@ public class LaborBitacoraViewModel
     public int Id { get; set; }
     public DateTime Fecha { get; set; }
     public TipoLabor Tipo { get; set; }
+    public string? TipoOtro { get; set; }
+    public string NombreLabor => Ui.NombreLabor(Tipo, TipoOtro);
     public decimal HorasTotales { get; set; }
     public EstadoLabor Estado { get; set; }
     public string Observaciones { get; set; } = string.Empty;

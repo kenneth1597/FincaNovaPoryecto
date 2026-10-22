@@ -11,6 +11,9 @@ public class Labor : AuditableEntity
 
     public TipoLabor Tipo { get; set; }
 
+    [StringLength(100)]
+    public string? TipoOtro { get; set; }
+
     public DateTime Fecha { get; set; }
 
     [Required, StringLength(500)]

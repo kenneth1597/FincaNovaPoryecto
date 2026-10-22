@@ -398,6 +398,10 @@ namespace FincaNovaGestionLotes.Web.Data.Migrations
                     b.Property<int>("Tipo")
                         .HasColumnType("int");
 
+                    b.Property<string>("TipoOtro")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("TerrenoId", "Fecha");
@@ -619,6 +623,9 @@ namespace FincaNovaGestionLotes.Web.Data.Migrations
                     b.Property<bool>("Activo")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("Bloqueado")
+                        .HasColumnType("bit");
+
                     b.Property<string>("CreadoPor")
                         .HasColumnType("nvarchar(max)");
 
@@ -631,6 +638,9 @@ namespace FincaNovaGestionLotes.Web.Data.Migrations
 
                     b.Property<DateTime?>("FechaModificacion")
                         .HasColumnType("datetime2");
+
+                    b.Property<int>("IntentosFallidos")
+                        .HasColumnType("int");
 
                     b.Property<string>("ModificadoPor")
                         .HasColumnType("nvarchar(max)");

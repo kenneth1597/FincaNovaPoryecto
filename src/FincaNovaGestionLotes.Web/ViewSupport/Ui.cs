@@ -39,6 +39,11 @@ public static class Ui
         _ => t.ToString()
     };
 
+    public static string NombreLabor(TipoLabor tipo, string? tipoOtro) =>
+        tipo == TipoLabor.Otra && !string.IsNullOrWhiteSpace(tipoOtro)
+            ? tipoOtro.Trim()
+            : TipoLaborTexto(tipo);
+
     public static string EstadoEnfermedadTexto(EstadoEnfermedad e) => e switch
     {
         EstadoEnfermedad.Activa => "Activa",

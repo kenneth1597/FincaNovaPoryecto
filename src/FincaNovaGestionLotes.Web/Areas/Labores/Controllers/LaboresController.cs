@@ -13,7 +13,7 @@ using Microsoft.Extensions.Options;
 namespace FincaNovaGestionLotes.Web.Areas.Labores.Controllers;
 
 [Area("Labores")]
-[RequiereRol(Roles.Trabajador, Roles.Administrador, Roles.Duenio)]
+[RequiereRol(Roles.Trabajador, Roles.Capataz, Roles.Administrador, Roles.Duenio)]
 public class LaboresController : Controller
 {
     private readonly AppDbContext _db;
@@ -71,6 +71,7 @@ public class LaboresController : Controller
                 TerrenoCodigo = l.Terreno.Codigo,
                 TerrenoNombre = l.Terreno.Nombre,
                 Tipo = l.Tipo,
+                TipoOtro = l.TipoOtro,
                 Fecha = l.Fecha,
                 Estado = l.Estado,
                 HorasTotales = l.HorasTotales,
@@ -121,6 +122,38 @@ public class LaboresController : Controller
         var idsColaboradores = await ResolverColaboradoresAsync(model);
         await ValidarFormularioAsync(model, idsColaboradores);
 
+        decimal? horasTrabajo = null;
+        if (model.YaRealizado)
+        {
+            if (model.Fecha is { } fechaTrabajo && fechaTrabajo.Date > DateTime.Today)
+                ModelState.AddModelError(nameof(model.Fecha), "Si el trabajo ya se realizó, la fecha no puede ser futura.");
+
+            if (model.ModoTrabajo == ModoRegistroAvance.JornadaCompleta)
+                horasTrabajo = _jornada.HorasPorJornada;
+            else if (model.ModoTrabajo == ModoRegistroAvance.PorHoras)
+            {
+                if (model.HorasTrabajo is null)
+                    ModelState.AddModelError(nameof(model.HorasTrabajo), "Indique las horas trabajadas.");
+                else
+                    horasTrabajo = model.HorasTrabajo;
+            }
+            else
+                ModelState.AddModelError(nameof(model.ModoTrabajo), "Seleccione cómo se registra el trabajo.");
+
+            if (horasTrabajo is { } horasNuevas && model.Fecha is { } dia)
+            {
+                foreach (var colaboradorId in idsColaboradores)
+                {
+                    if (await HorasDelDiaAsync(colaboradorId, dia) + horasNuevas > 24)
+                    {
+                        ModelState.AddModelError(nameof(model.HorasTrabajo),
+                            $"Un colaborador asignado ya supera las 24 h registradas el {dia:dd/MM/yyyy}.");
+                        break;
+                    }
+                }
+            }
+        }
+
         if (!ModelState.IsValid)
             return View(model);
 
@@ -128,6 +161,7 @@ public class LaboresController : Controller
         {
             TerrenoId = model.TerrenoId!.Value,
             Tipo = model.Tipo!.Value,
+            TipoOtro = model.Tipo == TipoLabor.Otra ? model.TipoOtro?.Trim() : null,
             Fecha = model.Fecha!.Value.Date,
             Observaciones = model.Observaciones!.Trim(),
             Estado = EstadoLabor.Pendiente,
@@ -138,14 +172,22 @@ public class LaboresController : Controller
         foreach (var colaboradorId in idsColaboradores)
             labor.Colaboradores.Add(new LaborColaborador { ColaboradorId = colaboradorId });
 
+        if (horasTrabajo is { } horasIniciales)
+        {
+            foreach (var colaboradorId in idsColaboradores)
+                await AgregarAvanceAsync(labor, colaboradorId, labor.Fecha, horasIniciales, labor.Observaciones);
+        }
+
         _db.Labores.Add(labor);
         await _db.SaveChangesAsync();
 
         var codigoLote = await CodigoTerrenoAsync(labor.TerrenoId);
         await _audit.RegistrarAsync(AccionAuditoria.Crear, nameof(Labor), labor.Id.ToString(),
-            $"Registro de labor {Ui.TipoLaborTexto(labor.Tipo)} en el lote {codigoLote} ({idsColaboradores.Count} colaborador(es))");
+            $"Registro de labor {Ui.NombreLabor(labor.Tipo, labor.TipoOtro)} en el lote {codigoLote} ({idsColaboradores.Count} colaborador(es))");
 
-        TempData["Ok"] = $"Labor de {Ui.TipoLaborTexto(labor.Tipo).ToLower()} registrada en el lote «{codigoLote}».";
+        TempData["Ok"] = horasTrabajo is { } h
+            ? $"Labor de {Ui.NombreLabor(labor.Tipo, labor.TipoOtro).ToLower()} registrada en «{codigoLote}» con {h:N2} h por colaborador (₡{labor.CostoTotal:N2})."
+            : $"Labor de {Ui.NombreLabor(labor.Tipo, labor.TipoOtro).ToLower()} registrada en el lote «{codigoLote}».";
         return RedirectToAction(nameof(Detalle), new { id = labor.Id });
     }
 
@@ -169,6 +211,7 @@ public class LaboresController : Controller
             Id = labor.Id,
             TerrenoId = labor.TerrenoId,
             Tipo = labor.Tipo,
+            TipoOtro = labor.TipoOtro,
             Fecha = labor.Fecha,
             Observaciones = labor.Observaciones,
             ColaboradoresIds = labor.Colaboradores.Select(c => c.ColaboradorId).ToList()
@@ -213,6 +256,7 @@ public class LaboresController : Controller
 
         labor.TerrenoId = model.TerrenoId!.Value;
         labor.Tipo = model.Tipo!.Value;
+        labor.TipoOtro = model.Tipo == TipoLabor.Otra ? model.TipoOtro?.Trim() : null;
         labor.Fecha = model.Fecha!.Value.Date;
         labor.Observaciones = model.Observaciones!.Trim();
         labor.ModificadoPor = NombreUsuario;
@@ -226,7 +270,7 @@ public class LaboresController : Controller
         await _db.SaveChangesAsync();
 
         await _audit.RegistrarAsync(AccionAuditoria.Modificar, nameof(Labor), labor.Id.ToString(),
-            $"Edición de la labor {Ui.TipoLaborTexto(labor.Tipo)} del lote {await CodigoTerrenoAsync(labor.TerrenoId)}");
+            $"Edición de la labor {Ui.NombreLabor(labor.Tipo, labor.TipoOtro)} del lote {await CodigoTerrenoAsync(labor.TerrenoId)}");
 
         TempData["Ok"] = "Labor actualizada.";
         return RedirectToAction(nameof(Detalle), new { id = labor.Id });
@@ -257,15 +301,31 @@ public class LaboresController : Controller
         if (colaboradorId is null || !asignados.Contains(colaboradorId.Value))
             ModelState.AddModelError("NuevoAvance.ColaboradorId", "Debe indicar un colaborador asignado a esta labor.");
 
-        if (avance.Fecha is { } fecha && fecha.Date > DateTime.Today)
-            ModelState.AddModelError("NuevoAvance.Fecha", "La fecha del avance no puede ser futura.");
-
-        if (colaboradorId is { } idColaborador && avance.Fecha is { } dia && avance.Horas is { } horasNuevas)
+        if (avance.Fecha is { } fecha)
         {
-            var horasDelDia = await _db.LaboresAvances
-                .Where(a => a.ColaboradorId == idColaborador && a.Fecha == dia.Date)
-                .SumAsync(a => (decimal?)a.Horas) ?? 0;
+            if (fecha.Date > DateTime.Today)
+                ModelState.AddModelError("NuevoAvance.Fecha", "La fecha del avance no puede ser futura.");
+            else if (fecha.Date < labor.Fecha.Date)
+                ModelState.AddModelError("NuevoAvance.Fecha",
+                    $"La fecha del avance no puede ser anterior al inicio de la labor ({labor.Fecha:dd/MM/yyyy}).");
+        }
 
+        decimal? horasRegistro = null;
+        if (avance.Modo == ModoRegistroAvance.JornadaCompleta)
+            horasRegistro = _jornada.HorasPorJornada;
+        else if (avance.Modo == ModoRegistroAvance.PorHoras)
+        {
+            if (avance.Horas is null)
+                ModelState.AddModelError("NuevoAvance.Horas", "Indique las horas trabajadas.");
+            else
+                horasRegistro = avance.Horas;
+        }
+        else
+            ModelState.AddModelError("NuevoAvance.Modo", "Seleccione cómo se registra el trabajo.");
+
+        if (colaboradorId is { } idColaborador && avance.Fecha is { } dia && horasRegistro is { } horasNuevas)
+        {
+            var horasDelDia = await HorasDelDiaAsync(idColaborador, dia);
             if (horasDelDia + horasNuevas > 24)
                 ModelState.AddModelError("NuevoAvance.Horas",
                     $"El colaborador ya tiene {horasDelDia:N2} h registradas el {dia:dd/MM/yyyy}; el día no puede superar 24 h.");
@@ -279,37 +339,14 @@ public class LaboresController : Controller
             return View(nameof(Detalle), vm);
         }
 
-        var tarifa = await _db.Colaboradores
-            .Where(c => c.Id == colaboradorId!.Value)
-            .Select(c => c.TarifaJornada)
-            .FirstAsync();
-        var horas = avance.Horas!.Value;
+        var horas = horasRegistro!.Value;
         var horasPorJornada = _jornada.HorasPorJornada;
-        var costo = Math.Round(horas / horasPorJornada * tarifa, 2);
-
-        _db.LaboresAvances.Add(new LaborAvance
-        {
-            LaborId = labor.Id,
-            ColaboradorId = colaboradorId!.Value,
-            Fecha = avance.Fecha!.Value.Date,
-            Horas = horas,
-            HorasPorJornada = horasPorJornada,
-            TarifaJornada = tarifa,
-            Costo = costo,
-            Comentario = avance.Comentario!.Trim(),
-            RegistradoPor = NombreUsuario,
-            CreadoPor = NombreUsuario
-        });
-
-        labor.HorasTotales += horas;
-        labor.CostoTotal += costo;
-        labor.Estado = EstadoLabor.EnProceso;
-        labor.ModificadoPor = NombreUsuario;
+        var costo = await AgregarAvanceAsync(labor, colaboradorId!.Value, avance.Fecha!.Value, horas, avance.Comentario!);
 
         await _db.SaveChangesAsync();
 
         await _audit.RegistrarAsync(AccionAuditoria.Modificar, nameof(Labor), labor.Id.ToString(),
-            $"Avance de {avance.Horas:N2} h registrado en la labor {Ui.TipoLaborTexto(labor.Tipo)}");
+            $"Avance de {horas:N2} h registrado en la labor {Ui.NombreLabor(labor.Tipo, labor.TipoOtro)}");
 
         TempData["Ok"] = $"Avance de {horas:N2} h registrado ({horas / horasPorJornada:N2} jornada(s), ₡{costo:N2}).";
         return RedirectToAction(nameof(Detalle), new { id });
@@ -359,10 +396,45 @@ public class LaboresController : Controller
         await _db.SaveChangesAsync();
 
         await _audit.RegistrarAsync(AccionAuditoria.Modificar, nameof(Labor), labor.Id.ToString(),
-            $"Cierre de la labor {Ui.TipoLaborTexto(labor.Tipo)} con {labor.HorasTotales:N2} h acumuladas");
+            $"Cierre de la labor {Ui.NombreLabor(labor.Tipo, labor.TipoOtro)} con {labor.HorasTotales:N2} h acumuladas");
 
         TempData["Ok"] = $"Labor finalizada con {labor.HorasTotales:N2} horas acumuladas.";
         return RedirectToAction(nameof(Detalle), new { id });
+    }
+
+    private async Task<decimal> HorasDelDiaAsync(int colaboradorId, DateTime fecha) =>
+        await _db.LaboresAvances
+            .Where(a => a.ColaboradorId == colaboradorId && a.Fecha == fecha.Date)
+            .SumAsync(a => (decimal?)a.Horas) ?? 0;
+
+    private async Task<decimal> AgregarAvanceAsync(Labor labor, int colaboradorId, DateTime fecha, decimal horas, string comentario)
+    {
+        var tarifa = await _db.Colaboradores
+            .Where(c => c.Id == colaboradorId)
+            .Select(c => c.TarifaJornada)
+            .FirstAsync();
+        var horasPorJornada = _jornada.HorasPorJornada;
+        var costo = Math.Round(horas / horasPorJornada * tarifa, 2);
+
+        labor.Avances.Add(new LaborAvance
+        {
+            ColaboradorId = colaboradorId,
+            Fecha = fecha.Date,
+            Horas = horas,
+            HorasPorJornada = horasPorJornada,
+            TarifaJornada = tarifa,
+            Costo = costo,
+            Comentario = comentario.Trim(),
+            RegistradoPor = NombreUsuario,
+            CreadoPor = NombreUsuario
+        });
+
+        labor.HorasTotales += horas;
+        labor.CostoTotal += costo;
+        labor.Estado = EstadoLabor.EnProceso;
+        labor.ModificadoPor = NombreUsuario;
+
+        return costo;
     }
 
     private bool PuedeActualizar(IReadOnlyCollection<int> asignados, int? miColaboradorId) =>
@@ -390,6 +462,7 @@ public class LaboresController : Controller
                 TerrenoCodigo = l.Terreno.Codigo,
                 TerrenoNombre = l.Terreno.Nombre,
                 Tipo = l.Tipo,
+                TipoOtro = l.TipoOtro,
                 Fecha = l.Fecha,
                 Observaciones = l.Observaciones,
                 RegistradoPor = l.RegistradoPor,
@@ -407,6 +480,8 @@ public class LaboresController : Controller
                         Nombre = c.Colaborador.Nombre,
                         Cargo = c.Colaborador.Cargo,
                         TarifaJornada = c.Colaborador.TarifaJornada,
+                        Dias = l.Avances.Where(a => a.ColaboradorId == c.ColaboradorId)
+                            .Select(a => a.Fecha).Distinct().Count(),
                         Horas = l.Avances.Where(a => a.ColaboradorId == c.ColaboradorId).Sum(a => a.Horas),
                         Jornadas = l.Avances.Where(a => a.ColaboradorId == c.ColaboradorId)
                             .Sum(a => a.HorasPorJornada > 0 ? a.Horas / a.HorasPorJornada : 0),
@@ -446,6 +521,7 @@ public class LaboresController : Controller
     {
         model.Terrenos = await TerrenosAsync(soloDisponibles: true);
         model.PuedeElegirColaboradores = EsAdmin;
+        model.HorasPorJornada = _jornada.HorasPorJornada;
 
         if (EsAdmin)
         {
@@ -496,6 +572,43 @@ public class LaboresController : Controller
 
         if (model.Tipo is { } tipo && !Enum.IsDefined(tipo))
             ModelState.AddModelError(nameof(model.Tipo), "El tipo de labor no es válido.");
+
+        if (model.Fecha is { } fechaLabor)
+        {
+            if (fechaLabor.Date < Validaciones.FechaMinima)
+                ModelState.AddModelError(nameof(model.Fecha),
+                    $"La fecha no puede ser anterior al {Validaciones.FechaMinima:dd/MM/yyyy}.");
+            else if (fechaLabor.Date > DateTime.Today.AddYears(1))
+                ModelState.AddModelError(nameof(model.Fecha), "La fecha no puede ser mayor a un año en el futuro.");
+        }
+
+        var tipoOtro = model.TipoOtro?.Trim();
+        if (model.Tipo == TipoLabor.Otra && string.IsNullOrWhiteSpace(tipoOtro))
+            ModelState.AddModelError(nameof(model.TipoOtro), "Escriba qué labor se realizó (por ejemplo: Siembra o Caños).");
+
+        if (model.TerrenoId is { } idTerreno && model.Tipo is { } tipoLabor &&
+            (tipoLabor != TipoLabor.Otra || !string.IsNullOrWhiteSpace(tipoOtro)))
+        {
+            var abiertas = _db.Labores.AsNoTracking()
+                .Where(l => l.TerrenoId == idTerreno && l.Tipo == tipoLabor &&
+                            l.Estado != EstadoLabor.Finalizada && l.Id != model.Id);
+
+            if (tipoLabor == TipoLabor.Otra)
+                abiertas = abiertas.Where(l => l.TipoOtro != null && l.TipoOtro.ToLower() == tipoOtro!.ToLower());
+
+            var abierta = await abiertas
+                .Select(l => new { l.Id, l.Fecha, l.Estado, Codigo = l.Terreno.Codigo })
+                .FirstOrDefaultAsync();
+
+            if (abierta is not null)
+            {
+                model.LaborAbiertaId = abierta.Id;
+                ModelState.AddModelError(nameof(model.Tipo),
+                    $"Ya existe una labor de {Ui.NombreLabor(tipoLabor, tipoOtro).ToLower()} sin finalizar en «{abierta.Codigo}» " +
+                    $"(del {abierta.Fecha:dd/MM/yyyy}, {Ui.EstadoLaborTexto(abierta.Estado).ToLower()}). " +
+                    "Registre los avances en esa labor o ciérrela antes de crear otra.");
+            }
+        }
 
         if (idsColaboradores.Count == 0)
         {

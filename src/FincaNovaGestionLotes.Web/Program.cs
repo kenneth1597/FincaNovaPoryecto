@@ -10,6 +10,19 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews(options =>
 {
     options.Filters.Add<RequiereSesionFilter>();
+
+    var mensajes = options.ModelBindingMessageProvider;
+    mensajes.SetValueMustBeANumberAccessor(campo => $"{campo} debe ser un número.");
+    mensajes.SetValueMustNotBeNullAccessor(valor => "Este campo es obligatorio.");
+    mensajes.SetAttemptedValueIsInvalidAccessor((valor, campo) => $"El valor «{valor}» no es válido para {campo}.");
+    mensajes.SetValueIsInvalidAccessor(valor => $"El valor «{valor}» no es válido.");
+    mensajes.SetUnknownValueIsInvalidAccessor(campo => $"El valor indicado no es válido para {campo}.");
+    mensajes.SetMissingBindRequiredValueAccessor(campo => $"Falta el valor de {campo}.");
+    mensajes.SetMissingKeyOrValueAccessor(() => "Falta un valor obligatorio.");
+    mensajes.SetNonPropertyAttemptedValueIsInvalidAccessor(valor => $"El valor «{valor}» no es válido.");
+    mensajes.SetNonPropertyUnknownValueIsInvalidAccessor(() => "El valor indicado no es válido.");
+    mensajes.SetNonPropertyValueMustBeANumberAccessor(() => "El campo debe ser un número.");
+    mensajes.SetMissingRequestBodyRequiredValueAccessor(() => "Falta información obligatoria en la solicitud.");
 });
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddSession();

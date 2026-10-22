@@ -46,6 +46,8 @@ public class LaborListItemViewModel
     public string TerrenoCodigo { get; set; } = string.Empty;
     public string TerrenoNombre { get; set; } = string.Empty;
     public TipoLabor Tipo { get; set; }
+    public string? TipoOtro { get; set; }
+    public string NombreLabor => Ui.NombreLabor(Tipo, TipoOtro);
     public DateTime Fecha { get; set; }
     public EstadoLabor Estado { get; set; }
     public decimal HorasTotales { get; set; }
@@ -68,18 +70,37 @@ public class LaborFormViewModel
     [Display(Name = "Tipo de labor")]
     public TipoLabor? Tipo { get; set; }
 
+    [StringLength(100, ErrorMessage = Validaciones.LongitudMsg)]
+    [RegularExpression(Validaciones.Texto, ErrorMessage = Validaciones.TextoMsg)]
+    [Display(Name = "Especifique la labor")]
+    public string? TipoOtro { get; set; }
+
     [Required(ErrorMessage = "La fecha es obligatoria.")]
     [DataType(DataType.Date)]
     [Display(Name = "Fecha de la labor")]
     public DateTime? Fecha { get; set; } = DateTime.Today;
 
     [Required(ErrorMessage = "Las observaciones son obligatorias.")]
-    [StringLength(500)]
+    [StringLength(500, ErrorMessage = Validaciones.LongitudMsg)]
     [Display(Name = "Observaciones / instrucciones")]
     public string? Observaciones { get; set; }
 
     [Display(Name = "Colaboradores asignados")]
     public List<int> ColaboradoresIds { get; set; } = new();
+
+    [Display(Name = "Ya se realizó este trabajo (registrar las horas ahora)")]
+    public bool YaRealizado { get; set; }
+
+    [Display(Name = "¿Cómo se registra el trabajo?")]
+    public ModoRegistroAvance ModoTrabajo { get; set; } = ModoRegistroAvance.JornadaCompleta;
+
+    [Range(0.25, 24, ErrorMessage = "Las horas deben ser mayores a cero y como máximo 24.")]
+    [Display(Name = "Horas trabajadas")]
+    public decimal? HorasTrabajo { get; set; }
+
+    public decimal HorasPorJornada { get; set; }
+
+    public int? LaborAbiertaId { get; set; }
 
     public bool EsEdicion => Id != 0;
 
@@ -104,21 +125,29 @@ public class AvanceFormViewModel
     [Display(Name = "Fecha")]
     public DateTime? Fecha { get; set; } = DateTime.Today;
 
-    [Required(ErrorMessage = "Las horas trabajadas son obligatorias.")]
+    [Display(Name = "¿Cómo se registra el trabajo?")]
+    public ModoRegistroAvance Modo { get; set; } = ModoRegistroAvance.JornadaCompleta;
+
     [Range(0.25, 24, ErrorMessage = "Las horas deben ser mayores a cero y como máximo 24.")]
     [Display(Name = "Horas trabajadas")]
     public decimal? Horas { get; set; }
 
     [Required(ErrorMessage = "El comentario es obligatorio.")]
-    [StringLength(500)]
+    [StringLength(500, ErrorMessage = Validaciones.LongitudMsg)]
     [Display(Name = "Comentario")]
     public string? Comentario { get; set; }
+}
+
+public enum ModoRegistroAvance
+{
+    JornadaCompleta = 1,
+    PorHoras = 2
 }
 
 public class CierreFormViewModel
 {
     [Required(ErrorMessage = "El comentario de cierre es obligatorio.")]
-    [StringLength(500)]
+    [StringLength(500, ErrorMessage = Validaciones.LongitudMsg)]
     [Display(Name = "Comentario de cierre")]
     public string? ComentarioCierre { get; set; }
 
@@ -132,6 +161,7 @@ public class ColaboradorLaborViewModel
     public string Nombre { get; set; } = string.Empty;
     public string Cargo { get; set; } = string.Empty;
     public decimal TarifaJornada { get; set; }
+    public int Dias { get; set; }
     public decimal Horas { get; set; }
     public decimal Jornadas { get; set; }
     public decimal Costo { get; set; }
@@ -157,6 +187,8 @@ public class LaborDetalleViewModel
     public string TerrenoCodigo { get; set; } = string.Empty;
     public string TerrenoNombre { get; set; } = string.Empty;
     public TipoLabor Tipo { get; set; }
+    public string? TipoOtro { get; set; }
+    public string NombreLabor => Ui.NombreLabor(Tipo, TipoOtro);
     public DateTime Fecha { get; set; }
     public string Observaciones { get; set; } = string.Empty;
     public string? RegistradoPor { get; set; }

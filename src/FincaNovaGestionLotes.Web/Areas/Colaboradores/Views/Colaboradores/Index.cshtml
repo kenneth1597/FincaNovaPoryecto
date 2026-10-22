@@ -40,17 +40,26 @@
     <div class="fn-card-body">
         <form method="get" asp-action="Index">
             <div class="row g-3 align-items-end">
-                <div class="col-md-7">
+                <div class="col-md-5">
                     <label class="fn-form-label">Buscar</label>
                     <input type="text" name="Q" value="@Model.Q" class="fn-form-control"
                            placeholder="Nombre, identificación o cargo..." />
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <label class="fn-form-label">Estado</label>
-                    <select name="Activo" class="fn-form-select">
-                        <option value="">Todos</option>
-                        <option value="true" selected="@(Model.Activo == true)">Activos</option>
-                        <option value="false" selected="@(Model.Activo == false)">Inactivos</option>
+                    <select name="Estado" class="fn-form-select">
+                        <option value="Activos" selected="@(Model.Estado == "Activos")">Solo activos</option>
+                        <option value="Inactivos" selected="@(Model.Estado == "Inactivos")">Solo inactivos</option>
+                        <option value="Todos" selected="@(Model.Estado == "Todos")">Todos</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="fn-form-label">Ordenar por</label>
+                    <select name="Orden" class="fn-form-select">
+                        @foreach (var (valor, texto) in ColaboradorFiltroViewModel.Ordenes)
+                        {
+                            <option value="@valor" selected="@(Model.Orden == valor)">@texto</option>
+                        }
                     </select>
                 </div>
                 <div class="col-md-2">
@@ -71,7 +80,9 @@
     {
         <div class="fn-empty">
             <div class="fn-empty-title">No se encontraron colaboradores.</div>
-            <div class="fn-empty-text">Registra un colaborador para poder asignarlo a las labores.</div>
+            <div class="fn-empty-text">
+                @(Model.Estado == "Activos" ? "No hay colaboradores activos con ese criterio. Pruebe con el estado «Todos»." : "Registra un colaborador para poder asignarlo a las labores.")
+            </div>
         </div>
     }
     else
@@ -84,10 +95,10 @@
                             <th>Nombre</th>
                             <th>Identificación</th>
                             <th>Teléfono</th>
-                            <th>Cargo</th>
-                            <th>Usuario</th>
                             <th>Tarifa jornada</th>
                             <th>Labores</th>
+                            <th>Horas</th>
+                            <th>Última labor</th>
                             <th>Estado</th>
                             <th></th>
                         </tr>
@@ -96,13 +107,16 @@
                         @foreach (var c in Model.Resultados)
                         {
                             <tr>
-                                <td><strong>@c.Nombre</strong></td>
+                                <td>
+                                    <a asp-action="Historial" asp-route-id="@c.Id" class="fw-bold text-decoration-none">@c.Nombre</a>
+                                    <div class="small text-muted">@c.Cargo</div>
+                                </td>
                                 <td>@c.Identificacion</td>
                                 <td>@c.Telefono</td>
-                                <td>@c.Cargo</td>
-                                <td>@(c.UsuarioEmail ?? "—")</td>
                                 <td>₡@c.TarifaJornada.ToString("N2")</td>
                                 <td>@c.Labores</td>
+                                <td>@c.Horas.ToString("N2")</td>
+                                <td>@(c.UltimaLabor?.ToString("dd/MM/yyyy") ?? "—")</td>
                                 <td>
                                     @if (c.Activo)
                                     {
@@ -115,6 +129,7 @@
                                 </td>
                                 <td class="text-end">
                                     <div class="d-flex gap-2 justify-content-end">
+                                        <a asp-action="Historial" asp-route-id="@c.Id" class="fn-btn fn-btn-outline">Historial</a>
                                         <a asp-action="Editar" asp-route-id="@c.Id" class="fn-btn fn-btn-outline">Editar</a>
                                         <form asp-action="CambiarEstado" method="post">
                                             <input type="hidden" name="id" value="@c.Id" />

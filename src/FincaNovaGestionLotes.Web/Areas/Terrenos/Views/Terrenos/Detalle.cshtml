@@ -192,7 +192,7 @@
                     @foreach (var i in Model.Indicadores)
                     {
                         <tr>
-                            <td>@Ui.TipoLaborTexto(i.Tipo)</td>
+                            <td>@i.NombreLabor</td>
                             <td class="text-end">@i.Labores</td>
                             <td class="text-end">@i.Horas.ToString("N2")</td>
                             <td class="text-end">@i.Jornadas.ToString("N2")</td>
@@ -230,7 +230,7 @@
                     {
                         <tr>
                             <td>@l.Fecha.ToString("dd/MM/yyyy")</td>
-                            <td>@Ui.TipoLaborTexto(l.Tipo)</td>
+                            <td>@l.NombreLabor</td>
                             <td>@l.HorasTotales.ToString("N2")</td>
                             <td><span class="fn-badge @Ui.EstadoLaborBadge(l.Estado)">@Ui.EstadoLaborTexto(l.Estado)</span></td>
                             <td>@string.Join(", ", l.Colaboradores)</td>

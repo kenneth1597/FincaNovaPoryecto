@@ -27,6 +27,9 @@ public class TerrenosController : Controller
         _jornada = jornada.Value;
     }
 
+    private const int LargoMaximoCodigoFinca = 25;
+    private const int TerrenosPorPagina = 5;
+
     private string? NombreUsuario => HttpContext.Session.GetString("UsuarioNombre");
 
     [HttpGet]
@@ -73,7 +76,7 @@ public class TerrenosController : Controller
                 Estado = t.Estado,
                 Lotes = t.Lotes.Count(l => !l.Eliminado)
             })
-            .PaginarAsync(filtro.Pagina);
+            .PaginarAsync(filtro.Pagina, TerrenosPorPagina);
 
         filtro.Resultados = resultados;
         filtro.Paginacion = paginacion;
@@ -115,6 +118,7 @@ public class TerrenosController : Controller
                 Id = l.Id,
                 Fecha = l.Fecha,
                 Tipo = l.Tipo,
+                TipoOtro = l.TipoOtro,
                 HorasTotales = l.HorasTotales,
                 Estado = l.Estado,
                 Observaciones = l.Observaciones,
@@ -127,10 +131,11 @@ public class TerrenosController : Controller
 
         var indicadores = await _db.Labores.AsNoTracking()
             .Where(l => idsIndicadores.Contains(l.TerrenoId))
-            .GroupBy(l => l.Tipo)
+            .GroupBy(l => new { l.Tipo, l.TipoOtro })
             .Select(g => new IndicadorMantenimientoViewModel
             {
-                Tipo = g.Key,
+                Tipo = g.Key.Tipo,
+                TipoOtro = g.Key.TipoOtro,
                 Labores = g.Count(),
                 Horas = g.Sum(l => l.HorasTotales),
                 Costo = g.Sum(l => l.CostoTotal)
@@ -155,6 +160,9 @@ public class TerrenosController : Controller
     [HttpGet]
     public async Task<IActionResult> Crear(TipoTerreno tipo = TipoTerreno.Finca, int? padreId = null)
     {
+        if (!Enum.IsDefined(tipo))
+            tipo = TipoTerreno.Finca;
+
         var fincas = await FincasPadreAsync();
 
         if (tipo == TipoTerreno.Lote && !fincas.Any())
@@ -181,10 +189,24 @@ public class TerrenosController : Controller
         if (!Enum.IsDefined(model.Tipo))
             ModelState.AddModelError(nameof(model.Tipo), "El tipo no es válido.");
 
-        await ValidarCodigoAsync(model, empresaId);
-
         if (model.Tipo == TipoTerreno.Lote)
+        {
+            ModelState.Remove(nameof(model.Codigo));
+            model.Codigo = string.Empty;
+
             await ValidarFincaPadreAsync(model, empresaId);
+
+            var fincaValida = ModelState[nameof(model.FincaPadreId)]?.Errors.Count is null or 0;
+            if (fincaValida && model.FincaPadreId is { } fincaId)
+                model.Codigo = await GenerarCodigoLoteAsync(fincaId);
+        }
+        else if (model.Codigo?.Trim().Length > LargoMaximoCodigoFinca)
+        {
+            ModelState.AddModelError(nameof(model.Codigo),
+                $"El código de la finca no puede superar {LargoMaximoCodigoFinca} caracteres (sus lotes le agregan «-L01»).");
+        }
+
+        await ValidarCodigoAsync(model, empresaId);
 
         if (!ModelState.IsValid)
             return View(model);
@@ -439,8 +461,10 @@ public class TerrenosController : Controller
                 t.Id,
                 t.Codigo,
                 t.Nombre,
+                t.Ubicacion,
                 t.AreaHectareas,
-                Asignada = t.Lotes.Where(l => !l.Eliminado).Sum(l => (decimal?)l.AreaHectareas) ?? 0
+                Asignada = t.Lotes.Where(l => !l.Eliminado).Sum(l => (decimal?)l.AreaHectareas) ?? 0,
+                CodigosLotes = t.Lotes.Select(l => l.Codigo).ToList()
             })
             .ToListAsync();
 
@@ -448,8 +472,30 @@ public class TerrenosController : Controller
         {
             Id = f.Id,
             Texto = $"{f.Codigo} — {f.Nombre}",
-            AreaDisponible = Math.Max(0, f.AreaHectareas - f.Asignada)
+            AreaDisponible = Math.Max(0, f.AreaHectareas - f.Asignada),
+            SiguienteCodigoLote = SiguienteCodigoLote(f.Codigo, f.CodigosLotes),
+            Ubicacion = f.Ubicacion
         }).ToList();
+    }
+
+    private static string SiguienteCodigoLote(string codigoFinca, IEnumerable<string> codigosLotes)
+    {
+        var prefijo = $"{codigoFinca}-L";
+        var mayor = codigosLotes
+            .Where(c => c.StartsWith(prefijo, StringComparison.OrdinalIgnoreCase))
+            .Select(c => int.TryParse(c[prefijo.Length..], out var n) ? n : 0)
+            .DefaultIfEmpty(0)
+            .Max();
+        return $"{prefijo}{mayor + 1:D2}";
+    }
+
+    private async Task<string> GenerarCodigoLoteAsync(int fincaId)
+    {
+        var finca = await _db.Terrenos.AsNoTracking()
+            .Where(t => t.Id == fincaId)
+            .Select(t => new { t.Codigo, CodigosLotes = t.Lotes.Select(l => l.Codigo).ToList() })
+            .FirstAsync();
+        return SiguienteCodigoLote(finca.Codigo, finca.CodigosLotes);
     }
 
     private async Task<bool> TieneRegistrosRelacionadosAsync(int terrenoId) =>
