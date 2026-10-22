@@ -13,4 +13,6 @@ public class Usuario : AuditableEntity
     public DateTime? ResetPasswordTokenExpiration { get; set; }
     public string? PasswordResetToken { get; set; }
     public DateTime? PasswordResetTokenExpiration { get; set; }
+    public int IntentosFallidos { get; set; } = 0;
+    public bool Bloqueado { get; set; } = false;
 }
