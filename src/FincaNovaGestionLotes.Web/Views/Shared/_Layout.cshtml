@@ -1,274 +1,164 @@
-<!DOCTYPE html>
-<html lang="es">
-
-<head>
-
-    <meta charset="utf-8" />
-
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0" />
-
-    <title>
-        @ViewData["Title"] - FincaNova
-    </title>
-
-    <link rel="stylesheet"
-          href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-
-    <link rel="stylesheet"
-          href="~/css/site.css"
-          asp-append-version="true" />
-
-</head>
-
-<body>
-
-    <header>
-
-        <nav class="navbar navbar-expand-lg fn-navbar">
-
-            <div class="container-fluid px-4">
-
-                <!-- LOGO -->
-
-                <a class="navbar-brand"
-                   asp-area="Lotes"
-                   asp-controller="Lotes"
-                   asp-action="Index">
-
-                    <span class="fn-logo">
-                        ●
-                    </span>
-
-                    <span>
-                        FincaNova · Lotes
-                    </span>
-
-                </a>
-
-
-                <!-- BOTÓN MÓVIL -->
-
-                <button class="navbar-toggler"
-                        type="button"
-                        data-bs-toggle="collapse"
-                        data-bs-target="#navbarFincaNova">
-
-                    <span class="navbar-toggler-icon"></span>
-
-                </button>
-
-
-                <!-- MENÚ -->
-
-                <div class="collapse navbar-collapse"
-                     id="navbarFincaNova">
-
-                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-
-
-                        <!-- LOTES -->
-
-                        <li class="nav-item">
-
-                            <a class="nav-link"
-                               asp-area="Lotes"
-                               asp-controller="Lotes"
-                               asp-action="Index">
-
-                                Lotes y micro lotes
-
-                            </a>
-
-                        </li>
-
-
-                        <!-- ENFERMEDADES -->
-
-                        <li class="nav-item">
-
-                            <a class="nav-link"
-                               asp-area="Enfermedades"
-                               asp-controller="Enfermedades"
-                               asp-action="Index">
-
-                                Enfermedades
-
-                            </a>
-
-                        </li>
-
-
-                        <!-- ALERTAS -->
-
-                        <li class="nav-item">
-
-                            <a class="nav-link"
-                               asp-area="Enfermedades"
-                               asp-controller="Enfermedades"
-                               asp-action="Alertas">
-
-                                Alertas
-
-                            </a>
-
-                        </li>
-
-
-                        <!-- PANEL -->
-
-                        <li class="nav-item">
-
-                            <a class="nav-link"
-                               asp-area="Lotes"
-                               asp-controller="Lotes"
-                               asp-action="Panel">
-
-                                Panel por estado
-
-                            </a>
-
-                        </li>
-
-
-                        <!-- PERIODOS -->
-
-                        <li class="nav-item">
-
-                            <a class="nav-link"
-                               asp-area="Produccion"
-                               asp-controller="Periodos"
-                               asp-action="Index">
-
-                                Períodos productivos
-
-                            </a>
-
-                        </li>
-
-
-                        <!-- BITÁCORA -->
-
-                        <li class="nav-item">
-
-                            <a class="nav-link"
-                               asp-area="Bitacora"
-                               asp-controller="Bitacora"
-                               asp-action="Index">
-
-                                Bitácora
-
-                            </a>
-
-                        </li>
-                    </ul>
-                </div>
-                @using Microsoft.AspNetCore.Http
-
+@using Microsoft.AspNetCore.Http
 @{
     var usuarioNombre = Context.Session.GetString("UsuarioNombre");
     var usuarioRol = Context.Session.GetString("UsuarioRol");
+    var haySesion = !string.IsNullOrEmpty(usuarioNombre);
+    var esAdmin = Roles.EsAdmin(usuarioRol);
+
+    var areaActual = ViewContext.RouteData.Values["area"]?.ToString() ?? "";
+    var controladorActual = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+    var accionActual = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
+
+    var iniciales = string.Concat((usuarioNombre ?? "")
+        .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+        .Take(2)
+        .Select(p => char.ToUpper(p[0])));
+
+    var menu = new (string Seccion, string Texto, string Area, string Controlador, string Accion, string? Excluir, string Icono, bool SoloAdmin)[]
+    {
+        ("Producción", "Fincas y lotes", "Terrenos", "Terrenos", "Index", null,
+            "<path d='M12 21v-9'/><path d='M12 12C12 8 9.5 5.5 5 5.5c0 4.2 2.8 6.5 7 6.5Z'/><path d='M12 14c0-3.2 2.4-5.5 7-5.5 0 3.6-2.6 5.5-7 5.5Z'/><path d='M7 21h10'/>", true),
+        ("Producción", "Períodos productivos", "Produccion", "Periodos", "Index", null,
+            "<rect x='4' y='5' width='16' height='15' rx='2'/><path d='M8 3v4M16 3v4M4 10h16'/>", true),
+        ("Trabajo de campo", "Labores", "Labores", "Labores", "Index", null,
+            "<rect x='6' y='4' width='12' height='17' rx='2'/><path d='M9 4h6v3H9z'/><path d='M9.5 13.5l2 2 3.5-4'/>", false),
+        ("Trabajo de campo", "Colaboradores", "Colaboradores", "Colaboradores", "Index", null,
+            "<circle cx='9' cy='8' r='3.5'/><path d='M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6'/><path d='M16 4.6a3.2 3.2 0 0 1 0 6.2'/><path d='M17.5 14.3c2.1.7 3.5 2.7 3.5 5.7'/>", true),
+        ("Sanidad", "Enfermedades", "Enfermedades", "Enfermedades", "Index", "Alertas",
+            "<path d='M5 19c0-8 5-14 14-14 0 9-6 14-14 14Z'/><path d='M5 19l7-7'/><circle cx='14.5' cy='9.5' r='1'/>", false),
+        ("Sanidad", "Alertas", "Enfermedades", "Enfermedades", "Alertas", null,
+            "<path d='M18 9a6 6 0 0 0-12 0c0 6.5-3 7.5-3 9h18c0-1.5-3-2.5-3-9'/><path d='M10 21h4'/>", true),
+        ("Administración", "Bitácora", "Bitacora", "Bitacora", "Index", null,
+            "<path d='M3 12a9 9 0 1 0 2.8-6.5'/><path d='M3 4v5h5'/><path d='M12 8v4l3 2'/>", true),
+        ("Administración", "Gestión de usuarios", "", "Usuarios", "Index", null,
+            "<path d='M12 3l7 3v5c0 4.6-3 8.4-7 10-4-1.6-7-5.4-7-10V6l7-3Z'/><circle cx='12' cy='10' r='2.2'/><path d='M8.5 16c.8-1.6 2-2.4 3.5-2.4s2.7.8 3.5 2.4'/>", true),
+        ("Mi cuenta", "Mi perfil", "", "Account", "Perfil", null,
+            "<circle cx='8' cy='8' r='4' transform='translate(4 0)'/><path d='M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8'/>", false)
+    };
+
+    bool EsActivo(string area, string controlador, string accion, string? excluir)
+    {
+        if (!string.Equals(areaActual, area, StringComparison.OrdinalIgnoreCase)) return false;
+        if (!string.Equals(controladorActual, controlador, StringComparison.OrdinalIgnoreCase)) return false;
+        if (excluir is not null) return !string.Equals(accionActual, excluir, StringComparison.OrdinalIgnoreCase);
+        if (accion == "Index") return true;
+        return string.Equals(accionActual, accion, StringComparison.OrdinalIgnoreCase);
+    }
 }
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - FincaNova</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body class="@(haySesion ? "fn-con-menu" : "fn-sin-menu")">
 
-<div class="collapse navbar-collapse" id="navbarMain">
+    @if (haySesion)
+    {
+        <div class="fn-app">
 
-    
-    <!-- Menú Derecho: Saludo, Mi Perfil y Cerrar Sesión -->
-    <ul class="navbar-nav ms-auto align-items-center">
-        @if (!string.IsNullOrEmpty(usuarioNombre))
-        {
-                            <ul class="navbar-nav me-auto">
-                                @if (usuarioRol == "Administrador" || usuarioRol == "Dueño")
-                                {
-                                    <li class="nav-item">
-                                        <a class="nav-link text-white" asp-area="" asp-controller="Usuarios" asp-action="Index">
-                                            <i class="bi bi-people-fill me-1"></i>Gestión de Usuarios
-                                        </a>
-                                    </li>
-                                }
-                            </ul>
+            <aside class="fn-sidebar" id="fnSidebar">
 
-            <!-- Saludo al usuario -->
-            <li class="nav-item me-2">
-                <span class="nav-link text-white fw-bold">
-                    <i class="bi bi-person-circle me-1"></i>Hola, @usuarioNombre
-                </span>
-            </li>
-
-            <!-- Botón Mi Perfil -->
-            <li class="nav-item me-2">
-                <a class="btn btn-outline-light btn-sm d-inline-flex align-items-center gap-1" asp-area="" asp-controller="Account" asp-action="Perfil">
-                    <i class="bi bi-person-gear"></i>
-                    <span>Mi Perfil</span>
+                <a class="fn-brand" asp-area="" asp-controller="Home" asp-action="Index">
+                    <span class="fn-brand-icon">
+                        <partial name="_CoffeeBeanIcon" model="20" />
+                    </span>
+                    <span>
+                        <span class="fn-brand-title">FincaNova</span>
+                        <span class="fn-brand-subtitle">Café Chaperno · Poás</span>
+                    </span>
                 </a>
-            </li>
 
-            <!-- Botón Cerrar Sesión -->
-            <li class="nav-item">
-                <a class="btn btn-danger btn-sm d-inline-flex align-items-center gap-1" asp-area="" asp-controller="Account" asp-action="Logout">
-                    <i class="bi bi-box-arrow-right"></i>
-                    <span>Cerrar Sesión</span>
-                </a>
-            </li>
-        }
-        else
-        {
-            <!-- Iniciar Sesión (Si no hay sesión activa) -->
-            <li class="nav-item">
-                <a class="btn btn-outline-light btn-sm" asp-area="" asp-controller="Account" asp-action="Login">
-                    <i class="bi bi-box-arrow-in-right me-1"></i>Iniciar Sesión
-                </a>
-            </li>
-        }
-    </ul>
-</div>
-                    
+                <nav class="fn-sidebar-nav">
+                    @foreach (var seccion in menu.Where(m => !m.SoloAdmin || esAdmin).GroupBy(m => m.Seccion))
+                    {
+                        <div class="fn-nav-section">@seccion.Key</div>
+
+                        @foreach (var item in seccion)
+                        {
+                            var activo = EsActivo(item.Area, item.Controlador, item.Accion, item.Excluir);
+                            <a class="fn-nav-link @(activo ? "active" : "")"
+                               aria-current="@(activo ? "page" : null)"
+                               asp-area="@item.Area" asp-controller="@item.Controlador" asp-action="@item.Accion">
+                                <span class="fn-nav-icon">
+                                    <svg viewBox="0 0 24 24" aria-hidden="true">@Html.Raw(item.Icono)</svg>
+                                </span>
+                                @item.Texto
+                            </a>
+                        }
+                    }
+                </nav>
+
+                <div class="fn-sidebar-user">
+                    <a class="fn-user" asp-area="" asp-controller="Account" asp-action="Perfil" title="Mi perfil">
+                        <span class="fn-user-avatar">@iniciales</span>
+                        <span class="fn-user-text">
+                            <strong>@usuarioNombre</strong>
+                            <span>@usuarioRol</span>
+                        </span>
+                    </a>
+                    <a class="fn-logout" asp-area="" asp-controller="Account" asp-action="Logout" title="Cerrar sesión" aria-label="Cerrar sesión">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3"/><path d="M10 17l5-5-5-5"/><path d="M15 12H3"/></svg>
+                    </a>
+                </div>
+
+            </aside>
+
+            <div class="fn-backdrop" id="fnBackdrop"></div>
+
+            <div class="fn-main">
+
+                <div class="fn-mobilebar">
+                    <button type="button" class="fn-menu-button" id="fnMenuButton" aria-label="Abrir menú" aria-controls="fnSidebar" aria-expanded="false">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+                    </button>
+                    <span class="fn-mobilebar-brand">
+                        <partial name="_CoffeeBeanIcon" model="16" />
+                        FincaNova
+                    </span>
+                </div>
+
+                <main class="fn-content">
+                    @RenderBody()
+                </main>
+
+                <footer class="fn-footer">
+                    FincaNova · Gestión de la finca Café Chaperno
+                </footer>
+
             </div>
 
-        </nav>
-
-    </header>
-
-
-    <!-- CONTENIDO -->
-
-    <main class="fn-main">
-
-        @RenderBody()
-
-    </main>
-
-
-    <!-- FOOTER -->
-
-    <footer class="fn-footer">
-
-        <div class="container">
-
-            FincaNova · Gestión de Lotes y Micro lotes
-
         </div>
+    }
+    else
+    {
+        <div class="fn-auth">
+            <div class="fn-auth-brand">
+                <span class="fn-brand-icon">
+                    <partial name="_CoffeeBeanIcon" model="22" />
+                </span>
+                <span>
+                    <span class="fn-brand-title">FincaNova</span>
+                    <span class="fn-brand-subtitle">Café Chaperno · Poás</span>
+                </span>
+            </div>
 
-    </footer>
-
+            <main class="fn-auth-content">
+                @RenderBody()
+            </main>
+        </div>
+    }
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
-
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-
     <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
-
     <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
 
-    <script src="~/js/site.js"
-            asp-append-version="true">
-    </script>
-
-    @await RenderSectionAsync(
-        "Scripts",
-        required: false
-    )
+    @await RenderSectionAsync("Scripts", required: false)
 
 </body>
-
 </html>

@@ -30,10 +30,13 @@
 
     <div class="fn-actions">
 
-        <a asp-action="Alertas"
-           class="fn-btn fn-btn-outline">
-            Alertas por recurrencia
-        </a>
+        @if (Roles.EsAdmin(Context))
+        {
+            <a asp-action="Alertas"
+               class="fn-btn fn-btn-outline">
+                Alertas por recurrencia
+            </a>
+        }
 
         <a asp-action="Crear"
            class="fn-btn fn-btn-primary">
@@ -78,17 +81,17 @@
                         Lote
                     </label>
 
-                    <select name="LoteId"
+                    <select name="TerrenoId"
                             class="fn-form-select">
 
                         <option value="">
-                            Todos los lotes
+                            Todas las fincas y lotes
                         </option>
 
-                        @foreach (var lote in Model.Lotes)
+                        @foreach (var lote in Model.Terrenos)
                         {
                             <option value="@lote.Id"
-                                    selected="@(Model.LoteId == lote.Id)">
+                                    selected="@(Model.TerrenoId == lote.Id)">
                                 @lote.Texto
                             </option>
                         }
@@ -104,11 +107,14 @@
                         Enfermedad
                     </label>
 
-                    <input type="text"
-                           name="Nombre"
-                           value="@Model.Nombre"
-                           class="fn-form-control"
-                           placeholder="Buscar enfermedad..." />
+                    <select name="Nombre"
+                            class="fn-form-select">
+                        <option value="">Todas las enfermedades</option>
+                        @foreach (var nombre in CatalogoEnfermedades.Nombres)
+                        {
+                            <option value="@nombre" selected="@(Model.Nombre == nombre)">@nombre</option>
+                        }
+                    </select>
 
                 </div>
 
@@ -141,6 +147,22 @@
                             Grave
                         </option>
 
+                    </select>
+
+                </div>
+
+
+                <div class="col-md-4">
+
+                    <label class="fn-form-label">
+                        Estado del caso
+                    </label>
+
+                    <select name="Estado"
+                            class="fn-form-select">
+                        <option value="">Todos</option>
+                        <option value="Abiertas" selected="@(Model.Estado == "Abiertas")">Abiertas (activas y en tratamiento)</option>
+                        <option value="Cerradas" selected="@(Model.Estado == "Cerradas")">Cerradas</option>
                     </select>
 
                 </div>
@@ -208,7 +230,7 @@
         </h2>
 
         <span class="fn-count">
-            @Model.Resultados.Count registro(s)
+            @Model.Paginacion.Total registro(s)
         </span>
 
     </div>
@@ -241,7 +263,7 @@
 
                         <tr>
                             <th>Fecha</th>
-                            <th>Lote</th>
+                            <th>Finca / lote</th>
                             <th>Enfermedad</th>
                             <th>Severidad</th>
                             <th>Estado</th>
@@ -263,7 +285,7 @@
 
                                 <td>
                                     <strong>
-                                        @enfermedad.LoteCodigo
+                                        @enfermedad.TerrenoCodigo
                                     </strong>
                                 </td>
 
@@ -305,17 +327,15 @@
 
                                 <td>
 
-                                    @if (enfermedad.Atendida)
+                                    <span class="fn-badge @Ui.EstadoEnfermedadBadge(enfermedad.Estado)">
+                                        @Ui.EstadoEnfermedadTexto(enfermedad.Estado)
+                                    </span>
+
+                                    @if (enfermedad.EsRecurrencia)
                                     {
-                                        <span class="fn-badge fn-badge-success">
-                                            Atendida
-                                        </span>
-                                    }
-                                    else
-                                    {
-                                        <span class="fn-badge fn-badge-danger">
-                                            Pendiente
-                                        </span>
+                                        <div class="small text-muted mt-1">
+                                            Alerta @(enfermedad.Atendida ? "atendida" : "pendiente")
+                                        </div>
                                     }
 
                                 </td>
@@ -338,7 +358,7 @@
 
 
 
-                                        @if (!enfermedad.Atendida)
+                                        @if (!enfermedad.Atendida && Roles.EsAdmin(Context))
                                         {
                                             <form asp-action="MarcarAtendida"
                                                   method="post"
@@ -370,6 +390,8 @@
             </div>
 
         </div>
+
+        <partial name="_Paginacion" model="Model.Paginacion" />
 
     }
 

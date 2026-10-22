@@ -2,132 +2,228 @@
 
 @{
     ViewData["Title"] = "Detalle de enfermedad";
+    var esAdmin = Roles.EsAdmin(Context);
+    var cerrada = Model.Estado == EstadoEnfermedad.Cerrada;
+    var tratamientos = Model.Tratamientos
+        .OrderBy(t => t.FechaAplicacion)
+        .ThenBy(t => t.Id)
+        .ToList();
+    var erroresCierre = (TempData["ErroresCierre"] as string)?.Split('|') ?? Array.Empty<string>();
+    var fechaFin = cerrada && Model.FechaCierre is { } fc ? fc.ToLocalTime().Date : DateTime.Today;
+    var dias = Math.Max(0, (fechaFin - Model.FechaDeteccion.Date).Days);
 }
 
-<div class="d-flex justify-content-between align-items-center mb-4">
+<div class="fn-page-header">
     <div>
-        <h1>@Model.Nombre</h1>
-
-        <p class="text-muted mb-0">
-            Lote: @Model.Lote.Codigo — @Model.Lote.Nombre
+        <h1 class="fn-page-title">
+            @Model.Nombre
+            <span class="fn-badge @Ui.EstadoEnfermedadBadge(Model.Estado)">@Ui.EstadoEnfermedadTexto(Model.Estado)</span>
+        </h1>
+        <p class="fn-page-subtitle">
+            Finca / lote: @Model.Terreno.Codigo — @Model.Terreno.Nombre ·
+            @(cerrada ? $"El caso duró {dias} día(s)" : $"Abierta hace {dias} día(s)")
         </p>
     </div>
 
-    <a asp-action="Index"
-       class="btn btn-outline-secondary">
-        Volver
-    </a>
+    <a asp-action="Index" class="fn-btn fn-btn-outline">Volver</a>
 </div>
+
+@if (TempData["Ok"] is string ok)
+{
+    <div class="alert alert-success border-0 shadow-sm">@ok</div>
+}
+@if (TempData["Error"] is string error)
+{
+    <div class="alert alert-danger border-0 shadow-sm">@error</div>
+}
 
 <div class="card shadow-sm mb-4">
     <div class="card-body">
 
         <dl class="row">
+            <dt class="col-sm-3">Fecha de detección</dt>
+            <dd class="col-sm-9">@Model.FechaDeteccion.ToString("dd/MM/yyyy")</dd>
 
-            <dt class="col-sm-3">
-                Fecha de detección
-            </dt>
+            <dt class="col-sm-3">Severidad</dt>
+            <dd class="col-sm-9">@Model.Severidad</dd>
 
-            <dd class="col-sm-9">
-                @Model.FechaDeteccion.ToString("dd/MM/yyyy")
-            </dd>
+            <dt class="col-sm-3">Descripción</dt>
+            <dd class="col-sm-9">@Model.Descripcion</dd>
 
-            <dt class="col-sm-3">
-                Severidad
-            </dt>
-
-            <dd class="col-sm-9">
-                @Model.Severidad
-            </dd>
-
-            <dt class="col-sm-3">
-                Descripción
-            </dt>
-
-            <dd class="col-sm-9">
-                @Model.Descripcion
-            </dd>
-
-            <dt class="col-sm-3">
-                Observaciones
-            </dt>
-
-            <dd class="col-sm-9">
-                @(Model.Observaciones ?? "Sin observaciones")
-            </dd>
-
+            <dt class="col-sm-3">Observaciones</dt>
+            <dd class="col-sm-9">@(Model.Observaciones ?? "Sin observaciones")</dd>
         </dl>
 
-        <a asp-action="Editar"
-           asp-route-id="@Model.Id"
-           class="btn btn-primary">
-            Editar enfermedad
-        </a>
-
-        <a asp-action="CrearTratamiento"
-           asp-route-enfermedadId="@Model.Id"
-           class="btn btn-primary">
-            Crear tratamiento
-        </a>
+        @if (!cerrada)
+        {
+            <div class="d-flex gap-2 flex-wrap">
+                @if (esAdmin)
+                {
+                    <a asp-action="Editar" asp-route-id="@Model.Id" class="btn btn-outline-primary">Editar enfermedad</a>
+                }
+                <a asp-action="CrearTratamiento" asp-route-enfermedadId="@Model.Id" class="btn btn-primary">Registrar tratamiento</a>
+            </div>
+        }
 
     </div>
 </div>
 
-<h3>Tratamientos aplicados</h3>
+<div class="fn-card">
+    <div class="fn-card-header d-flex justify-content-between align-items-center">
+        <h2 class="fn-card-title">Tratamientos aplicados</h2>
+        <span class="fn-count">@tratamientos.Count</span>
+    </div>
+    <div class="fn-card-body">
+        @if (!tratamientos.Any())
+        {
+            <div class="alert alert-info mb-0">
+                No existen tratamientos registrados para esta enfermedad.
+            </div>
+        }
+        else
+        {
+            var numero = 0;
+            foreach (var tratamiento in tratamientos)
+            {
+                numero++;
+                var resolvio = Model.TratamientoEfectivoId == tratamiento.Id;
+                <div class="card mb-3 @(resolvio ? "border-success border-2" : "")">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-2">
+                            <h5 class="mb-0">#@numero · @tratamiento.Tratamiento</h5>
+                            <div class="d-flex gap-1">
+                                @if (tratamiento.Efectividad is { } efectividad)
+                                {
+                                    <span class="fn-badge @Ui.EfectividadBadge(efectividad)">@Ui.EfectividadTexto(efectividad)</span>
+                                }
+                                else
+                                {
+                                    <span class="fn-badge fn-badge-neutral">Efectividad sin indicar</span>
+                                }
+                                @if (resolvio)
+                                {
+                                    <span class="fn-badge fn-badge-success">Resolvió el caso</span>
+                                }
+                            </div>
+                        </div>
 
-@if (!Model.Tratamientos.Any())
+                        <p class="mb-1"><strong>Fecha:</strong> @tratamiento.FechaAplicacion.ToString("dd/MM/yyyy")</p>
+                        <p class="mb-1"><strong>Responsable:</strong> @(tratamiento.Responsable ?? "No indicado")</p>
+                        <p><strong>Resultado observado:</strong> @(tratamiento.Resultado ?? "No indicado")</p>
+
+                        <h6>Productos utilizados</h6>
+                        @if (!tratamiento.Productos.Any())
+                        {
+                            <p class="text-muted mb-0">No se registraron productos.</p>
+                        }
+                        else
+                        {
+                            <ul class="mb-0">
+                                @foreach (var producto in tratamiento.Productos)
+                                {
+                                    <li>@producto.NombreProducto - @producto.Cantidad @producto.Unidad</li>
+                                }
+                            </ul>
+                        }
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>
+
+@if (cerrada)
 {
-    <div class="alert alert-info">
-        No existen tratamientos registrados para esta enfermedad.
+    var efectivo = tratamientos.FirstOrDefault(t => t.Id == Model.TratamientoEfectivoId);
+    <div class="fn-card">
+        <div class="fn-card-header"><h2 class="fn-card-title">Cierre del caso</h2></div>
+        <div class="fn-card-body">
+            <dl class="row mb-0">
+                <dt class="col-sm-3">Resultado final</dt>
+                <dd class="col-sm-9">@(Model.ResultadoCierre is { } r ? Ui.ResultadoCierreTexto(r) : "—")</dd>
+
+                <dt class="col-sm-3">Tratamiento que lo resolvió</dt>
+                <dd class="col-sm-9">@(efectivo?.Tratamiento ?? "No indicado")</dd>
+
+                <dt class="col-sm-3">Cerrada</dt>
+                <dd class="col-sm-9">
+                    @Model.FechaCierre?.ToLocalTime().ToString("dd/MM/yyyy HH:mm") por @(Model.CerradaPor ?? "—")
+                </dd>
+
+                <dt class="col-sm-3">Duración del caso</dt>
+                <dd class="col-sm-9">@dias día(s) · @tratamientos.Count tratamiento(s)</dd>
+
+                <dt class="col-sm-3">Comentario</dt>
+                <dd class="col-sm-9">@Model.ComentarioCierre</dd>
+            </dl>
+        </div>
     </div>
 }
-else
+else if (esAdmin)
 {
-    foreach (var tratamiento in Model.Tratamientos)
-    {
-        <div class="card mb-3">
-            <div class="card-body">
-
-                <h5>@tratamiento.Tratamiento</h5>
-
-                <p>
-                    <strong>Fecha:</strong>
-                    @tratamiento.FechaAplicacion.ToString("dd/MM/yyyy")
-                </p>
-
-                <p>
-                    <strong>Responsable:</strong>
-                    @(tratamiento.Responsable ?? "No indicado")
-                </p>
-
-                <p>
-                    <strong>Resultado:</strong>
-                    @(tratamiento.Resultado ?? "No indicado")
-                </p>
-
-                <h6>Productos utilizados</h6>
-
-                @if (!tratamiento.Productos.Any())
-                {
-                    <p class="text-muted">
-                        No se registraron productos.
-                    </p>
-                }
-                else
-                {
-                    <ul>
-                        @foreach (var producto in tratamiento.Productos)
+    <div class="fn-card">
+        <div class="fn-card-header"><h2 class="fn-card-title">Cerrar enfermedad</h2></div>
+        <div class="fn-card-body">
+            @if (erroresCierre.Any())
+            {
+                <div class="alert alert-danger">
+                    <strong>No se cerró la enfermedad:</strong>
+                    <ul class="mb-0 mt-1">
+                        @foreach (var e in erroresCierre)
                         {
-                            <li>
-                                @producto.NombreProducto -
-                                @producto.Cantidad
-                                @producto.Unidad
-                            </li>
+                            <li>@e</li>
                         }
                     </ul>
-                }
+                </div>
+            }
 
-            </div>
+            @if (!tratamientos.Any())
+            {
+                <div class="alert alert-secondary mb-0">
+                    Para cerrar la enfermedad primero debe registrarse al menos un tratamiento aplicado.
+                </div>
+            }
+            else
+            {
+                <form asp-action="Cerrar" asp-route-id="@Model.Id" method="post">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="fn-form-label" for="Cierre_ResultadoCierre">Resultado final</label>
+                            <select class="fn-form-select" id="Cierre_ResultadoCierre" name="Cierre.ResultadoCierre">
+                                <option value="">-- Seleccione --</option>
+                                @foreach (ResultadoCierreEnfermedad r in Enum.GetValues<ResultadoCierreEnfermedad>())
+                                {
+                                    <option value="@r">@Ui.ResultadoCierreTexto(r)</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="fn-form-label" for="Cierre_TratamientoEfectivoId">Tratamiento que resolvió el caso</label>
+                            <select class="fn-form-select" id="Cierre_TratamientoEfectivoId" name="Cierre.TratamientoEfectivoId">
+                                <option value="">-- Ninguno en particular --</option>
+                                @foreach (var t in tratamientos)
+                                {
+                                    var sugerido = t.Efectividad == EfectividadTratamiento.Efectivo;
+                                    <option value="@t.Id" selected="@sugerido">@t.FechaAplicacion.ToString("dd/MM/yyyy") · @t.Tratamiento</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label class="fn-form-label" for="Cierre_ComentarioCierre">Comentario de cierre</label>
+                            <textarea class="fn-form-control" id="Cierre_ComentarioCierre" name="Cierre.ComentarioCierre" rows="2" maxlength="500"
+                                      placeholder="Ej. Tras el segundo tratamiento no se observan nuevas lesiones en el lote."></textarea>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="Cierre_Confirmo" name="Cierre.Confirmo" value="true" />
+                                <label class="form-check-label" for="Cierre_Confirmo">Verifiqué en campo que la enfermedad está controlada</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="small text-muted mt-2">Al cerrarla ya no se podrán registrar tratamientos ni editarla. Si la enfermedad reaparece, regístrela como un caso nuevo.</div>
+                    <button type="submit" class="fn-btn fn-btn-primary mt-3">Cerrar enfermedad</button>
+                </form>
+            }
         </div>
-    }
+    </div>
 }

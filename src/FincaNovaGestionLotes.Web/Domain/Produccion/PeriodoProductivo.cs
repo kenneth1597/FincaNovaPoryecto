@@ -1,15 +1,15 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using FincaNovaGestionLotes.Web.Domain.Common;
-using FincaNovaGestionLotes.Web.Domain.Lotes;
+using FincaNovaGestionLotes.Web.Domain.Terrenos;
 
 namespace FincaNovaGestionLotes.Web.Domain.Produccion;
 
 public class PeriodoProductivo : AuditableEntity
 {
     [Required]
-    public int LoteId { get; set; }
+    public int TerrenoId { get; set; }
 
-    public Lote Lote { get; set; } = null!;
+    public Terreno Terreno { get; set; } = null!;
 
     [Required]
     public DateTime FechaInicio { get; set; }

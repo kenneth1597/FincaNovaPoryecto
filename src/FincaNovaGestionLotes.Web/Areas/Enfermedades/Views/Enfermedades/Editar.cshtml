@@ -39,18 +39,18 @@
 
             <div class="mb-3">
 
-                <label asp-for="LoteId"
+                <label asp-for="TerrenoId"
                        class="form-label">
                 </label>
 
-                <select asp-for="LoteId"
+                <select asp-for="TerrenoId"
                         class="form-select">
 
                     <option value="">
-                        -- Seleccione un lote --
+                        -- Seleccione la finca o el lote --
                     </option>
 
-                    @foreach (var lote in Model.Lotes)
+                    @foreach (var lote in Model.Terrenos)
                     {
                         <option value="@lote.Id">
                             @lote.Texto
@@ -59,7 +59,7 @@
 
                 </select>
 
-                <span asp-validation-for="LoteId"
+                <span asp-validation-for="TerrenoId"
                       class="text-danger">
                 </span>
 
@@ -72,8 +72,18 @@
                        class="form-label">
                 </label>
 
-                <input asp-for="Nombre"
-                       class="form-control" />
+                <select asp-for="Nombre"
+                        class="form-select">
+                    <option value="">-- Seleccione la enfermedad --</option>
+                    @if (!string.IsNullOrWhiteSpace(Model.Nombre) && !CatalogoEnfermedades.Existe(Model.Nombre))
+                    {
+                        <option value="@Model.Nombre">@Model.Nombre (registrada antes del catálogo)</option>
+                    }
+                    @foreach (var nombre in CatalogoEnfermedades.Nombres)
+                    {
+                        <option value="@nombre">@nombre</option>
+                    }
+                </select>
 
                 <span asp-validation-for="Nombre"
                       class="text-danger">

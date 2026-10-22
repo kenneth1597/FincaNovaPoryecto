@@ -1,0 +1,180 @@
+@model TerrenoFiltroViewModel
+@{
+    ViewData["Title"] = "Fincas y lotes";
+    var hayFiltrosActivos = !string.IsNullOrWhiteSpace(Model.Q) || !string.IsNullOrWhiteSpace(Model.Ubicacion)
+                            || Model.Tipo != null || Model.Estado != null;
+}
+
+<div class="fn-page-header">
+    <div>
+        <h1 class="fn-page-title">
+            <span class="fn-page-title-icon">
+                <svg viewBox="0 0 24 24">
+                    <path d="M12 21v-9" />
+                    <path d="M12 12C12 8 9.5 5.5 5 5.5c0 4.2 2.8 6.5 7 6.5Z" />
+                    <path d="M12 14c0-3.2 2.4-5.5 7-5.5 0 3.6-2.6 5.5-7 5.5Z" />
+                    <path d="M7 21h10" />
+                </svg>
+            </span>
+            Fincas y lotes
+        </h1>
+        <p class="fn-page-subtitle">Cada finca se divide en lotes; la suma del área de los lotes nunca supera la de su finca.</p>
+    </div>
+    <div class="d-flex gap-2 flex-wrap">
+        <a asp-action="Crear" asp-route-tipo="Finca" class="fn-btn fn-btn-primary">+ Nueva finca</a>
+        <a asp-action="Crear" asp-route-tipo="Lote" class="fn-btn fn-btn-outline">+ Nuevo lote</a>
+    </div>
+</div>
+
+@if (TempData["Ok"] is string ok)
+{
+    <div class="alert alert-success border-0 shadow-sm">@ok</div>
+}
+@if (TempData["Error"] is string error)
+{
+    <div class="alert alert-danger border-0 shadow-sm">@error</div>
+}
+
+<div class="row row-cols-2 row-cols-md-4 g-2 mb-4">
+    @foreach (EstadoTerreno estado in Enum.GetValues<EstadoTerreno>())
+    {
+        var count = Model.Conteos.TryGetValue(estado, out var c) ? c : 0;
+        var activo = Model.Estado == estado;
+        <div class="col">
+            <a class="text-decoration-none" asp-action="Index" asp-route-estado="@estado" asp-route-q="@Model.Q"
+               asp-route-ubicacion="@Model.Ubicacion" asp-route-tipo="@Model.Tipo">
+                <div class="card text-center border-@Ui.EstadoTerrenoColor(estado) @(activo ? "border-3" : "")">
+                    <div class="card-body py-2">
+                        <div class="fs-4 fw-bold text-@Ui.EstadoTerrenoColor(estado)">@count</div>
+                        <div class="small text-muted">@Ui.EstadoTerrenoTexto(estado)</div>
+                    </div>
+                </div>
+            </a>
+        </div>
+    }
+</div>
+
+<div class="fn-card">
+    <div class="fn-card-body">
+        <form method="get" asp-action="Index">
+            <div class="row g-3 align-items-end">
+                <div class="col-md-3">
+                    <label class="fn-form-label">Buscar</label>
+                    <input type="text" name="Q" value="@Model.Q" class="fn-form-control" placeholder="Código o nombre..." />
+                </div>
+                <div class="col-md-3">
+                    <label class="fn-form-label">Ubicación</label>
+                    <input type="text" name="Ubicacion" value="@Model.Ubicacion" class="fn-form-control" placeholder="Ej. Poás, La abuela..." />
+                </div>
+                <div class="col-md-2">
+                    <label class="fn-form-label">Tipo</label>
+                    <select name="Tipo" class="fn-form-select">
+                        <option value="">Fincas y lotes</option>
+                        @foreach (TipoTerreno t in Enum.GetValues<TipoTerreno>())
+                        {
+                            <option value="@t" selected="@(Model.Tipo == t)">@(t == TipoTerreno.Finca ? "Solo fincas" : "Solo lotes")</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="fn-form-label">Estado</label>
+                    <select name="Estado" class="fn-form-select">
+                        <option value="">Todos</option>
+                        @foreach (EstadoTerreno e in Enum.GetValues<EstadoTerreno>())
+                        {
+                            <option value="@e" selected="@(Model.Estado == e)">@Ui.EstadoTerrenoTexto(e)</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2 d-flex gap-2">
+                    <button type="submit" class="fn-btn fn-btn-primary flex-fill">Filtrar</button>
+                    @if (hayFiltrosActivos)
+                    {
+                        <a asp-action="Index" class="fn-btn fn-btn-outline" title="Quitar filtros">✕</a>
+                    }
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="fn-card">
+    <div class="fn-card-header d-flex justify-content-between align-items-center">
+        <h2 class="fn-card-title">Fincas y lotes registrados</h2>
+        <span class="fn-count">@Model.Paginacion.Total registro(s)</span>
+    </div>
+
+    @if (!Model.Resultados.Any())
+    {
+        <div class="fn-empty">
+            <div class="fn-empty-title">
+                @(hayFiltrosActivos ? "No hay fincas ni lotes que coincidan con los filtros." : "Todavía no hay fincas registradas.")
+            </div>
+            <div class="fn-empty-text">Registra una finca y luego divídela en lotes.</div>
+        </div>
+    }
+    else
+    {
+        <div class="fn-card-body">
+            <div class="fn-table-wrapper">
+                <table class="fn-table">
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Nombre</th>
+                            <th>Tipo</th>
+                            <th>Ubicación</th>
+                            <th>Área (ha)</th>
+                            <th>Estado</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var t in Model.Resultados)
+                        {
+                            <tr>
+                                <td>
+                                    @if (t.Tipo == TipoTerreno.Lote)
+                                    {
+                                        <span class="text-muted me-1">↳</span>
+                                    }
+                                    <strong>@t.Codigo</strong>
+                                </td>
+                                <td>
+                                    @t.Nombre
+                                    @if (t.Tipo == TipoTerreno.Lote && t.FincaPadre is not null)
+                                    {
+                                        <div class="small text-muted">Finca: @t.FincaPadre</div>
+                                    }
+                                    else if (t.Tipo == TipoTerreno.Finca)
+                                    {
+                                        <div class="small text-muted">@t.Lotes lote(s)</div>
+                                    }
+                                </td>
+                                <td>
+                                    <span class="fn-badge @(t.Tipo == TipoTerreno.Finca ? "fn-badge-info" : "fn-badge-neutral")">@Ui.TipoTerrenoTexto(t.Tipo)</span>
+                                </td>
+                                <td>@(t.Ubicacion ?? "—")</td>
+                                <td>
+                                    @t.AreaHectareas.ToString("N2")
+                                    @if (t.Tipo == TipoTerreno.Finca)
+                                    {
+                                        <div class="small text-muted">@t.AreaAsignada.ToString("N2") asignadas</div>
+                                    }
+                                </td>
+                                <td><span class="badge bg-@Ui.EstadoTerrenoColor(t.Estado)">@Ui.EstadoTerrenoTexto(t.Estado)</span></td>
+                                <td class="text-end">
+                                    <div class="d-flex gap-2 justify-content-end">
+                                        <a asp-action="Detalle" asp-route-id="@t.Id" class="fn-btn fn-btn-outline">Ver</a>
+                                        <a asp-action="Editar" asp-route-id="@t.Id" class="fn-btn fn-btn-outline">Editar</a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <partial name="_Paginacion" model="Model.Paginacion" />
+    }
+</div>

@@ -4,11 +4,14 @@ using FincaNovaGestionLotes.Web.Domain;
 using FincaNovaGestionLotes.Web.Domain.Produccion;
 using FincaNovaGestionLotes.Web.Services.Auditoria;
 using Microsoft.AspNetCore.Mvc;
+using FincaNovaGestionLotes.Web.Filters;
+using FincaNovaGestionLotes.Web.ViewSupport;
 using Microsoft.EntityFrameworkCore;
 
 namespace FincaNovaGestionLotes.Web.Areas.Produccion.Controllers;
 
 [Area("Produccion")]
+[RequiereRol(Roles.Administrador, Roles.Duenio)]
 public class PeriodosController : Controller
 {
     private readonly AppDbContext _db;
@@ -23,24 +26,26 @@ public class PeriodosController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(int pagina = 1)
     {
-        var periodos = await _db.PeriodosProductivos
+        var (periodos, paginacion) = await _db.PeriodosProductivos
             .AsNoTracking()
-            .Include(p => p.Lote)
+            .Include(p => p.Terreno)
             .OrderByDescending(p => p.FechaInicio)
-            .ToListAsync();
+            .PaginarAsync(pagina);
+
+        ViewBag.Paginacion = paginacion;
 
         return View(periodos);
     }
 
     [HttpGet]
-    public async Task<IActionResult> Crear(int? loteId = null)
+    public async Task<IActionResult> Crear(int? terrenoId = null)
     {
         var model = new PeriodoCrearViewModel
         {
-            LoteId = loteId ?? 0,
-            Lotes = await ObtenerLotesAsync()
+            TerrenoId = terrenoId ?? 0,
+            Terrenos = await ObtenerTerrenosAsync()
         };
 
         return View(model);
@@ -51,17 +56,17 @@ public class PeriodosController : Controller
     public async Task<IActionResult> Crear(
         PeriodoCrearViewModel model)
     {
-        model.Lotes = await ObtenerLotesAsync();
+        model.Terrenos = await ObtenerTerrenosAsync();
 
-        var loteExiste = await _db.Lotes.AnyAsync(
-            l => l.Id == model.LoteId &&
+        var loteExiste = await _db.Terrenos.AnyAsync(
+            l => l.Id == model.TerrenoId &&
                  !l.Eliminado);
 
         if (!loteExiste)
         {
             ModelState.AddModelError(
-                nameof(model.LoteId),
-                "El lote seleccionado no existe.");
+                nameof(model.TerrenoId),
+                "La finca o el lote seleccionado no existe.");
         }
 
         if (model.FechaFin.HasValue &&
@@ -74,7 +79,7 @@ public class PeriodosController : Controller
 
         var periodoAbierto = await _db.PeriodosProductivos
             .AnyAsync(p =>
-                p.LoteId == model.LoteId &&
+                p.TerrenoId == model.TerrenoId &&
                 !p.Cerrado);
 
         if (periodoAbierto && !model.FechaFin.HasValue)
@@ -89,7 +94,7 @@ public class PeriodosController : Controller
 
         var periodo = new PeriodoProductivo
         {
-            LoteId = model.LoteId,
+            TerrenoId = model.TerrenoId,
             FechaInicio = model.FechaInicio,
             FechaFin = model.FechaFin,
             Observaciones = model.Observaciones?.Trim(),
@@ -104,7 +109,7 @@ public class PeriodosController : Controller
             AccionAuditoria.Crear,
             nameof(PeriodoProductivo),
             periodo.Id.ToString(),
-            $"Registro de período productivo para el lote {periodo.LoteId}");
+            $"Registro de período productivo para el lote {periodo.TerrenoId}");
 
         TempData["Ok"] =
             "El período productivo fue registrado correctamente.";
@@ -112,14 +117,14 @@ public class PeriodosController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    private async Task<IEnumerable<LoteOpcionViewModel>>
-        ObtenerLotesAsync()
+    private async Task<IEnumerable<TerrenoOpcionViewModel>>
+        ObtenerTerrenosAsync()
     {
-        return await _db.Lotes
+        return await _db.Terrenos
             .AsNoTracking()
             .Where(l => !l.Eliminado)
             .OrderBy(l => l.Codigo)
-            .Select(l => new LoteOpcionViewModel
+            .Select(l => new TerrenoOpcionViewModel
             {
                 Id = l.Id,
                 Texto = l.Codigo + " — " + l.Nombre

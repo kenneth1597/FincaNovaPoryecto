@@ -1,0 +1,33 @@
+@model LaborFormViewModel
+
+@{
+    ViewData["Title"] = "Registrar labor";
+}
+
+<div class="fn-page-header">
+    <div>
+        <h1 class="fn-page-title">Registrar labor agrícola</h1>
+        <p class="fn-page-subtitle">
+            @(Model.PuedeElegirColaboradores
+                ? "Asigna la labor a uno o varios colaboradores. Ellos registrarán sus horas y la cerrarán."
+                : "Registra una labor que realizaste; después podrás agregar tus horas y cerrarla.")
+        </p>
+    </div>
+    <a asp-action="Index" class="fn-btn fn-btn-outline">Volver a la bitácora</a>
+</div>
+
+<div class="fn-card">
+    <div class="fn-card-body">
+        <form asp-action="Crear" method="post">
+            <partial name="_FormFields" />
+            <div class="d-flex gap-2 mt-4">
+                <button type="submit" class="fn-btn fn-btn-primary">Guardar</button>
+                <a asp-action="Index" class="fn-btn fn-btn-outline">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
