@@ -1044,10 +1044,6 @@ namespace FincaNovaGestionLotes.Web.Data.Migrations
                         .HasMaxLength(150)
                         .HasColumnType("nvarchar(150)");
 
-                    b.Property<string>("DevueltaPor")
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
-
                     b.Property<int>("Estado")
                         .HasColumnType("int");
 
@@ -1060,12 +1056,6 @@ namespace FincaNovaGestionLotes.Web.Data.Migrations
                     b.Property<DateTime>("FechaCreacion")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("FechaDevolucion")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("FechaEnvioRevision")
-                        .HasColumnType("datetime2");
-
                     b.Property<DateTime?>("FechaModificacion")
                         .HasColumnType("datetime2");
 
@@ -1076,10 +1066,6 @@ namespace FincaNovaGestionLotes.Web.Data.Migrations
                     b.Property<string>("ModificadoPor")
                         .HasMaxLength(150)
                         .HasColumnType("nvarchar(150)");
-
-                    b.Property<string>("MotivoDevolucion")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
 
                     b.Property<string>("Observaciones")
                         .IsRequired()
@@ -1179,20 +1165,6 @@ namespace FincaNovaGestionLotes.Web.Data.Migrations
 
                     b.Property<int>("ColaboradorId")
                         .HasColumnType("int");
-
-                    b.Property<string>("ComentarioParte")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<DateTime?>("FechaParteTerminada")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("ParteTerminada")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("ParteTerminadaPor")
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
 
                     b.HasKey("LaborId", "ColaboradorId");
 
