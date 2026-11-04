@@ -25,6 +25,21 @@ public static class DbSeeder
             await db.SaveChangesAsync();
         }
 
+        // Una fila de parámetros por empresa; KgPorCajuela = 0 hasta que el administrador lo configure.
+        var empresasSinParametros = await db.Empresas
+            .Where(e => !db.ParametrosFinca.Any(p => p.EmpresaId == e.Id))
+            .Select(e => e.Id)
+            .ToListAsync();
+        if (empresasSinParametros.Count > 0)
+        {
+            db.ParametrosFinca.AddRange(empresasSinParametros.Select(id => new ParametrosFinca
+            {
+                EmpresaId = id,
+                CreadoPor = "Sistema"
+            }));
+            await db.SaveChangesAsync();
+        }
+
         await CrearAdministradorInicialAsync(db, services);
     }
 

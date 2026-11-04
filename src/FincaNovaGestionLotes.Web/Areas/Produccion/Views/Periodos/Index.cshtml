@@ -22,7 +22,7 @@
         </h1>
 
         <p class="fn-page-subtitle">
-            Administración de los períodos productivos asociados a cada lote.
+            Administración de los períodos productivos y de las fincas y lotes que participan en cada uno.
         </p>
 
     </div>
@@ -84,11 +84,13 @@
                     <thead>
 
                         <tr>
-                            <th>Finca / lote</th>
+                            <th>Período</th>
+                            <th>Fincas / lotes</th>
                             <th>Fecha de inicio</th>
                             <th>Fecha de finalización</th>
                             <th>Estado</th>
                             <th>Observaciones</th>
+                            <th></th>
                         </tr>
 
                     </thead>
@@ -100,15 +102,24 @@
                             <tr>
 
                                 <td>
+                                    <strong>@periodo.Nombre</strong>
+                                </td>
 
-                                    <strong>
-                                        @periodo.Terreno.Codigo
-                                    </strong>
-
-                                    <div class="small text-muted">
-                                        @periodo.Terreno.Nombre
-                                    </div>
-
+                                <td>
+                                    @if (!periodo.Terrenos.Any())
+                                    {
+                                        <span class="text-muted">Sin asignar</span>
+                                    }
+                                    else
+                                    {
+                                        @foreach (var pt in periodo.Terrenos.OrderBy(x => x.Terreno.Codigo))
+                                        {
+                                            <span class="fn-badge fn-badge-neutral me-1 mb-1"
+                                                  title="@pt.Terreno.Nombre">
+                                                @pt.Terreno.Codigo
+                                            </span>
+                                        }
+                                    }
                                 </td>
 
                                 <td>
@@ -151,6 +162,14 @@
                                     @(string.IsNullOrWhiteSpace(periodo.Observaciones)
                                         ? "—"
                                         : periodo.Observaciones)
+                                </td>
+
+                                <td>
+                                    <a asp-action="Terrenos"
+                                       asp-route-id="@periodo.Id"
+                                       class="fn-action-link">
+                                        Fincas y lotes
+                                    </a>
                                 </td>
 
                             </tr>

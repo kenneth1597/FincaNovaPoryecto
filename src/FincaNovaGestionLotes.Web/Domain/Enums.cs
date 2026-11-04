@@ -61,3 +61,23 @@ public enum AccionAuditoria
     Inactivar = 3,
     Eliminar = 4
 }
+
+public enum TipoMovimientoInventario
+{
+    Entrada = 1,
+    Salida = 2,
+    Ajuste = 3
+}
+
+public enum UnidadVentaCafe
+{
+    Cajuela = 1,
+    Fanega = 2,
+    Kilogramo = 3
+}
+
+public enum TipoDetallePago
+{
+    Jornada = 1,
+    Cajuela = 2
+}

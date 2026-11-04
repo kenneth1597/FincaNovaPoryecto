@@ -22,6 +22,10 @@ public class Colaborador : AuditableEntity
     [Range(0, 10000000)]
     public decimal TarifaJornada { get; set; }
 
+    /// <summary>Pago por cajuela recolectada (HU-06).</summary>
+    [Range(0, 10000000)]
+    public decimal TarifaCajuela { get; set; }
+
     public bool Activo { get; set; } = true;
 
     public int? UsuarioId { get; set; }
