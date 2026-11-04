@@ -1,7 +1,7 @@
 # FincaNova · Diagrama entidad-relación (FincaUSER)
 
 Generado a partir del esquema real de la base después de la migración
-`LaboresConRevision` (28 tablas, 43 llaves foráneas, 16 restricciones CHECK).
+`RevisionEsquemaRelaciones` (28 tablas, 43 llaves foráneas, 16 restricciones CHECK).
 Se ve renderizado en GitHub y en VS Code (extensión Markdown Preview Mermaid).
 
 Por claridad se omiten en cada tabla las columnas de control comunes
@@ -131,18 +131,13 @@ erDiagram
         int TerrenoId FK
         int Tipo
         datetime2 Fecha
-        int Estado "1 Pendiente, 2 En proceso, 4 En revisión, 3 Finalizada"
+        int Estado
         decimal HorasTotales
         decimal CostoTotal
-        datetime2 FechaEnvioRevision
-        nvarchar MotivoDevolucion
-        nvarchar CerradaPor "aprobó admin o dueño"
     }
     LaboresColaboradores {
         int LaborId PK, FK
         int ColaboradorId PK, FK
-        bit ParteTerminada "solo con horas"
-        datetime2 FechaParteTerminada
     }
     LaboresAvances {
         int Id PK
@@ -307,7 +302,6 @@ erDiagram
 | Un avance de labor o una recolección solo se paga una vez | índices únicos filtrados en `PagoDetalles` |
 | La bitácora no se puede editar ni borrar | trigger `TR_AuditLogs_SoloLectura` |
 | `AuditLogs.UsuarioId` no tiene FK | intencional: la bitácora debe sobrevivir aunque se borre el usuario |
-| Una labor pasa a «En revisión» solo cuando todos los asignados terminaron su parte (con horas), y solo el administrador o dueño la finaliza | `LaboresController` (TerminarParte, Aprobar, Devolver) |
 
 ## Borrado en cascada (solo dentro de un mismo registro)
 

@@ -22,7 +22,7 @@
         </h1>
 
         <p class="fn-page-subtitle">
-            Administración de los períodos productivos asociados a cada lote.
+            Administración de los períodos productivos y de las fincas y lotes que participan en cada uno.
         </p>
 
     </div>
@@ -52,7 +52,7 @@
         </h2>
 
         <span class="fn-count">
-            @Model.Count() período(s)
+            @(((PaginaInfo)ViewBag.Paginacion).Total) período(s)
         </span>
 
     </div>
@@ -84,11 +84,13 @@
                     <thead>
 
                         <tr>
-                            <th>Lote</th>
+                            <th>Período</th>
+                            <th>Fincas / lotes</th>
                             <th>Fecha de inicio</th>
                             <th>Fecha de finalización</th>
                             <th>Estado</th>
                             <th>Observaciones</th>
+                            <th></th>
                         </tr>
 
                     </thead>
@@ -100,15 +102,24 @@
                             <tr>
 
                                 <td>
+                                    <strong>@periodo.Nombre</strong>
+                                </td>
 
-                                    <strong>
-                                        @periodo.Lote.Codigo
-                                    </strong>
-
-                                    <div class="small text-muted">
-                                        @periodo.Lote.Nombre
-                                    </div>
-
+                                <td>
+                                    @if (!periodo.Terrenos.Any())
+                                    {
+                                        <span class="text-muted">Sin asignar</span>
+                                    }
+                                    else
+                                    {
+                                        @foreach (var pt in periodo.Terrenos.OrderBy(x => x.Terreno.Codigo))
+                                        {
+                                            <span class="fn-badge fn-badge-neutral me-1 mb-1"
+                                                  title="@pt.Terreno.Nombre">
+                                                @pt.Terreno.Codigo
+                                            </span>
+                                        }
+                                    }
                                 </td>
 
                                 <td>
@@ -153,6 +164,14 @@
                                         : periodo.Observaciones)
                                 </td>
 
+                                <td>
+                                    <a asp-action="Terrenos"
+                                       asp-route-id="@periodo.Id"
+                                       class="fn-action-link">
+                                        Fincas y lotes
+                                    </a>
+                                </td>
+
                             </tr>
                         }
 
@@ -163,6 +182,8 @@
             </div>
 
         </div>
+
+        <partial name="_Paginacion" model="(PaginaInfo)ViewBag.Paginacion" />
 
     }
 
