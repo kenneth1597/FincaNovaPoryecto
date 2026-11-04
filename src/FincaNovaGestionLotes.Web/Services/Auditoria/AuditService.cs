@@ -15,17 +15,24 @@ public class AuditService : IAuditService
         _httpContextAccessor = httpContextAccessor;
     }
 
-    public async Task RegistrarAsync(AccionAuditoria accion, string entidad, string entidadId, string descripcion)
+    public async Task RegistrarAsync(AccionAuditoria accion, string entidad, string entidadId, string descripcion,
+        string? valorAnterior = null, string? valorNuevo = null)
     {
+        var http = _httpContextAccessor.HttpContext;
         _db.AuditLogs.Add(new AuditLog
         {
             FechaHora = DateTime.UtcNow,
-            Usuario = _httpContextAccessor.HttpContext?.Session.GetString("UsuarioNombre")
-                      ?? _httpContextAccessor.HttpContext?.User?.Identity?.Name,
+            UsuarioId = http?.Session.GetInt32("UsuarioId"),
+            Usuario = http?.Session.GetString("UsuarioNombre")
+                      ?? http?.User?.Identity?.Name,
+            DireccionIp = http?.Connection.RemoteIpAddress?.ToString(),
+            Modulo = http?.GetRouteValue("area")?.ToString() ?? http?.GetRouteValue("controller")?.ToString(),
             Accion = accion,
             Entidad = entidad,
             EntidadId = entidadId,
-            Descripcion = descripcion
+            Descripcion = descripcion,
+            ValorAnterior = valorAnterior,
+            ValorNuevo = valorNuevo
         });
         await _db.SaveChangesAsync();
     }

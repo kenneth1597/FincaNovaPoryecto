@@ -39,4 +39,6 @@ public class Labor : AuditableEntity
     public ICollection<LaborColaborador> Colaboradores { get; set; } = new List<LaborColaborador>();
 
     public ICollection<LaborAvance> Avances { get; set; } = new List<LaborAvance>();
+
+    public ICollection<LaborInsumo> Insumos { get; set; } = new List<LaborInsumo>();
 }

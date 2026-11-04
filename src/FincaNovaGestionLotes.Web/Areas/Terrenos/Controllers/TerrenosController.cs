@@ -502,7 +502,11 @@ public class TerrenosController : Controller
         await _db.Terrenos.AnyAsync(t => t.FincaPadreId == terrenoId && !t.Eliminado) ||
         await _db.Labores.AnyAsync(l => l.TerrenoId == terrenoId) ||
         await _db.Enfermedades.AnyAsync(e => e.TerrenoId == terrenoId) ||
-        await _db.PeriodosProductivos.AnyAsync(p => p.TerrenoId == terrenoId);
+        await _db.PeriodosTerrenos.AnyAsync(p => p.TerrenoId == terrenoId) ||
+        await _db.Recolecciones.AnyAsync(r => r.TerrenoId == terrenoId) ||
+        await _db.PesosSecado.AnyAsync(p => p.TerrenoId == terrenoId) ||
+        await _db.PesosProcesado.AnyAsync(p => p.TerrenoId == terrenoId) ||
+        await _db.Gastos.AnyAsync(g => g.TerrenoId == terrenoId);
 
     private static string Mayuscula(string texto) =>
         string.IsNullOrEmpty(texto) ? texto : char.ToUpper(texto[0]) + texto[1..];

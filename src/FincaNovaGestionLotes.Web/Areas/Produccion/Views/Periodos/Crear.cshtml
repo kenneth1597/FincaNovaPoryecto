@@ -13,7 +13,7 @@
         </h1>
 
         <p class="fn-page-subtitle">
-            Registra un nuevo período productivo asociado a un lote.
+            Registra un período productivo y asigna las fincas y lotes que participan.
         </p>
 
     </div>
@@ -44,27 +44,15 @@
 
             <div class="mb-3">
 
-                <label asp-for="TerrenoId"
+                <label asp-for="Nombre"
                        class="fn-form-label">
                 </label>
 
-                <select asp-for="TerrenoId"
-                        class="fn-form-select">
+                <input asp-for="Nombre"
+                       class="fn-form-control"
+                       placeholder="Ej. Cosecha 2026-2027" />
 
-                    <option value="0">
-                        -- Seleccione la finca o el lote --
-                    </option>
-
-                    @foreach (var lote in Model.Terrenos)
-                    {
-                        <option value="@lote.Id">
-                            @lote.Texto
-                        </option>
-                    }
-
-                </select>
-
-                <span asp-validation-for="TerrenoId"
+                <span asp-validation-for="Nombre"
                       class="text-danger">
                 </span>
 
@@ -124,6 +112,11 @@
                       class="text-danger">
                 </span>
 
+            </div>
+
+
+            <div class="mb-3">
+                <partial name="_TerrenosSeleccion" model="(Model.Terrenos, Model.TerrenoIds)" />
             </div>
 
 
