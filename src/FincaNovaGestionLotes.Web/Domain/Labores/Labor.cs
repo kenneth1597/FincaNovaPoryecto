@@ -28,6 +28,19 @@ public class Labor : AuditableEntity
 
     public decimal CostoTotal { get; set; }
 
+    /// <summary>Cuándo todos los asignados terminaron su parte y la labor pasó a revisión.</summary>
+    public DateTime? FechaEnvioRevision { get; set; }
+
+    /// <summary>Último rechazo del revisor: la labor volvió a «En proceso».</summary>
+    public DateTime? FechaDevolucion { get; set; }
+
+    [StringLength(150)]
+    public string? DevueltaPor { get; set; }
+
+    [StringLength(500)]
+    public string? MotivoDevolucion { get; set; }
+
+    /// <summary>Aprobación final del administrador o dueño.</summary>
     public DateTime? FechaCierre { get; set; }
 
     [StringLength(150)]

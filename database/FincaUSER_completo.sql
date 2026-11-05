@@ -2,7 +2,7 @@
    FincaNova · Script completo de la base de datos FincaUSER
    ---------------------------------------------------------------------
    Generado con: dotnet ef migrations script --idempotent
-   Incluye las 18 migraciones (hasta RevisionEsquemaRelaciones).
+   Incluye las 19 migraciones (hasta LaboresConRevision).
 
    Es idempotente: se puede ejecutar sobre una base vacía o sobre una
    FincaUSER existente; solo aplica las migraciones que falten.
@@ -3545,6 +3545,107 @@ IF NOT EXISTS (
 BEGIN
     INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
     VALUES (N'20261104233945_RevisionEsquemaRelaciones', N'8.0.11');
+END;
+GO
+
+COMMIT;
+GO
+
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261105001754_LaboresConRevision'
+)
+BEGIN
+    ALTER TABLE [LaboresColaboradores] ADD [ComentarioParte] nvarchar(500) NULL;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261105001754_LaboresConRevision'
+)
+BEGIN
+    ALTER TABLE [LaboresColaboradores] ADD [FechaParteTerminada] datetime2 NULL;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261105001754_LaboresConRevision'
+)
+BEGIN
+    ALTER TABLE [LaboresColaboradores] ADD [ParteTerminada] bit NOT NULL DEFAULT CAST(0 AS bit);
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261105001754_LaboresConRevision'
+)
+BEGIN
+    ALTER TABLE [LaboresColaboradores] ADD [ParteTerminadaPor] nvarchar(150) NULL;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261105001754_LaboresConRevision'
+)
+BEGIN
+    ALTER TABLE [Labores] ADD [DevueltaPor] nvarchar(150) NULL;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261105001754_LaboresConRevision'
+)
+BEGIN
+    ALTER TABLE [Labores] ADD [FechaDevolucion] datetime2 NULL;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261105001754_LaboresConRevision'
+)
+BEGIN
+    ALTER TABLE [Labores] ADD [FechaEnvioRevision] datetime2 NULL;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261105001754_LaboresConRevision'
+)
+BEGIN
+    ALTER TABLE [Labores] ADD [MotivoDevolucion] nvarchar(500) NULL;
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261105001754_LaboresConRevision'
+)
+BEGIN
+
+    EXEC(N'UPDATE lc SET lc.[ParteTerminada] = 1, lc.[FechaParteTerminada] = l.[FechaCierre], lc.[ParteTerminadaPor] = l.[CerradaPor]
+    FROM [LaboresColaboradores] lc
+    JOIN [Labores] l ON l.[Id] = lc.[LaborId]
+    WHERE l.[Estado] = 3;');
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261105001754_LaboresConRevision'
+)
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20261105001754_LaboresConRevision', N'8.0.11');
 END;
 GO
 

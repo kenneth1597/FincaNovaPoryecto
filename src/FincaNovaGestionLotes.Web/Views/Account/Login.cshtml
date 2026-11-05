@@ -2,52 +2,88 @@
 
 @{
     ViewData["Title"] = "Iniciar Sesión";
+    ViewData["PantallaCompleta"] = true;
 }
 
-<div class="row justify-content-center mt-5">
-    <div class="col-md-5">
-        <div class="card shadow-sm border-0 rounded-3">
-            <div class="card-body p-4">
-                <h3 class="card-title text-center mb-4 fw-bold text-success">FincaNova</h3>
+<div class="fn-login">
 
-                @if (TempData["SuccessMessage"] != null)
-                {
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        @TempData["SuccessMessage"]
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                }
+    <partial name="_PanelAcceso" model='("Su finca de café,", "organizada en un solo lugar.", "Lotes, labores, enfermedades, inventario y producción al alcance de un clic.", true)' />
 
-                <form asp-action="Login" method="post">
-                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+    @* ---------- Formulario ---------- *@
+    <main class="fn-login-panel">
+        <div class="fn-login-formulario">
+            <h2>Bienvenido de nuevo</h2>
+            <p class="fn-login-sub">Ingrese con su correo y contraseña.</p>
 
-                    <div class="mb-3">
-                        <label asp-for="Email" class="form-label">Correo Electrónico</label>
-                        <input asp-for="Email" class="form-control" placeholder="correo@ejemplo.com" />
-                        <span asp-validation-for="Email" class="text-danger"></span>
-                    </div>
-
-                    <div class="mb-3">
-                        <label asp-for="Password" class="form-label">Contraseña</label>
-                        <input asp-for="Password" type="password" class="form-control" />
-                        <span asp-validation-for="Password" class="text-danger"></span>
-                    </div>
-
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <a asp-action="ForgotPassword" class="text-decoration-none small text-secondary">¿Olvidaste tu contraseña?</a>
-                    </div>
-
-                    <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-success">Ingresar</button>
-                    </div>
-                </form>
-
-                <hr class="my-4" />
-
-                <div class="text-center text-muted small">
-                    ¿No tienes una cuenta? Solicítala al administrador de la finca.
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    @TempData["SuccessMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
                 </div>
+            }
+            @* El controlador redirige aquí con ErrorMessage cuando el enlace de recuperación expiró o no es válido. *@
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="fn-login-error">@TempData["ErrorMessage"]</div>
+            }
+
+            <form asp-action="Login" method="post">
+                <div asp-validation-summary="ModelOnly" class="fn-login-error"></div>
+
+                <div class="mb-3">
+                    <label asp-for="Email" class="form-label">Correo electrónico</label>
+                    <div class="fn-login-campo">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2" /><path d="M3.5 6.5l8.5 6 8.5-6" /></svg>
+                        <input asp-for="Email" class="form-control" placeholder="correo@ejemplo.com" autocomplete="username" autofocus />
+                    </div>
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+
+                <div class="mb-2">
+                    <label asp-for="Password" class="form-label">Contraseña</label>
+                    <div class="fn-login-campo">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10.5" width="14" height="10" rx="2" /><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3" /></svg>
+                        <input asp-for="Password" type="password" class="form-control" placeholder="Su contraseña" autocomplete="current-password" />
+                        <button type="button" class="fn-login-ojo" id="verPassword" aria-label="Mostrar contraseña" title="Mostrar contraseña">
+                            <svg viewBox="0 0 24 24" class="ojo-abierto"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z" /><circle cx="12" cy="12" r="3" /></svg>
+                            <svg viewBox="0 0 24 24" class="ojo-cerrado" hidden><path d="M3 3l18 18" /><path d="M10.6 5.1A10.6 10.6 0 0 1 12 5c6.5 0 10 7 10 7a17.6 17.6 0 0 1-3.2 4.1M6.6 6.6A17.3 17.3 0 0 0 2 12s3.5 7 10 7a9.7 9.7 0 0 0 5.4-1.6" /><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2" /></svg>
+                        </button>
+                    </div>
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+
+                <div class="text-end mb-4">
+                    <a asp-action="ForgotPassword" class="fn-login-enlace">¿Olvidó su contraseña?</a>
+                </div>
+
+                <button type="submit" class="fn-btn fn-btn-primary fn-login-boton">
+                    Ingresar
+                    <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+                </button>
+            </form>
+
+            <div class="fn-login-nota">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 11v5M12 8v.5" /></svg>
+                ¿No tiene una cuenta? Solicítela al administrador de la finca.
             </div>
         </div>
-    </div>
+    </main>
 </div>
+
+@section Scripts {
+    <script>
+        (function () {
+            const boton = document.getElementById('verPassword');
+            const campo = document.getElementById('Password');
+            boton.addEventListener('click', () => {
+                const mostrar = campo.type === 'password';
+                campo.type = mostrar ? 'text' : 'password';
+                boton.querySelector('.ojo-abierto').hidden = mostrar;
+                boton.querySelector('.ojo-cerrado').hidden = !mostrar;
+                boton.setAttribute('aria-label', mostrar ? 'Ocultar contraseña' : 'Mostrar contraseña');
+                boton.title = boton.getAttribute('aria-label');
+            });
+        })();
+    </script>
+}

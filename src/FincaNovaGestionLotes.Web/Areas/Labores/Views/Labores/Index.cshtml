@@ -33,6 +33,13 @@
 {
     <div class="alert alert-danger border-0 shadow-sm">@error</div>
 }
+@if (Model.PorRevisar > 0 && Model.Estado != EstadoLabor.EnRevision)
+{
+    <div class="alert alert-warning border-0 shadow-sm d-flex justify-content-between align-items-center">
+        <span><strong>@Model.PorRevisar labor(es)</strong> terminadas por los colaboradores esperan tu revisión para cerrarse.</span>
+        <a asp-action="Index" asp-route-Estado="@EstadoLabor.EnRevision" class="fn-btn fn-btn-outline">Revisar</a>
+    </div>
+}
 
 <div class="fn-card">
     <div class="fn-card-body">
@@ -139,7 +146,7 @@
                                 </td>
                                 <td>@l.NombreLabor</td>
                                 <td><span class="fn-badge @Ui.EstadoLaborBadge(l.Estado)">@Ui.EstadoLaborTexto(l.Estado)</span></td>
-                                <td>@l.HorasTotales.ToString("N2") h</td>
+                                <td class="text-nowrap">@l.HorasTotales.ToString("N2") h</td>
                                 <td>
                                     @if (Model.EsAdmin)
                                     {
@@ -163,7 +170,7 @@
                                 </td>
                                 <td class="text-end">
                                     <a asp-action="Detalle" asp-route-id="@l.Id" class="fn-btn fn-btn-outline">
-                                        @(l.EsMia && l.Estado != EstadoLabor.Finalizada ? "Actualizar" : "Ver")
+                                        @(l.EsMia && l.Estado is EstadoLabor.Pendiente or EstadoLabor.EnProceso ? "Actualizar" : "Ver")
                                     </a>
                                 </td>
                             </tr>

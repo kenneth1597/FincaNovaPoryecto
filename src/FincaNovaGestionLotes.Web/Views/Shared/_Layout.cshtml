@@ -1,4 +1,5 @@
 @using Microsoft.AspNetCore.Http
+@inject FincaNovaGestionLotes.Web.Data.AppDbContext Db
 @{
     var usuarioNombre = Context.Session.GetString("UsuarioNombre");
     var usuarioRol = Context.Session.GetString("UsuarioRol");
@@ -8,6 +9,11 @@
     var areaActual = ViewContext.RouteData.Values["area"]?.ToString() ?? "";
     var controladorActual = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
     var accionActual = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
+
+    // Avisos del menú para el administrador: insumos en el stock mínimo (rojo)
+    // y labores terminadas que esperan su revisión (amarillo).
+    var alertasStock = haySesion && esAdmin ? Db.AlertasStock.Count(a => a.Activa) : 0;
+    var laboresEnRevision = haySesion && esAdmin ? Db.Labores.Count(l => l.Estado == EstadoLabor.EnRevision) : 0;
 
     var iniciales = string.Concat((usuarioNombre ?? "")
         .Split(' ', StringSplitOptions.RemoveEmptyEntries)
@@ -28,6 +34,10 @@
             "<path d='M5 19c0-8 5-14 14-14 0 9-6 14-14 14Z'/><path d='M5 19l7-7'/><circle cx='14.5' cy='9.5' r='1'/>", false),
         ("Sanidad", "Alertas", "Enfermedades", "Enfermedades", "Alertas", null,
             "<path d='M18 9a6 6 0 0 0-12 0c0 6.5-3 7.5-3 9h18c0-1.5-3-2.5-3-9'/><path d='M10 21h4'/>", true),
+        ("Inventario", "Insumos", "Inventario", "Insumos", "Index", "Alertas",
+            "<path d='M3 7l9-4 9 4-9 4-9-4Z'/><path d='M3 7v10l9 4 9-4V7'/><path d='M12 11v10'/>", false),
+        ("Inventario", "Alertas de stock", "Inventario", "Insumos", "Alertas", null,
+            "<path d='M12 3l9.5 17h-19L12 3Z'/><path d='M12 10v4M12 17.5v.5'/>", true),
         ("Administración", "Bitácora", "Bitacora", "Bitacora", "Index", null,
             "<path d='M3 12a9 9 0 1 0 2.8-6.5'/><path d='M3 4v5h5'/><path d='M12 8v4l3 2'/>", true),
         ("Administración", "Gestión de usuarios", "", "Usuarios", "Index", null,
@@ -51,6 +61,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - FincaNova</title>
+    <link rel="icon" type="image/svg+xml" href="~/favicon.svg" asp-append-version="true" />
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>
@@ -87,6 +98,14 @@
                                     <svg viewBox="0 0 24 24" aria-hidden="true">@Html.Raw(item.Icono)</svg>
                                 </span>
                                 @item.Texto
+                                @if (item.Texto == "Alertas de stock" && alertasStock > 0)
+                                {
+                                    <span class="fn-nav-badge" title="Insumos en el stock mínimo">@alertasStock</span>
+                                }
+                                else if (item.Texto == "Labores" && laboresEnRevision > 0)
+                                {
+                                    <span class="fn-nav-badge fn-nav-badge-revision" title="Labores que esperan su revisión">@laboresEnRevision</span>
+                                }
                             </a>
                         }
                     }
@@ -132,6 +151,11 @@
             </div>
 
         </div>
+    }
+    else if (ViewData["PantallaCompleta"] is true)
+    {
+        @* Páginas que dibujan su propio diseño a pantalla completa (ej. el login). *@
+        @RenderBody()
     }
     else
     {

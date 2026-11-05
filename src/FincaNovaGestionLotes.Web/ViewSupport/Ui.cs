@@ -4,6 +4,36 @@ namespace FincaNovaGestionLotes.Web.ViewSupport;
 
 public static class Ui
 {
+    /// <summary>Iniciales para el avatar: «Andres Martinez Lopez» → «AM».</summary>
+    public static string Iniciales(string nombre) => string.Concat(nombre
+        .Split(' ', StringSplitOptions.RemoveEmptyEntries).Take(2).Select(p => char.ToUpper(p[0])));
+
+    /// <summary>Color de avatar estable por colaborador (clases fn-avatar-0 a fn-avatar-4).</summary>
+    public static string ColorAvatar(int id) => $"fn-avatar-{id % 5}";
+
+    /// <summary>«3 sacos», «1 litro», «2.5 galones».</summary>
+    public static string CantidadConUnidad(decimal cantidad, string? unidad)
+    {
+        var numero = cantidad.ToString("0.##");
+        if (string.IsNullOrWhiteSpace(unidad)) return numero;
+
+        var nombre = unidad.Trim().ToLower();
+        if (cantidad == 1) return $"{numero} {nombre}";
+
+        var plural = nombre.EndsWith("ón") ? nombre[..^2] + "ones"
+            : "aeiou".Contains(nombre[^1]) ? nombre + "s"
+            : nombre + "es";
+        return $"{numero} {plural}";
+    }
+
+    public static string TipoMovimientoTexto(TipoMovimientoInventario t) => t switch
+    {
+        TipoMovimientoInventario.Entrada => "Entrada",
+        TipoMovimientoInventario.Salida => "Salida",
+        TipoMovimientoInventario.Ajuste => "Ajuste",
+        _ => t.ToString()
+    };
+
     public static string EstadoTerrenoTexto(EstadoTerreno e) => e switch
     {
         EstadoTerreno.Activo => "Activo",
@@ -88,6 +118,7 @@ public static class Ui
     {
         EstadoLabor.Pendiente => "Pendiente",
         EstadoLabor.EnProceso => "En proceso",
+        EstadoLabor.EnRevision => "En revisión",
         EstadoLabor.Finalizada => "Finalizada",
         _ => e.ToString()
     };
@@ -96,6 +127,7 @@ public static class Ui
     {
         EstadoLabor.Pendiente => "fn-badge-warning",
         EstadoLabor.EnProceso => "fn-badge-info",
+        EstadoLabor.EnRevision => "fn-badge-danger",
         EstadoLabor.Finalizada => "fn-badge-success",
         _ => "fn-badge-neutral"
     };

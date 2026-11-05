@@ -8,6 +8,16 @@ public class OpcionViewModel
 {
     public int Id { get; set; }
     public string Texto { get; set; } = string.Empty;
+
+    /// <summary>Terrenos: la finca a la que pertenece (o la propia, si es finca).</summary>
+    public int? FincaId { get; set; }
+    public bool EsFinca { get; set; }
+
+    /// <summary>Terrenos: ubicación o referencia registrada al crear la finca o el lote.</summary>
+    public string? Ubicacion { get; set; }
+
+    /// <summary>Colaboradores: el cargo, mostrado bajo el nombre.</summary>
+    public string? Detalle { get; set; }
 }
 
 public class LaborFiltroViewModel
@@ -27,6 +37,9 @@ public class LaborFiltroViewModel
     public bool TieneColaborador { get; set; }
 
     public bool EsAdmin { get; set; }
+
+    /// <summary>Labores que esperan la aprobación del administrador o dueño.</summary>
+    public int PorRevisar { get; set; }
 
     public int Pagina { get; set; } = 1;
 
@@ -144,15 +157,36 @@ public enum ModoRegistroAvance
     PorHoras = 2
 }
 
+/// <summary>Aprobación final del administrador o dueño sobre una labor en revisión.</summary>
 public class CierreFormViewModel
 {
     [Required(ErrorMessage = "El comentario de cierre es obligatorio.")]
     [StringLength(500, ErrorMessage = Validaciones.LongitudMsg)]
-    [Display(Name = "Comentario de cierre")]
+    [Display(Name = "Comentario de la revisión")]
     public string? ComentarioCierre { get; set; }
 
-    [Display(Name = "Verifiqué que todo el trabajo asignado se realizó")]
+    [Display(Name = "Verifiqué en campo que todo el trabajo asignado se realizó")]
     public bool Confirmo { get; set; }
+}
+
+/// <summary>El revisor rechaza la labor y la devuelve a los colaboradores.</summary>
+public class DevolucionFormViewModel
+{
+    [Required(ErrorMessage = "Indique por qué se devuelve la labor.")]
+    [StringLength(500, ErrorMessage = Validaciones.LongitudMsg)]
+    [Display(Name = "Motivo de la devolución")]
+    public string? Motivo { get; set; }
+}
+
+/// <summary>Un colaborador confirma que terminó su parte.</summary>
+public class TerminarParteFormViewModel
+{
+    /// <summary>Solo lo usa el administrador para marcar la parte de otro colaborador.</summary>
+    public int? ColaboradorId { get; set; }
+
+    [StringLength(500, ErrorMessage = Validaciones.LongitudMsg)]
+    [Display(Name = "Comentario (opcional)")]
+    public string? Comentario { get; set; }
 }
 
 public class ColaboradorLaborViewModel
@@ -165,6 +199,10 @@ public class ColaboradorLaborViewModel
     public decimal Horas { get; set; }
     public decimal Jornadas { get; set; }
     public decimal Costo { get; set; }
+    public bool ParteTerminada { get; set; }
+    public DateTime? FechaParteTerminada { get; set; }
+    public string? ParteTerminadaPor { get; set; }
+    public string? ComentarioParte { get; set; }
 }
 
 public class AvanceItemViewModel
@@ -186,6 +224,10 @@ public class LaborDetalleViewModel
     public int TerrenoId { get; set; }
     public string TerrenoCodigo { get; set; } = string.Empty;
     public string TerrenoNombre { get; set; } = string.Empty;
+    /// <summary>Si la labor es en un lote: la finca a la que pertenece.</summary>
+    public string? FincaPadre { get; set; }
+    /// <summary>Ubicación o referencia del lote (o de su finca si el lote no tiene).</summary>
+    public string? Ubicacion { get; set; }
     public TipoLabor Tipo { get; set; }
     public string? TipoOtro { get; set; }
     public string NombreLabor => Ui.NombreLabor(Tipo, TipoOtro);
@@ -199,6 +241,10 @@ public class LaborDetalleViewModel
     public DateTime? FechaCierre { get; set; }
     public string? CerradaPor { get; set; }
     public string? ComentarioCierre { get; set; }
+    public DateTime? FechaEnvioRevision { get; set; }
+    public DateTime? FechaDevolucion { get; set; }
+    public string? DevueltaPor { get; set; }
+    public string? MotivoDevolucion { get; set; }
 
     public List<ColaboradorLaborViewModel> Colaboradores { get; set; } = new();
     public List<AvanceItemViewModel> Avances { get; set; } = new();
@@ -213,4 +259,38 @@ public class LaborDetalleViewModel
 
     public AvanceFormViewModel NuevoAvance { get; set; } = new();
     public CierreFormViewModel Cierre { get; set; } = new();
+    public DevolucionFormViewModel Devolucion { get; set; } = new();
+    public TerminarParteFormViewModel TerminarParte { get; set; } = new();
+
+    public ColaboradorLaborViewModel? MiParte =>
+        MiColaboradorId is { } mio ? Colaboradores.FirstOrDefault(c => c.Id == mio) : null;
+
+    public int PartesTerminadas => Colaboradores.Count(c => c.ParteTerminada);
+
+    /// <summary>Se aceptan horas, insumos y confirmaciones solo mientras nadie la ha enviado a revisión.</summary>
+    public bool Abierta => Estado is EstadoLabor.Pendiente or EstadoLabor.EnProceso;
+
+    // HU-24 esc. 2: insumos consumidos en la labor, rebajados del inventario.
+    public List<LaborInsumoItemViewModel> Insumos { get; set; } = new();
+    public List<OpcionViewModel> InsumosDisponibles { get; set; } = new();
+    public LaborInsumoFormViewModel NuevoInsumo { get; set; } = new();
+}
+
+public class LaborInsumoItemViewModel
+{
+    public string Insumo { get; set; } = string.Empty;
+    public decimal Cantidad { get; set; }
+    public string Unidad { get; set; } = string.Empty;
+}
+
+public class LaborInsumoFormViewModel
+{
+    [Required(ErrorMessage = "Seleccione el insumo utilizado.")]
+    [Display(Name = "Insumo")]
+    public int? InsumoId { get; set; }
+
+    [Required(ErrorMessage = "Indique la cantidad utilizada.")]
+    [Range(0.01, 100000000, ErrorMessage = "La cantidad debe ser mayor a cero.")]
+    [Display(Name = "Cantidad utilizada")]
+    public decimal? Cantidad { get; set; }
 }

@@ -94,39 +94,69 @@
             <h4>Productos utilizados</h4>
 
             <p class="text-muted">
-                Registre los productos utilizados durante el tratamiento.
+                Registre los productos utilizados durante el tratamiento. Si el producto está en el
+                inventario, selecciónelo y la cantidad se rebajará automáticamente de las existencias.
             </p>
+
+            <span asp-validation-for="Productos" class="text-danger"></span>
 
             <div id="productos">
 
                 @for (int i = 0; i < Model.Productos.Count; i++)
                 {
+                    var p = Model.Productos[i];
                     <div class="row g-2 mb-2 producto">
 
-                        <div class="col-md-5">
-                            <input asp-for="Productos[i].NombreProducto"
-                                   class="form-control"
-                                   placeholder="Nombre del producto" />
+                        <div class="col-md-4">
+                            <select name="Productos[@i].InsumoId" class="form-select insumo">
+                                <option value="">Otro producto (no está en el inventario)</option>
+                                @foreach (var ins in Model.Insumos)
+                                {
+                                    <option value="@ins.Id" data-unidad="@ins.Unidad"
+                                            selected="@(p.InsumoId == ins.Id)">
+                                        @ins.Nombre — hay @Ui.CantidadConUnidad(ins.StockActual, ins.Unidad)
+                                    </option>
+                                }
+                            </select>
+                            <span class="text-danger small">@Html.ValidationMessage($"Productos[{i}].InsumoId")</span>
                         </div>
 
                         <div class="col-md-3">
-                            <input asp-for="Productos[i].Cantidad"
+                            <input name="Productos[@i].NombreProducto" value="@p.NombreProducto"
+                                   class="form-control nombre"
+                                   placeholder="Nombre del producto" />
+                            <span class="text-danger small">@Html.ValidationMessage($"Productos[{i}].NombreProducto")</span>
+                        </div>
+
+                        <div class="col-md-2">
+                            <input name="Productos[@i].Cantidad" value="@(p.Cantidad == 0 ? "" : p.Cantidad.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture))"
                                    class="form-control"
                                    type="number"
                                    step="0.01"
+                                   min="0.01"
                                    placeholder="Cantidad" />
+                            <span class="text-danger small">@Html.ValidationMessage($"Productos[{i}].Cantidad")</span>
                         </div>
 
-                        <div class="col-md-3">
-                            <input asp-for="Productos[i].Unidad"
-                                   class="form-control"
+                        <div class="col-md-2">
+                            <input name="Productos[@i].Unidad" value="@p.Unidad"
+                                   class="form-control unidad"
                                    placeholder="Unidad" />
+                            <span class="text-danger small">@Html.ValidationMessage($"Productos[{i}].Unidad")</span>
+                        </div>
+
+                        <div class="col-md-1">
+                            <button type="button" class="btn btn-outline-secondary w-100 quitar" title="Quitar producto">✕</button>
                         </div>
 
                     </div>
                 }
 
             </div>
+
+            <button type="button" class="btn btn-outline-secondary btn-sm" id="agregarProducto">
+                + Agregar producto
+            </button>
 
             <button type="submit"
                     class="btn btn-success mt-3">
@@ -146,4 +176,51 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        (function () {
+            const contenedor = document.getElementById('productos');
+
+            // Con un insumo del inventario, el nombre y la unidad salen del insumo.
+            function sincronizar(fila) {
+                const opcion = fila.querySelector('.insumo').selectedOptions[0];
+                const delInventario = !!opcion.value;
+                const nombre = fila.querySelector('.nombre');
+                const unidad = fila.querySelector('.unidad');
+                nombre.readOnly = unidad.readOnly = delInventario;
+                if (delInventario) {
+                    nombre.value = opcion.textContent.split(' — ')[0].trim();
+                    unidad.value = opcion.dataset.unidad;
+                }
+            }
+
+            // Los nombres de campo deben quedar Productos[0], Productos[1]... sin huecos.
+            function renumerar() {
+                contenedor.querySelectorAll('.producto').forEach((fila, i) =>
+                    fila.querySelectorAll('[name]').forEach(el =>
+                        el.name = el.name.replace(/Productos\[\d+\]/, `Productos[${i}]`)));
+            }
+
+            contenedor.addEventListener('change', e => {
+                if (e.target.classList.contains('insumo')) sincronizar(e.target.closest('.producto'));
+            });
+
+            contenedor.addEventListener('click', e => {
+                if (!e.target.classList.contains('quitar')) return;
+                if (contenedor.querySelectorAll('.producto').length === 1) return;
+                e.target.closest('.producto').remove();
+                renumerar();
+            });
+
+            document.getElementById('agregarProducto').addEventListener('click', () => {
+                const nueva = contenedor.querySelector('.producto').cloneNode(true);
+                nueva.querySelectorAll('input').forEach(el => { el.value = ''; el.readOnly = false; });
+                nueva.querySelector('.insumo').value = '';
+                nueva.querySelectorAll('.text-danger').forEach(el => el.textContent = '');
+                contenedor.appendChild(nueva);
+                renumerar();
+            });
+
+            contenedor.querySelectorAll('.producto').forEach(sincronizar);
+        })();
+    </script>
 }
