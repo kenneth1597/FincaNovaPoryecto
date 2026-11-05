@@ -298,6 +298,9 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
         builder.Entity<Insumo>(e =>
         {
             e.HasIndex(i => i.Nombre).IsUnique();
+            // Si dos personas mueven el mismo insumo a la vez, el segundo UPDATE no
+            // encuentra el stock que leyó y falla, en vez de sobrescribir el rebajo del primero.
+            e.Property(i => i.StockActual).IsConcurrencyToken();
             e.HasOne(i => i.CategoriaInsumo).WithMany(c => c.Insumos)
                 .HasForeignKey(i => i.CategoriaInsumoId).OnDelete(DeleteBehavior.Restrict);
             e.HasOne(i => i.UnidadMedida).WithMany()

@@ -1,5 +1,12 @@
 @model LaborFormViewModel
 
+@{
+    var fincas = Model.Terrenos.Where(t => t.EsFinca).ToList();
+    var seleccionado = Model.Terrenos.FirstOrDefault(t => t.Id == Model.TerrenoId);
+    var fincaSeleccionada = seleccionado?.FincaId;
+    var loteSeleccionado = seleccionado is { EsFinca: false } ? seleccionado.Id : (int?)null;
+}
+
 @if (!ViewData.ModelState.IsValid)
 {
     <div class="alert alert-danger">
@@ -12,102 +19,164 @@
     </div>
 }
 
-<div class="row g-3">
-    <div class="col-md-6">
-        <label asp-for="TerrenoId" class="fn-form-label"></label>
-        <select asp-for="TerrenoId" class="fn-form-select">
-            <option value="">-- Seleccione la finca o el lote --</option>
-            @foreach (var lote in Model.Terrenos)
-            {
-                <option value="@lote.Id">@lote.Texto</option>
-            }
-        </select>
-        <span asp-validation-for="TerrenoId" class="text-danger"></span>
-    </div>
+<div class="row g-4">
+    <div class="col-xl-8">
 
-    <div class="col-md-3">
-        <label asp-for="Tipo" class="fn-form-label"></label>
-        <select asp-for="Tipo" class="fn-form-select" id="tipoLabor">
-            <option value="">-- Seleccione --</option>
-            @foreach (TipoLabor t in Enum.GetValues<TipoLabor>())
-            {
-                <option value="@t">@(t == TipoLabor.Otra ? "Otra (especificar)" : Ui.TipoLaborTexto(t))</option>
-            }
-        </select>
-        <span asp-validation-for="Tipo" class="text-danger"></span>
-    </div>
-
-    <div class="col-md-3">
-        <label asp-for="Fecha" class="fn-form-label"></label>
-        <input asp-for="Fecha" type="date" class="fn-form-control" />
-        <span asp-validation-for="Fecha" class="text-danger"></span>
-    </div>
-
-    <div class="col-md-6 offset-md-6" id="bloqueTipoOtro">
-        <label asp-for="TipoOtro" class="fn-form-label"></label>
-        <input asp-for="TipoOtro" class="fn-form-control" list="laboresOtras" maxlength="100"
-               placeholder="Ej. Siembra, Caños, Resiembra..." />
-        <datalist id="laboresOtras">
-            <option value="Siembra" />
-            <option value="Resiembra" />
-            <option value="Caños" />
-            <option value="Regulación de sombra" />
-            <option value="Encalado" />
-            <option value="Control de malezas" />
-        </datalist>
-        <span asp-validation-for="TipoOtro" class="text-danger"></span>
-    </div>
-
-    <div class="col-12">
-        <label asp-for="ColaboradoresIds" class="fn-form-label"></label>
-        @if (!Model.PuedeElegirColaboradores)
-        {
-            <div class="alert alert-secondary mb-0">
-                La labor quedará asignada a ti: <strong>@Model.ColaboradorPropio</strong>
+        @* ---------- Datos de la labor ---------- *@
+        <div class="fn-card">
+            <div class="fn-card-header">
+                <h2 class="fn-card-title fn-titulo-icono">
+                    <svg viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="17" rx="2" /><path d="M9 4h6v3H9z" /><path d="M9 12h6M9 16h4" /></svg>
+                    Datos de la labor
+                </h2>
             </div>
-        }
-        else if (!Model.ColaboradoresDisponibles.Any())
-        {
-            <div class="alert alert-warning mb-0">
-                No hay colaboradores activos.
-                <a asp-area="Colaboradores" asp-controller="Colaboradores" asp-action="Crear">Registrar un colaborador</a>
-            </div>
-        }
-        else
-        {
-            <div class="row row-cols-1 row-cols-md-3 g-2">
-                @foreach (var c in Model.ColaboradoresDisponibles)
-                {
-                    <div class="col">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="ColaboradoresIds"
-                                   id="col-@c.Id" value="@c.Id"
-                                   checked="@Model.ColaboradoresIds.Contains(c.Id)" />
-                            <label class="form-check-label" for="col-@c.Id">@c.Texto</label>
-                        </div>
+            <div class="fn-card-body">
+                <input type="hidden" asp-for="TerrenoId" id="terrenoId" />
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="fn-form-label" for="fincaSel">Finca</label>
+                        <select id="fincaSel" class="fn-form-select">
+                            <option value="">-- Seleccione la finca --</option>
+                            @foreach (var f in fincas)
+                            {
+                                <option value="@f.Id" data-ubicacion="@f.Ubicacion" selected="@(fincaSeleccionada == f.Id)">@f.Texto</option>
+                            }
+                        </select>
+                        <span asp-validation-for="TerrenoId" class="text-danger"></span>
                     </div>
+
+                    <div class="col-md-4">
+                        <label class="fn-form-label" for="loteSel">Lote</label>
+                        <select id="loteSel" class="fn-form-select">
+                            <option value="">Toda la finca</option>
+                            @foreach (var l in Model.Terrenos.Where(t => !t.EsFinca))
+                            {
+                                <option value="@l.Id" data-finca="@l.FincaId" data-ubicacion="@l.Ubicacion" selected="@(loteSeleccionado == l.Id)">@l.Texto</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label asp-for="Tipo" class="fn-form-label"></label>
+                        <select asp-for="Tipo" class="fn-form-select" id="tipoLabor">
+                            <option value="">-- Seleccione --</option>
+                            @foreach (TipoLabor t in Enum.GetValues<TipoLabor>())
+                            {
+                                <option value="@t">@(t == TipoLabor.Otra ? "Otra (especificar)" : Ui.TipoLaborTexto(t))</option>
+                            }
+                        </select>
+                        <span asp-validation-for="Tipo" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-8" id="bloqueTipoOtro">
+                        <label asp-for="TipoOtro" class="fn-form-label">Nombre de la labor</label>
+                        <input asp-for="TipoOtro" class="fn-form-control" list="laboresOtras" maxlength="100"
+                               placeholder="Ej. Siembra, Caños, Resiembra..." />
+                        <datalist id="laboresOtras">
+                            <option value="Siembra" />
+                            <option value="Resiembra" />
+                            <option value="Caños" />
+                            <option value="Regulación de sombra" />
+                            <option value="Encalado" />
+                            <option value="Control de malezas" />
+                        </datalist>
+                        <span asp-validation-for="TipoOtro" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label asp-for="Fecha" class="fn-form-label"></label>
+                        <input asp-for="Fecha" type="date" class="fn-form-control" />
+                        <span asp-validation-for="Fecha" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @* ---------- Colaboradores ---------- *@
+        <div class="fn-card">
+            <div class="fn-card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <h2 class="fn-card-title fn-titulo-icono">
+                    <svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3" /><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6" /><circle cx="17" cy="9" r="2.5" /><path d="M15.5 14.2c2.9.4 5.5 2.8 5.5 5.8" /></svg>
+                    Colaboradores asignados
+                </h2>
+                @if (Model.PuedeElegirColaboradores && Model.ColaboradoresDisponibles.Any())
+                {
+                    <span class="fn-count" id="conteoColaboradores">0 seleccionados</span>
                 }
             </div>
-        }
-        <span asp-validation-for="ColaboradoresIds" class="text-danger"></span>
-    </div>
-
-    <div class="col-12">
-        <label asp-for="Observaciones" class="fn-form-label"></label>
-        <textarea asp-for="Observaciones" class="fn-form-control" rows="3"
-                  placeholder="Ej. Poda de formación en las calles 1 a 10."></textarea>
-        <span asp-validation-for="Observaciones" class="text-danger"></span>
-    </div>
-
-    @if (!Model.EsEdicion)
-    {
-        <div class="col-12">
-            <div class="fn-card mb-0">
-                <div class="fn-card-body">
-                    <div class="form-check">
-                        <input asp-for="YaRealizado" class="form-check-input" id="yaRealizado" />
-                        <label asp-for="YaRealizado" class="form-check-label"></label>
+            <div class="fn-card-body">
+                @if (!Model.PuedeElegirColaboradores)
+                {
+                    <div class="alert alert-secondary mb-0">
+                        La labor quedará asignada a usted: <strong>@Model.ColaboradorPropio</strong>
                     </div>
+                }
+                else if (!Model.ColaboradoresDisponibles.Any())
+                {
+                    <div class="alert alert-warning mb-0">
+                        No hay colaboradores activos.
+                        <a asp-area="Colaboradores" asp-controller="Colaboradores" asp-action="Crear">Registrar un colaborador</a>
+                    </div>
+                }
+                else
+                {
+                    <div class="fn-buscador mb-3">
+                        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5" /><path d="M20 20l-4.2-4.2" /></svg>
+                        <input type="search" id="buscarColaborador" class="fn-form-control" placeholder="Buscar colaborador..." autocomplete="off" />
+                    </div>
+
+                    <div class="row row-cols-1 row-cols-md-2 g-3" id="listaColaboradores">
+                        @foreach (var c in Model.ColaboradoresDisponibles)
+                        {
+                            <div class="col" data-nombre="@c.Texto.ToLower() @c.Detalle?.ToLower()">
+                                <label class="fn-colaborador" for="col-@c.Id">
+                                    <input class="form-check-input" type="checkbox" name="ColaboradoresIds"
+                                           id="col-@c.Id" value="@c.Id"
+                                           data-nombre="@c.Texto" data-cargo="@c.Detalle" data-iniciales="@Ui.Iniciales(c.Texto)" data-color="@Ui.ColorAvatar(c.Id)"
+                                           checked="@Model.ColaboradoresIds.Contains(c.Id)" />
+                                    <span class="fn-avatar @Ui.ColorAvatar(c.Id)">@Ui.Iniciales(c.Texto)</span>
+                                    <span class="fn-colaborador-texto">
+                                        <strong>@c.Texto</strong>
+                                        <span>@c.Detalle</span>
+                                    </span>
+                                </label>
+                            </div>
+                        }
+                    </div>
+                    <div class="text-muted mt-2" id="sinCoincidencias" hidden>Ningún colaborador coincide con la búsqueda.</div>
+                }
+                <span asp-validation-for="ColaboradoresIds" class="text-danger"></span>
+            </div>
+        </div>
+
+        @* ---------- Instrucciones ---------- *@
+        <div class="fn-card">
+            <div class="fn-card-header">
+                <h2 class="fn-card-title fn-titulo-icono">
+                    <svg viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16v4Z" /><path d="M13.5 6.5l4 4" /></svg>
+                    Instrucciones
+                </h2>
+            </div>
+            <div class="fn-card-body">
+                <textarea asp-for="Observaciones" class="fn-form-control" rows="3" maxlength="500" id="observaciones"
+                          placeholder="Ej. Atomizar el sector sur del lote según las indicaciones del encargado."></textarea>
+                <div class="d-flex justify-content-between mt-1">
+                    <span asp-validation-for="Observaciones" class="text-danger"></span>
+                    <span class="form-text ms-auto" id="contadorObservaciones">0/500</span>
+                </div>
+            </div>
+        </div>
+
+        @* ---------- ¿Ya se realizó? ---------- *@
+        @if (!Model.EsEdicion)
+        {
+            <div class="fn-card">
+                <div class="fn-card-body">
+                    <div class="form-check form-switch fn-switch">
+                        <input asp-for="YaRealizado" class="form-check-input" role="switch" id="yaRealizado" />
+                        <label class="form-check-label" for="yaRealizado"><strong>¿El trabajo ya se realizó?</strong></label>
+                    </div>
+                    <div class="form-text" id="ayudaYaRealizado">Si no, podrá registrar las horas después desde los avances.</div>
 
                     <div class="row g-3 mt-1" id="bloqueTrabajo">
                         <div class="col-md-6">
@@ -124,51 +193,170 @@
                         </div>
                         <div class="col-12">
                             <div class="form-text">
-                                Se registrará un avance con la fecha de la labor para cada colaborador asignado, usando las observaciones como comentario.
+                                Se registrará un avance con la fecha de la labor para cada colaborador asignado, usando las instrucciones como comentario.
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+        }
+
+        <div class="d-flex justify-content-between gap-2 flex-wrap">
+            @if (Model.EsEdicion)
+            {
+                <a asp-action="Detalle" asp-route-id="@Model.Id" class="fn-btn fn-btn-outline">Cancelar</a>
+                <button type="submit" class="fn-btn fn-btn-primary fn-btn-grande">
+                    <svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
+                    Guardar cambios
+                </button>
+            }
+            else
+            {
+                <a asp-action="Index" class="fn-btn fn-btn-outline">Cancelar</a>
+                <button type="submit" class="fn-btn fn-btn-primary fn-btn-grande">
+                    <svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
+                    @(Model.PuedeElegirColaboradores ? "Crear y asignar labor" : "Registrar labor")
+                </button>
+            }
         </div>
-    }
+    </div>
+
+    @* ---------- Resumen ---------- *@
+    <div class="col-xl-4">
+        <div class="fn-card fn-resumen">
+            <div class="fn-card-header">
+                <h2 class="fn-card-title">Resumen de asignación</h2>
+            </div>
+            <div class="fn-card-body">
+                <div class="fn-resumen-item">
+                    <svg viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="17" rx="2" /><path d="M9 4h6v3H9z" /></svg>
+                    <div><span>Labor</span><strong id="resLabor">—</strong></div>
+                </div>
+                <div class="fn-resumen-item">
+                    <svg viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21Z" /><circle cx="12" cy="9.5" r="2.5" /></svg>
+                    <div>
+                        <span>Lugar</span><strong id="resLugar">—</strong>
+                        <small class="fn-resumen-ref" id="resUbicacion" hidden></small>
+                    </div>
+                </div>
+                <div class="fn-resumen-item">
+                    <svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2" /><path d="M8 3v4M16 3v4M4 10h16" /></svg>
+                    <div><span>Fecha</span><strong id="resFecha">—</strong></div>
+                </div>
+                <div class="fn-resumen-item">
+                    <svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3" /><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6" /><circle cx="17" cy="9" r="2.5" /><path d="M15.5 14.2c2.9.4 5.5 2.8 5.5 5.8" /></svg>
+                    <div class="w-100">
+                        <span>Responsables</span>
+                        <div id="resResponsables">
+                            <strong>@(Model.PuedeElegirColaboradores ? "—" : Model.ColaboradorPropio)</strong>
+                        </div>
+                    </div>
+                </div>
+                <div class="fn-resumen-nota">
+                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" /><path d="M12 11v5M12 8v.5" /></svg>
+                    Cada colaborador tendrá su propio registro de horas y deberá terminar su parte antes de la revisión.
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
     (function () {
-        var tipo = document.getElementById('tipoLabor');
-        var bloque = document.getElementById('bloqueTipoOtro');
-        if (!tipo || !bloque) return;
-        var otra = '@TipoLabor.Otra';
-        function actualizar() {
-            bloque.style.display = tipo.value === otra ? '' : 'none';
+        const $ = id => document.getElementById(id);
+        const finca = $('fincaSel'), lote = $('loteSel'), terreno = $('terrenoId');
+        const tipo = $('tipoLabor'), otro = $('TipoOtro'), fecha = $('Fecha');
+        const otra = '@TipoLabor.Otra';
+        const lista = $('listaColaboradores');
+
+        // Finca + lote → un solo TerrenoId (el lote, o la finca si es "Toda la finca").
+        function filtrarLotes() {
+            let visibles = 0;
+            [...lote.options].forEach(o => {
+                if (!o.value) return;
+                o.hidden = o.dataset.finca !== finca.value;
+                if (!o.hidden) visibles++;
+            });
+            if (lote.selectedOptions[0]?.hidden) lote.value = '';
+            lote.disabled = !finca.value || visibles === 0;
         }
-        tipo.addEventListener('change', actualizar);
-        actualizar();
-    })();
-</script>
+        function sincronizarTerreno() { terreno.value = lote.value || finca.value; resumen(); }
 
-<script>
-    (function () {
-        var check = document.getElementById('yaRealizado');
-        var bloque = document.getElementById('bloqueTrabajo');
-        var modo = document.getElementById('modoTrabajo');
-        var bloqueHoras = document.getElementById('bloqueHorasTrabajo');
-        if (!check || !bloque || !modo || !bloqueHoras) return;
-        var porHoras = '@ModoRegistroAvance.PorHoras';
+        function texto(sel) { const o = sel.selectedOptions[0]; return o && o.value ? o.textContent.trim() : ''; }
 
-        function actualizar() {
-            bloque.style.display = check.checked ? '' : 'none';
-            var mostrarHoras = check.checked && modo.value === porHoras;
-            bloqueHoras.style.display = mostrarHoras ? '' : 'none';
-            if (!mostrarHoras) {
-                var input = bloqueHoras.querySelector('input');
-                if (input) input.value = '';
+        function resumen() {
+            const nombreTipo = tipo.value === otra ? (otro.value.trim() || 'Otra') : texto(tipo);
+            $('resLabor').textContent = nombreTipo || '—';
+            $('resLugar').textContent = finca.value ? (texto(finca) + (lote.value ? ' · ' + texto(lote) : ' · toda la finca')) : '—';
+            // Ubicación de referencia del lote; si el lote no tiene, la de su finca.
+            const ubicacion = (lote.value && lote.selectedOptions[0].dataset.ubicacion)
+                || (finca.value && finca.selectedOptions[0].dataset.ubicacion) || '';
+            $('resUbicacion').textContent = ubicacion ? '📍 ' + ubicacion : '';
+            $('resUbicacion').hidden = !ubicacion;
+            if (fecha.value) {
+                const [a, m, d] = fecha.value.split('-');
+                $('resFecha').textContent = new Date(a, m - 1, d).toLocaleDateString('es-CR', { day: 'numeric', month: 'long', year: 'numeric' });
+            } else $('resFecha').textContent = '—';
+
+            if (!lista) return;
+            const marcados = [...lista.querySelectorAll('input:checked')];
+            $('conteoColaboradores').textContent = marcados.length + (marcados.length === 1 ? ' seleccionado' : ' seleccionados');
+            const destino = $('resResponsables');
+            destino.innerHTML = '';
+            if (!marcados.length) { destino.innerHTML = '<strong>—</strong>'; return; }
+            marcados.forEach(m => {
+                const fila = document.createElement('div');
+                fila.className = 'fn-resumen-persona';
+                fila.innerHTML = '<span class="fn-avatar fn-avatar-sm"></span><span><strong></strong><small></small></span>';
+                const avatar = fila.querySelector('.fn-avatar');
+                avatar.classList.add(m.dataset.color);
+                avatar.textContent = m.dataset.iniciales;
+                fila.querySelector('strong').textContent = m.dataset.nombre;
+                fila.querySelector('small').textContent = m.dataset.cargo;
+                destino.appendChild(fila);
+            });
+        }
+
+        finca.addEventListener('change', () => { filtrarLotes(); sincronizarTerreno(); });
+        lote.addEventListener('change', sincronizarTerreno);
+        tipo.addEventListener('change', () => { $('bloqueTipoOtro').style.display = tipo.value === otra ? '' : 'none'; resumen(); });
+        otro.addEventListener('input', resumen);
+        fecha.addEventListener('change', resumen);
+
+        // Colaboradores: búsqueda por nombre o cargo.
+        if (lista) {
+            $('buscarColaborador').addEventListener('input', e => {
+                const t = e.target.value.trim().toLowerCase();
+                let n = 0;
+                lista.querySelectorAll('.col').forEach(c => { c.hidden = !c.dataset.nombre.includes(t); if (!c.hidden) n++; });
+                $('sinCoincidencias').hidden = n > 0;
+            });
+            lista.addEventListener('change', resumen);
+        }
+
+        const obs = $('observaciones');
+        const contar = () => $('contadorObservaciones').textContent = obs.value.length + '/500';
+        obs.addEventListener('input', contar);
+        contar();
+
+        // ¿Ya se realizó? → muestra el bloque de horas.
+        const check = $('yaRealizado');
+        if (check) {
+            const modo = $('modoTrabajo'), bloqueHoras = $('bloqueHorasTrabajo'), porHoras = '@ModoRegistroAvance.PorHoras';
+            function trabajo() {
+                $('bloqueTrabajo').style.display = check.checked ? '' : 'none';
+                $('ayudaYaRealizado').style.display = check.checked ? 'none' : '';
+                const mostrar = check.checked && modo.value === porHoras;
+                bloqueHoras.style.display = mostrar ? '' : 'none';
+                if (!mostrar) bloqueHoras.querySelector('input').value = '';
             }
+            check.addEventListener('change', trabajo);
+            modo.addEventListener('change', trabajo);
+            trabajo();
         }
 
-        check.addEventListener('change', actualizar);
-        modo.addEventListener('change', actualizar);
-        actualizar();
+        filtrarLotes();
+        $('bloqueTipoOtro').style.display = tipo.value === otra ? '' : 'none';
+        resumen();
     })();
 </script>

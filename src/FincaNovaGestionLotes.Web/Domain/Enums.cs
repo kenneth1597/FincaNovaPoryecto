@@ -30,7 +30,9 @@ public enum EstadoLabor
 {
     Pendiente = 1,
     EnProceso = 2,
-    Finalizada = 3
+    Finalizada = 3,
+    /// <summary>Todos los asignados terminaron su parte; espera la aprobación del administrador o dueño.</summary>
+    EnRevision = 4
 }
 
 public enum EstadoEnfermedad

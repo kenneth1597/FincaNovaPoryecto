@@ -1,0 +1,144 @@
+@model InsumoDetalleViewModel
+
+@{
+    ViewData["Title"] = Model.Nombre;
+}
+
+<div class="fn-page-header">
+    <div>
+        <h1 class="fn-page-title">@Model.Nombre</h1>
+        <p class="fn-page-subtitle">@Model.Categoria · @Model.Unidad</p>
+    </div>
+    <div class="d-flex gap-2">
+        @if (Model.EsAdmin)
+        {
+            @if (Model.Activo)
+            {
+                <a asp-action="Ingreso" asp-route-insumoId="@Model.Id" class="fn-btn fn-btn-primary">+ Registrar ingreso</a>
+            }
+            <a asp-action="Editar" asp-route-id="@Model.Id" class="fn-btn fn-btn-outline">Editar</a>
+        }
+        <a asp-action="Index" class="fn-btn fn-btn-outline">Volver</a>
+    </div>
+</div>
+
+@if (TempData["Ok"] is string ok)
+{
+    <div class="alert alert-success border-0 shadow-sm">@ok</div>
+}
+
+@if (Model.BajoMinimo)
+{
+    <div class="alert alert-danger border-0 shadow-sm">
+        <strong>⚠ Alerta: Stock por debajo del mínimo crítico.</strong>
+        Quedan @Ui.CantidadConUnidad(Model.StockActual, Model.Unidad); el mínimo es @Ui.CantidadConUnidad(Model.StockMinimo, Model.Unidad).
+    </div>
+}
+
+<div class="row g-3 mb-3">
+    <div class="col-md-4">
+        <div class="fn-card h-100 mb-0">
+            <div class="fn-card-body">
+                <div class="fn-form-label">Existencias</div>
+                <div class="fs-3 fw-bold @(Model.BajoMinimo ? "fn-texto-alerta" : "")">
+                    @Ui.CantidadConUnidad(Model.StockActual, Model.Unidad)
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="fn-card h-100 mb-0">
+            <div class="fn-card-body">
+                <div class="fn-form-label">Stock mínimo</div>
+                <div class="fs-3 fw-bold">
+                    @(Model.StockMinimo > 0 ? Ui.CantidadConUnidad(Model.StockMinimo, Model.Unidad) : "Sin configurar")
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="fn-card h-100 mb-0">
+            <div class="fn-card-body">
+                <div class="fn-form-label">Estado</div>
+                <div class="mt-2">
+                    @if (Model.Activo)
+                    {
+                        <span class="fn-badge fn-badge-success">Activo</span>
+                    }
+                    else
+                    {
+                        <span class="fn-badge fn-badge-neutral">Inactivo</span>
+                    }
+                    @if (Model.RequiereVencimiento)
+                    {
+                        <span class="fn-badge fn-badge-warning">Requiere vencimiento</span>
+                    }
+                </div>
+                @if (!string.IsNullOrWhiteSpace(Model.Descripcion))
+                {
+                    <div class="small text-muted mt-2">@Model.Descripcion</div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="fn-card">
+    <div class="fn-card-header d-flex justify-content-between align-items-center">
+        <h2 class="fn-card-title">Movimientos</h2>
+        <span class="fn-count">@Model.Paginacion.Total movimiento(s)</span>
+    </div>
+
+    @if (!Model.Movimientos.Any())
+    {
+        <div class="fn-empty">
+            <div class="fn-empty-title">Este insumo no tiene movimientos.</div>
+        </div>
+    }
+    else
+    {
+        <div class="fn-card-body">
+            <div class="fn-table-wrapper">
+                <table class="fn-table">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Tipo</th>
+                            <th class="text-end">Cantidad</th>
+                            <th class="text-end">Saldo</th>
+                            <th>Vence</th>
+                            <th>Origen</th>
+                            <th>Registrado por</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var m in Model.Movimientos)
+                        {
+                            var entrada = m.Tipo == TipoMovimientoInventario.Entrada;
+                            <tr>
+                                <td>@m.Fecha.ToString("dd/MM/yyyy")</td>
+                                <td>
+                                    <span class="fn-badge @(entrada ? "fn-badge-success" : "fn-badge-warning")">
+                                        @Ui.TipoMovimientoTexto(m.Tipo)
+                                    </span>
+                                </td>
+                                <td class="text-end fw-bold">@(entrada ? "+" : "−")@m.Cantidad.ToString("0.##")</td>
+                                <td class="text-end">@m.StockResultante.ToString("0.##")</td>
+                                <td>@(m.FechaVencimiento?.ToString("dd/MM/yyyy") ?? "—")</td>
+                                <td>
+                                    @(m.Origen ?? "—")
+                                    @if (!string.IsNullOrWhiteSpace(m.Observaciones))
+                                    {
+                                        <div class="small text-muted">@m.Observaciones</div>
+                                    }
+                                </td>
+                                <td>@(m.RegistradoPor ?? "—")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <partial name="_Paginacion" model="Model.Paginacion" />
+    }
+</div>

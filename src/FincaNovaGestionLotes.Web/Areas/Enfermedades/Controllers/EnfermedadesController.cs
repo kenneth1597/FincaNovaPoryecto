@@ -3,6 +3,7 @@ using FincaNovaGestionLotes.Web.Data;
 using FincaNovaGestionLotes.Web.Domain;
 using FincaNovaGestionLotes.Web.Domain.Enfermedades;
 using FincaNovaGestionLotes.Web.Services.Auditoria;
+using FincaNovaGestionLotes.Web.Services.Inventario;
 using Microsoft.AspNetCore.Mvc;
 using FincaNovaGestionLotes.Web.Filters;
 using FincaNovaGestionLotes.Web.ViewSupport;
@@ -15,14 +16,30 @@ public class EnfermedadesController : Controller
 {
     private readonly AppDbContext _db;
     private readonly IAuditService _audit;
+    private readonly IInventarioService _inventario;
 
     public EnfermedadesController(
         AppDbContext db,
-        IAuditService audit)
+        IAuditService audit,
+        IInventarioService inventario)
     {
         _db = db;
         _audit = audit;
+        _inventario = inventario;
     }
+
+    private Task<List<InsumoTratamientoOpcion>> InsumosDisponiblesAsync() =>
+        _db.Insumos.AsNoTracking()
+            .Where(i => i.Activo)
+            .OrderBy(i => i.Nombre)
+            .Select(i => new InsumoTratamientoOpcion
+            {
+                Id = i.Id,
+                Nombre = i.Nombre,
+                Unidad = i.UnidadMedida.Nombre,
+                StockActual = i.StockActual
+            })
+            .ToListAsync();
 
 
     [HttpGet]
@@ -390,7 +407,8 @@ public class EnfermedadesController : Controller
             Productos = new List<ProductoViewModel>
             {
                 new ProductoViewModel()
-            }
+            },
+            Insumos = await InsumosDisponiblesAsync()
         };
 
         return View(model);
@@ -420,15 +438,52 @@ public class EnfermedadesController : Controller
                 "La efectividad indicada no es válida.");
         }
 
-        if (model.Productos.Count == 0)
+        // Las filas que el usuario agregó y dejó en blanco no cuentan.
+        for (var i = model.Productos.Count - 1; i >= 0; i--)
+        {
+            if (model.Productos[i].EstaVacio && model.Productos.Count > 1)
+            {
+                foreach (var clave in ModelState.Keys.Where(k => k.StartsWith($"Productos[{i}]")).ToList())
+                    ModelState.Remove(clave);
+                model.Productos.RemoveAt(i);
+            }
+        }
+
+        if (model.Productos.Count == 0 || model.Productos.All(p => p.EstaVacio))
         {
             ModelState.AddModelError(
                 nameof(model.Productos),
                 "Debe registrar al menos un producto utilizado.");
         }
 
+        // Cada producto viene del inventario o se describe a mano (nombre y unidad).
+        var insumos = new Dictionary<int, Domain.Inventario.Insumo>();
+        for (var i = 0; i < model.Productos.Count; i++)
+        {
+            var producto = model.Productos[i];
+            if (producto.InsumoId is { } insumoId)
+            {
+                var insumo = await _db.Insumos.Include(x => x.UnidadMedida)
+                    .FirstOrDefaultAsync(x => x.Id == insumoId && x.Activo);
+                if (insumo is null)
+                    ModelState.AddModelError($"Productos[{i}].InsumoId", "El insumo seleccionado no está disponible.");
+                else
+                    insumos[insumoId] = insumo;
+            }
+            else
+            {
+                if (string.IsNullOrWhiteSpace(producto.NombreProducto))
+                    ModelState.AddModelError($"Productos[{i}].NombreProducto", "El nombre del producto es obligatorio.");
+                if (string.IsNullOrWhiteSpace(producto.Unidad))
+                    ModelState.AddModelError($"Productos[{i}].Unidad", "La unidad es obligatoria.");
+            }
+        }
+
         if (!ModelState.IsValid)
+        {
+            model.Insumos = await InsumosDisponiblesAsync();
             return View(model);
+        }
 
         var tratamiento = new TratamientoEnfermedad
         {
@@ -444,20 +499,54 @@ public class EnfermedadesController : Controller
         if (enfermedad.Estado == EstadoEnfermedad.Activa)
             enfermedad.Estado = EstadoEnfermedad.EnTratamiento;
 
-        foreach (var producto in model.Productos)
+        var rebajados = new List<string>();
+        try
         {
-            tratamiento.Productos.Add(
-                new ProductoTratamiento
+            foreach (var producto in model.Productos)
+            {
+                var insumo = producto.InsumoId is { } id ? insumos[id] : null;
+                var productoTratamiento = new ProductoTratamiento
                 {
-                    NombreProducto = producto.NombreProducto.Trim(),
+                    NombreProducto = insumo?.Nombre ?? producto.NombreProducto!.Trim(),
                     Cantidad = producto.Cantidad,
-                    Unidad = producto.Unidad.Trim()
-                });
+                    Unidad = insumo?.UnidadMedida.Nombre ?? producto.Unidad!.Trim(),
+                    Insumo = insumo
+                };
+                tratamiento.Productos.Add(productoTratamiento);
+
+                // HU-24 esc. 1: el inventario se rebaja junto con el tratamiento, sin doble digitación.
+                if (insumo is not null)
+                {
+                    await _inventario.RegistrarSalidaAsync(insumo, producto.Cantidad, model.FechaAplicacion,
+                        $"Tratamiento de {enfermedad.Nombre}", productoTratamiento: productoTratamiento);
+                    rebajados.Add(Ui.CantidadConUnidad(producto.Cantidad, insumo.UnidadMedida.Nombre) + " de " + insumo.Nombre);
+                }
+            }
+        }
+        catch (InventarioInsuficienteException ex)
+        {
+            // Nada se guardó todavía: se descartan el tratamiento y los rebajos preparados.
+            _db.ChangeTracker.Clear();
+            ModelState.AddModelError(string.Empty,
+                $"No es posible registrar el tratamiento: Inventario insuficiente de {ex.Insumo.Nombre}. " +
+                $"Existencias actuales: {ex.Existencias}");
+            model.Insumos = await InsumosDisponiblesAsync();
+            return View(model);
         }
 
         _db.TratamientosEnfermedad.Add(tratamiento);
 
-        await _db.SaveChangesAsync();
+        try
+        {
+            await _db.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            _db.ChangeTracker.Clear();
+            ModelState.AddModelError(string.Empty, InventarioService.MensajeConcurrencia);
+            model.Insumos = await InsumosDisponiblesAsync();
+            return View(model);
+        }
 
         await _audit.RegistrarAsync(
             AccionAuditoria.Crear,
@@ -465,8 +554,9 @@ public class EnfermedadesController : Controller
             tratamiento.Id.ToString(),
             $"Tratamiento registrado para la enfermedad {enfermedad.Nombre}");
 
-        TempData["Ok"] =
-            "El tratamiento y los productos utilizados fueron registrados.";
+        TempData["Ok"] = rebajados.Count == 0
+            ? "El tratamiento y los productos utilizados fueron registrados."
+            : "El tratamiento fue registrado y se rebajó del inventario: " + string.Join(", ", rebajados) + ".";
 
         return RedirectToAction(
             nameof(Detalle),

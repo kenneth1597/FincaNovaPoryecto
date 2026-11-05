@@ -1,0 +1,103 @@
+@model InsumoEditarViewModel
+
+@{
+    ViewData["Title"] = "Editar insumo";
+}
+
+<div class="fn-page-header">
+    <div>
+        <h1 class="fn-page-title">Editar insumo</h1>
+        <p class="fn-page-subtitle">
+            Existencias actuales: <strong>@Model.StockActual.ToString("0.##")</strong>.
+            Las existencias solo cambian con ingresos o con el uso en tratamientos y labores.
+        </p>
+    </div>
+    <a asp-action="Detalle" asp-route-id="@Model.Id" class="fn-btn fn-btn-outline">Volver</a>
+</div>
+
+@if (TempData["Error"] is string error)
+{
+    <div class="alert alert-danger border-0 shadow-sm">@error</div>
+}
+
+<div class="fn-card">
+    <div class="fn-card-body">
+        <form asp-action="Editar" method="post">
+            <input type="hidden" asp-for="Id" />
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label asp-for="Nombre" class="fn-form-label"></label>
+                    <input asp-for="Nombre" class="fn-form-control" />
+                    <span asp-validation-for="Nombre" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="CategoriaInsumoId" class="fn-form-label"></label>
+                    <select asp-for="CategoriaInsumoId" class="fn-form-select">
+                        @foreach (var c in Model.Categorias)
+                        {
+                            <option value="@c.Id" selected="@(Model.CategoriaInsumoId == c.Id)">@c.Texto</option>
+                        }
+                    </select>
+                    <span asp-validation-for="CategoriaInsumoId" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-4">
+                    <label asp-for="UnidadMedidaId" class="fn-form-label"></label>
+                    @if (Model.TieneMovimientos)
+                    {
+                        <input type="hidden" asp-for="UnidadMedidaId" />
+                        <select class="fn-form-select" disabled>
+                            @foreach (var u in Model.Unidades.Where(u => u.Id == Model.UnidadMedidaId))
+                            {
+                                <option>@u.Texto</option>
+                            }
+                        </select>
+                        <div class="form-text">No se puede cambiar: el insumo ya tiene movimientos.</div>
+                    }
+                    else
+                    {
+                        <select asp-for="UnidadMedidaId" class="fn-form-select">
+                            @foreach (var u in Model.Unidades)
+                            {
+                                <option value="@u.Id" selected="@(Model.UnidadMedidaId == u.Id)">@u.Texto</option>
+                            }
+                        </select>
+                    }
+                    <span asp-validation-for="UnidadMedidaId" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-4">
+                    <label asp-for="StockMinimo" class="fn-form-label"></label>
+                    <input asp-for="StockMinimo" type="number" step="0.01" min="0" class="fn-form-control" />
+                    <div class="form-text">Al llegar a esta cantidad se genera la alerta. 0 = sin alerta.</div>
+                    <span asp-validation-for="StockMinimo" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-4 d-flex align-items-end">
+                    <div class="form-check mb-2">
+                        <input asp-for="Activo" class="form-check-input" />
+                        <label asp-for="Activo" class="form-check-label"></label>
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <label asp-for="Descripcion" class="fn-form-label"></label>
+                    <textarea asp-for="Descripcion" class="fn-form-control" rows="2"></textarea>
+                    <span asp-validation-for="Descripcion" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="d-flex gap-2 mt-4">
+                <button type="submit" class="fn-btn fn-btn-primary">Guardar cambios</button>
+                <a asp-action="Detalle" asp-route-id="@Model.Id" class="fn-btn fn-btn-outline">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

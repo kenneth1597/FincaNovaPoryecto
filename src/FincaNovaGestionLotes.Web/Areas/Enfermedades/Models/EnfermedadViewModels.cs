@@ -141,21 +141,40 @@ public class TratamientoCrearViewModel
 
     public List<ProductoViewModel> Productos { get; set; }
         = new();
+
+    /// <summary>Insumos del inventario que se pueden aplicar (HU-24).</summary>
+    public IEnumerable<InsumoTratamientoOpcion> Insumos { get; set; }
+        = Enumerable.Empty<InsumoTratamientoOpcion>();
 }
 
 public class ProductoViewModel
 {
-    [Required(ErrorMessage = "El nombre del producto es obligatorio.")]
+    /// <summary>
+    /// Insumo del inventario. Si se elige, el nombre y la unidad salen del insumo
+    /// y la cantidad se rebaja del stock (HU-24). Si no, se escriben a mano.
+    /// </summary>
+    [Display(Name = "Insumo del inventario")]
+    public int? InsumoId { get; set; }
+
     [StringLength(150)]
     [Display(Name = "Producto")]
-    public string NombreProducto { get; set; } = string.Empty;
+    public string? NombreProducto { get; set; }
 
     [Range(0.01, 100000, ErrorMessage = "La cantidad debe ser mayor a cero.")]
     public decimal Cantidad { get; set; }
 
-    [Required(ErrorMessage = "La unidad es obligatoria.")]
     [StringLength(30)]
+    public string? Unidad { get; set; }
+
+    public bool EstaVacio => InsumoId is null && string.IsNullOrWhiteSpace(NombreProducto) && Cantidad == 0;
+}
+
+public class InsumoTratamientoOpcion
+{
+    public int Id { get; set; }
+    public string Nombre { get; set; } = string.Empty;
     public string Unidad { get; set; } = string.Empty;
+    public decimal StockActual { get; set; }
 }
 
 public class EnfermedadEditarViewModel

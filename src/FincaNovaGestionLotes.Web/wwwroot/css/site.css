@@ -1058,3 +1058,1307 @@ textarea.fn-form-control {
         min-width: 800px;
     }
 }
+
+/* =========================================================
+   INVENTARIO: insumos en el stock mínimo (HU-23, HU-25)
+   ========================================================= */
+
+.fn-table tbody tr.fn-fila-alerta td {
+    background: var(--fn-rojo-claro);
+}
+
+.fn-table tbody tr.fn-fila-alerta:hover td {
+    background: #F1CFC6;
+}
+
+.fn-texto-alerta {
+    color: var(--fn-rojo-texto);
+    font-weight: 700;
+}
+
+.fn-nav-badge {
+    margin-left: auto;
+    min-width: 20px;
+    padding: 1px 7px;
+    border-radius: 999px;
+    background: var(--fn-rojo);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    text-align: center;
+}
+
+/* =========================================================
+   LEGIBILIDAD (sugerencia de revisión)
+   Letra más grande, menú con separadores y botones más
+   visibles: el sistema lo usan personas mayores.
+   Todo en este bloque; para revertir basta con quitarlo.
+   ========================================================= */
+
+html {
+    font-size: 17px;
+}
+
+body {
+    line-height: 1.5;
+}
+
+/* Menú lateral: secciones separadas por una línea y textos más grandes */
+.fn-sidebar-nav {
+    padding: 8px 14px 16px;
+}
+
+.fn-nav-section {
+    padding: 16px 12px 8px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .9px;
+}
+
+    .fn-nav-section:not(:first-child) {
+        margin-top: 10px;
+        border-top: 1px solid rgba(243, 235, 221, .14);
+    }
+
+.fn-nav-link {
+    padding: 11px 14px;
+    margin-bottom: 3px;
+    border-radius: 10px;
+    font-size: 16px;
+}
+
+    .fn-nav-link.active {
+        box-shadow: 0 2px 6px rgba(0, 0, 0, .18);
+    }
+
+.fn-nav-icon,
+.fn-nav-icon svg {
+    width: 21px;
+    height: 21px;
+}
+
+.fn-brand-title {
+    font-size: 20px;
+}
+
+.fn-brand-subtitle,
+.fn-user-text span {
+    font-size: 13px;
+}
+
+.fn-user-text strong {
+    font-size: 14.5px;
+}
+
+/* Encabezados y tarjetas */
+.fn-page-title {
+    font-size: 31px;
+    font-weight: 800;
+}
+
+.fn-page-subtitle {
+    font-size: 16.5px;
+}
+
+.fn-card {
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(59, 42, 32, .06);
+}
+
+.fn-card-header {
+    padding: 18px 22px;
+}
+
+.fn-card-body {
+    padding: 22px;
+}
+
+.fn-card-title {
+    font-size: 19px;
+}
+
+.fn-titulo-icono {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+    .fn-titulo-icono svg {
+        width: 22px;
+        height: 22px;
+        flex-shrink: 0;
+        fill: none;
+        stroke: var(--fn-hoja);
+        stroke-width: 1.9;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+/* Formularios */
+.fn-form-label {
+    font-size: 15px;
+    margin-bottom: 8px;
+}
+
+.fn-form-control,
+.fn-form-select {
+    height: 48px;
+    font-size: 16px;
+    border-radius: 9px;
+}
+
+textarea.fn-form-control {
+    font-size: 16px;
+}
+
+.form-text,
+.text-danger {
+    font-size: 14.5px;
+}
+
+.form-check-input {
+    width: 1.2em;
+    height: 1.2em;
+}
+
+/* Botones: más altos, con ícono y sombra en la acción principal */
+.fn-btn {
+    min-height: 48px;
+    padding: 10px 22px;
+    font-size: 16px;
+    border-radius: 9px;
+}
+
+    .fn-btn svg {
+        width: 20px;
+        height: 20px;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2.2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+.fn-btn-primary {
+    box-shadow: 0 2px 6px rgba(76, 104, 48, .28);
+}
+
+.fn-btn-outline {
+    border-width: 1.5px;
+    border-color: #CDBFAA;
+    color: var(--fn-texto);
+}
+
+.fn-btn-grande {
+    min-height: 54px;
+    padding: 12px 30px;
+    font-size: 17px;
+}
+
+/* Tablas, insignias y textos pequeños */
+.fn-table thead th {
+    font-size: 14.5px;
+}
+
+.fn-table tbody td {
+    font-size: 15.5px;
+}
+
+.fn-badge {
+    font-size: 13.5px;
+    padding: 6px 13px;
+}
+
+.fn-count {
+    font-size: 13.5px;
+}
+
+.fn-empty-title {
+    font-size: 19px;
+}
+
+.fn-empty-text,
+.fn-paginacion-info,
+.fn-action-link {
+    font-size: 15px;
+}
+
+.fn-footer {
+    font-size: 14px;
+}
+
+.alert {
+    font-size: 16px;
+}
+
+/* Ruta de navegación (Labores / Nueva labor) */
+.fn-migas {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 6px;
+    font-size: 14.5px;
+    color: var(--fn-texto-suave);
+}
+
+    .fn-migas a {
+        color: var(--fn-texto-suave);
+        text-decoration: none;
+    }
+
+        .fn-migas a:hover {
+            color: var(--fn-hoja-oscuro);
+            text-decoration: underline;
+        }
+
+    .fn-migas span:last-child {
+        color: var(--fn-texto);
+        font-weight: 700;
+    }
+
+/* =========================================================
+   ASIGNAR LABOR: buscador, tarjetas de colaborador y resumen
+   ========================================================= */
+
+.fn-buscador {
+    position: relative;
+    max-width: 420px;
+}
+
+    .fn-buscador svg {
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        width: 20px;
+        height: 20px;
+        transform: translateY(-50%);
+        fill: none;
+        stroke: var(--fn-texto-suave);
+        stroke-width: 2;
+        stroke-linecap: round;
+    }
+
+    .fn-buscador .fn-form-control {
+        padding-left: 44px;
+    }
+
+.fn-colaborador {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    border: 1.5px solid var(--fn-borde-fuerte);
+    border-radius: 11px;
+    background: #fff;
+    cursor: pointer;
+    transition: border-color .15s ease, background .15s ease;
+}
+
+    .fn-colaborador:hover {
+        border-color: var(--fn-hoja);
+    }
+
+    .fn-colaborador:has(input:checked) {
+        border-color: var(--fn-hoja);
+        background: #EEF3E4;
+    }
+
+    .fn-colaborador .form-check-input {
+        margin: 0;
+        flex-shrink: 0;
+    }
+
+        .fn-colaborador .form-check-input:checked {
+            background-color: var(--fn-hoja);
+            border-color: var(--fn-hoja);
+        }
+
+.fn-colaborador-texto {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.3;
+    min-width: 0;
+}
+
+    .fn-colaborador-texto strong {
+        font-size: 16.5px;
+        color: var(--fn-texto);
+    }
+
+    .fn-colaborador-texto span {
+        font-size: 14.5px;
+        color: var(--fn-texto-suave);
+    }
+
+.fn-avatar {
+    width: 46px;
+    height: 46px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.fn-avatar-sm {
+    width: 38px;
+    height: 38px;
+    font-size: 13.5px;
+}
+
+.fn-avatar-0 { background: #DCE8CC; color: #3F5525; }
+.fn-avatar-1 { background: #E4DCF3; color: #4B3A78; }
+.fn-avatar-2 { background: #F6E3CC; color: #7A4A13; }
+.fn-avatar-3 { background: #D6E6F2; color: #23506E; }
+.fn-avatar-4 { background: #F3D9D9; color: #7E2A2A; }
+
+.fn-switch {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-left: 0;
+    font-size: 17px;
+}
+
+    .fn-switch .form-check-input {
+        width: 3em;
+        height: 1.6em;
+        margin: 0;
+        cursor: pointer;
+    }
+
+        .fn-switch .form-check-input:checked {
+            background-color: var(--fn-hoja);
+            border-color: var(--fn-hoja);
+        }
+
+.fn-resumen {
+    position: sticky;
+    top: 20px;
+}
+
+.fn-resumen-item {
+    display: flex;
+    gap: 14px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--fn-borde);
+}
+
+    .fn-resumen-item:first-child {
+        padding-top: 0;
+    }
+
+    .fn-resumen-item > svg {
+        width: 24px;
+        height: 24px;
+        flex-shrink: 0;
+        margin-top: 2px;
+        fill: none;
+        stroke: var(--fn-texto-2);
+        stroke-width: 1.8;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+    .fn-resumen-item span {
+        display: block;
+        font-size: 14px;
+        color: var(--fn-texto-suave);
+    }
+
+    .fn-resumen-item strong {
+        display: block;
+        font-size: 17px;
+        color: var(--fn-texto);
+    }
+
+.fn-resumen-persona {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+    .fn-resumen-persona strong {
+        font-size: 15.5px;
+    }
+
+    .fn-resumen-persona small {
+        display: block;
+        font-size: 13.5px;
+        color: var(--fn-texto-suave);
+    }
+
+.fn-resumen-nota {
+    display: flex;
+    gap: 10px;
+    margin-top: 16px;
+    font-size: 14.5px;
+    color: var(--fn-texto-suave);
+}
+
+    .fn-resumen-nota svg {
+        width: 20px;
+        height: 20px;
+        flex-shrink: 0;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 1.8;
+        stroke-linecap: round;
+    }
+
+@media (max-width: 1199px) {
+    .fn-resumen {
+        position: static;
+    }
+}
+
+/* El subtítulo solo se alinea con el texto del título cuando este lleva ícono. */
+.fn-page-header:not(:has(.fn-page-title-icon)) .fn-page-subtitle {
+    margin-left: 0;
+}
+
+/* Los avatares del resumen no deben heredar el display:block de sus etiquetas. */
+.fn-resumen-item .fn-avatar {
+    display: inline-flex;
+}
+
+.fn-table tbody td {
+    overflow-wrap: normal;
+}
+
+/* =========================================================
+   ARMONÍA ENTRE MÓDULOS
+   Varias pantallas usan los componentes estándar de Bootstrap
+   (card, form-control, btn-success, table, badge, h1). Aquí se
+   les da el mismo aspecto que a los componentes fn-*, para que
+   todos los módulos se vean iguales sin reescribir sus vistas.
+   ========================================================= */
+
+/* Títulos de página escritos como <h1>/<h2> sueltos */
+:is(.fn-content, .fn-auth) h1:not(.fn-page-title),
+.fn-content > h2:first-child,
+.fn-content > div > h2:first-child {
+    font-size: 31px;
+    font-weight: 800;
+    line-height: 1.15;
+    color: var(--fn-texto);
+    margin-bottom: 6px;
+}
+
+.fn-content h1:not(.fn-page-title) + p.text-muted,
+.fn-content h1:not(.fn-page-title) + p {
+    font-size: 16.5px;
+    color: var(--fn-texto-suave) !important;
+    margin-bottom: 22px;
+}
+
+/* Tarjetas */
+:is(.fn-content, .fn-auth) .card {
+    background: var(--fn-crema);
+    border: 1px solid var(--fn-borde);
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(59, 42, 32, .06) !important;
+    margin-bottom: 22px;
+    overflow: hidden;
+}
+
+:is(.fn-content, .fn-auth) .card-header {
+    padding: 18px 22px;
+    background: var(--fn-crema-2);
+    border-bottom: 1px solid var(--fn-borde);
+    font-size: 19px;
+    font-weight: 700;
+    color: var(--fn-texto);
+}
+
+    /* Encabezados de tarjeta pintados con color fuerte → mismo tono claro que el resto */
+    :is(.fn-content, .fn-auth) .card-header.bg-primary,
+    :is(.fn-content, .fn-auth) .card-header.bg-dark,
+    :is(.fn-content, .fn-auth) .card-header.bg-success {
+        background: var(--fn-crema-2) !important;
+        color: var(--fn-texto) !important;
+    }
+
+    :is(.fn-content, .fn-auth) .card-header :is(h1, h2, h3, h4, h5) {
+        font-size: 19px;
+        font-weight: 700;
+        color: var(--fn-texto);
+    }
+
+:is(.fn-content, .fn-auth) .card-body {
+    padding: 22px;
+}
+
+:is(.fn-content, .fn-auth) .card-body > :is(h4, h5) {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--fn-texto);
+}
+
+:is(.fn-content, .fn-auth) .card-footer {
+    padding: 14px 22px;
+    background: var(--fn-crema-2);
+    border-top: 1px solid var(--fn-borde);
+}
+
+/* Formularios */
+:is(.fn-content, .fn-auth) .form-label {
+    margin-bottom: 8px;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--fn-texto-2);
+}
+
+:is(.fn-content, .fn-auth) :is(.form-control, .form-select) {
+    min-height: 48px;
+    font-size: 16px;
+    border: 1px solid var(--fn-borde-fuerte);
+    border-radius: 9px;
+    background-color: #fff;
+    color: var(--fn-texto);
+}
+
+    :is(.fn-content, .fn-auth) :is(.form-control, .form-select):focus {
+        border-color: var(--fn-hoja);
+        box-shadow: 0 0 0 3px rgba(94, 125, 58, .15);
+    }
+
+:is(.fn-content, .fn-auth) textarea.form-control {
+    min-height: 96px;
+}
+
+/* Botones */
+:is(.fn-content, .fn-auth) .btn:not(.btn-link):not(.btn-close) {
+    min-height: 46px;
+    padding: 9px 20px;
+    border-radius: 9px;
+    font-size: 16px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+}
+
+:is(.fn-content, .fn-auth) .btn-sm:not(.btn-link) {
+    min-height: 38px !important;
+    padding: 6px 14px !important;
+    font-size: 15px !important;
+}
+
+:is(.fn-content, .fn-auth) :is(.btn-success, .btn-primary) {
+    background: var(--fn-hoja);
+    border: 1px solid var(--fn-hoja);
+    color: #fff;
+    box-shadow: 0 2px 6px rgba(76, 104, 48, .28);
+}
+
+    :is(.fn-content, .fn-auth) :is(.btn-success, .btn-primary):hover {
+        background: var(--fn-hoja-oscuro);
+        border-color: var(--fn-hoja-oscuro);
+        color: #fff;
+    }
+
+:is(.fn-content, .fn-auth) :is(.btn-outline-secondary, .btn-outline-primary, .btn-outline-success, .btn-secondary, .btn-light) {
+    background: #fff;
+    border: 1.5px solid #CDBFAA;
+    color: var(--fn-texto);
+}
+
+    :is(.fn-content, .fn-auth) :is(.btn-outline-secondary, .btn-outline-primary, .btn-outline-success, .btn-secondary, .btn-light):hover {
+        background: var(--fn-crema-2);
+        border-color: var(--fn-neutro);
+        color: var(--fn-texto);
+    }
+
+:is(.fn-content, .fn-auth) .btn-outline-warning {
+    border: 1.5px solid var(--fn-trigo);
+    color: var(--fn-trigo-texto);
+    background: #fff;
+}
+
+    :is(.fn-content, .fn-auth) .btn-outline-warning:hover {
+        background: var(--fn-trigo-claro);
+        color: var(--fn-trigo-texto);
+    }
+
+:is(.fn-content, .fn-auth) .btn-outline-danger {
+    border: 1.5px solid var(--fn-rojo);
+    color: var(--fn-rojo-texto);
+    background: #fff;
+}
+
+    :is(.fn-content, .fn-auth) .btn-outline-danger:hover {
+        background: var(--fn-rojo-claro);
+        color: var(--fn-rojo-texto);
+    }
+
+:is(.fn-content, .fn-auth) :is(.btn-danger, .btn-warning) {
+    border: 0;
+}
+
+/* Tablas: misma cabecera clara y mismo tamaño de letra que .fn-table */
+.fn-content .table {
+    --bs-table-bg: transparent;
+    --bs-table-hover-bg: #FCF8F1;
+    margin-bottom: 0;
+}
+
+    .fn-content .table > thead > tr > th,
+    .fn-content .table > thead.table-dark > tr > th {
+        background: var(--fn-crema-2);
+        color: var(--fn-texto-2);
+        font-size: 14.5px;
+        font-weight: 700;
+        padding: 12px 14px;
+        border-bottom: 1px solid var(--fn-borde);
+        white-space: nowrap;
+    }
+
+    .fn-content .table > tbody > tr > td,
+    .fn-content .table > tfoot > tr > :is(td, th) {
+        font-size: 15.5px;
+        padding: 12px 14px;
+        border-bottom: 1px solid #EFE7DA;
+        color: var(--fn-texto-2);
+        vertical-align: middle;
+    }
+
+.fn-content .table-responsive {
+    border-radius: 12px;
+    border: 1px solid var(--fn-borde);
+    background: var(--fn-crema);
+}
+
+/* Insignias de Bootstrap con los mismos colores suaves que .fn-badge */
+:is(.fn-content, .fn-auth) .badge {
+    border-radius: 999px;
+    padding: 6px 13px;
+    font-size: 13.5px;
+    font-weight: 700;
+}
+
+    :is(.fn-content, .fn-auth) .badge.bg-success { background: var(--fn-hoja-claro) !important; color: var(--fn-hoja-texto) !important; }
+    :is(.fn-content, .fn-auth) .badge.bg-primary { background: var(--fn-caramelo-claro) !important; color: var(--fn-caramelo) !important; }
+    :is(.fn-content, .fn-auth) .badge.bg-warning { background: var(--fn-trigo-claro) !important; color: var(--fn-trigo-texto) !important; }
+    :is(.fn-content, .fn-auth) .badge.bg-danger { background: var(--fn-rojo-claro) !important; color: var(--fn-rojo-texto) !important; }
+    :is(.fn-content, .fn-auth) .badge.bg-secondary,
+    :is(.fn-content, .fn-auth) .badge.bg-light { background: var(--fn-neutro-claro) !important; color: var(--fn-texto-suave) !important; }
+
+/* Subtítulos de sección dentro de tarjetas (ej. «Productos utilizados») */
+:is(.fn-content, .fn-auth) .card-body :is(h3, h4, h5) {
+    font-size: 19px;
+    font-weight: 700;
+    color: var(--fn-texto);
+}
+
+/* Botones dentro de tablas: en una sola línea y un poco más compactos */
+.fn-content .table .btn:not(.btn-link) {
+    min-height: 40px;
+    padding: 6px 12px;
+    font-size: 15px;
+    white-space: nowrap;
+}
+
+/* Grupos de botones en tablas: pasan a otra línea si no caben y conservan sus esquinas */
+.fn-content .table .btn-group {
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+    .fn-content .table .btn-group .btn {
+        border-radius: 9px !important;
+    }
+
+/* =========================================================
+   LOGIN: panel de marca (café) + formulario (crema)
+   Usa la misma paleta que el resto de la aplicación.
+   ========================================================= */
+
+.fn-login {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    background: var(--fn-arena);
+}
+
+/* ---------- Panel de marca ---------- */
+.fn-login-marca {
+    position: relative;
+    overflow: hidden;
+    color: #FFF8EE;
+    background:
+        radial-gradient(circle at 85% 15%, rgba(94, 125, 58, .45), transparent 45%),
+        radial-gradient(circle at 10% 95%, rgba(181, 101, 29, .35), transparent 40%),
+        linear-gradient(160deg, #4A3528 0%, var(--fn-cafe) 55%, #2C1F17 100%);
+}
+
+.fn-login-patron {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    color: #F3EBDD;
+    opacity: .07;
+}
+
+.fn-login-marca-contenido {
+    position: relative;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 48px 56px;
+    gap: 40px;
+}
+
+.fn-login-logo {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+    .fn-login-logo strong {
+        display: block;
+        font-size: 24px;
+        line-height: 1.1;
+    }
+
+    .fn-login-logo small {
+        display: block;
+        margin-top: 3px;
+        font-size: 14px;
+        color: var(--fn-menu-suave);
+    }
+
+.fn-login-logo-icono {
+    width: 54px;
+    height: 54px;
+    border-radius: 15px;
+    background: #F3EBDD;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, .25);
+}
+
+.fn-login-mensaje {
+    margin-top: auto;
+}
+
+    .fn-login-mensaje h1 {
+        margin: 0 0 16px;
+        font-size: 42px;
+        font-weight: 800;
+        line-height: 1.15;
+        color: #FFF8EE;
+    }
+
+        .fn-login-mensaje h1 span {
+            color: #C9DDA8;
+        }
+
+    .fn-login-mensaje p {
+        max-width: 470px;
+        margin: 0;
+        font-size: 18px;
+        color: var(--fn-menu-texto);
+    }
+
+.fn-login-puntos {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 14px;
+}
+
+    .fn-login-puntos li {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        font-size: 16.5px;
+        color: var(--fn-menu-texto);
+    }
+
+        .fn-login-puntos li strong {
+            color: #FFF8EE;
+        }
+
+.fn-login-punto-icono {
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+    border-radius: 12px;
+    background: rgba(243, 235, 221, .1);
+    border: 1px solid rgba(243, 235, 221, .16);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+    .fn-login-punto-icono svg {
+        width: 22px;
+        height: 22px;
+        fill: none;
+        stroke: #C9DDA8;
+        stroke-width: 1.8;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+.fn-login-pie {
+    margin-top: auto;
+    font-size: 14px;
+    color: var(--fn-menu-seccion);
+}
+
+/* ---------- Formulario ---------- */
+.fn-login-panel {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 32px;
+}
+
+.fn-login-formulario {
+    width: 100%;
+    max-width: 440px;
+}
+
+    .fn-login-formulario h2 {
+        margin: 0 0 6px;
+        font-size: 32px;
+        font-weight: 800;
+        color: var(--fn-texto);
+    }
+
+.fn-login-sub {
+    margin: 0 0 28px;
+    font-size: 17px;
+    color: var(--fn-texto-suave);
+}
+
+.fn-login-campo {
+    position: relative;
+}
+
+    .fn-login-campo > svg {
+        position: absolute;
+        left: 16px;
+        top: 50%;
+        width: 21px;
+        height: 21px;
+        transform: translateY(-50%);
+        fill: none;
+        stroke: var(--fn-texto-suave);
+        stroke-width: 1.8;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        pointer-events: none;
+    }
+
+    .fn-login-campo .form-control {
+        min-height: 54px;
+        padding-left: 50px;
+        padding-right: 52px;
+        font-size: 17px;
+        border-radius: 11px;
+        border: 1.5px solid var(--fn-borde-fuerte);
+        background: #fff;
+    }
+
+        .fn-login-campo .form-control:focus {
+            border-color: var(--fn-hoja);
+            box-shadow: 0 0 0 4px rgba(94, 125, 58, .15);
+        }
+
+.fn-login-ojo {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 40px;
+    border: 0;
+    border-radius: 9px;
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--fn-texto-suave);
+}
+
+    .fn-login-ojo:hover {
+        background: var(--fn-crema-2);
+        color: var(--fn-texto);
+    }
+
+    .fn-login-ojo svg {
+        width: 21px;
+        height: 21px;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 1.8;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+.fn-login-enlace {
+    font-size: 15.5px;
+    font-weight: 600;
+    color: var(--fn-hoja-oscuro);
+    text-decoration: none;
+}
+
+    .fn-login-enlace:hover {
+        text-decoration: underline;
+    }
+
+.fn-login-boton {
+    width: 100%;
+    min-height: 56px;
+    font-size: 18px;
+    border-radius: 11px;
+}
+
+    .fn-login-boton svg {
+        transition: transform .15s ease;
+    }
+
+    .fn-login-boton:hover svg {
+        transform: translateX(3px);
+    }
+
+.fn-login-error:not(.validation-summary-valid) {
+    margin-bottom: 18px;
+    padding: 12px 16px;
+    border-radius: 10px;
+    background: var(--fn-rojo-claro);
+    color: var(--fn-rojo-texto);
+    font-size: 15.5px;
+}
+
+    .fn-login-error ul {
+        margin: 0;
+        padding-left: 18px;
+    }
+
+.fn-login-nota {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    margin-top: 28px;
+    padding-top: 20px;
+    border-top: 1px solid var(--fn-borde);
+    font-size: 15px;
+    color: var(--fn-texto-suave);
+}
+
+    .fn-login-nota svg {
+        width: 20px;
+        height: 20px;
+        flex-shrink: 0;
+        margin-top: 1px;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 1.8;
+        stroke-linecap: round;
+    }
+
+.fn-login .form-label {
+    margin-bottom: 8px;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--fn-texto-2);
+}
+
+/* ---------- Tableta y celular: la marca pasa a una franja superior ---------- */
+@media (max-width: 991px) {
+    .fn-login {
+        grid-template-columns: 1fr;
+    }
+
+    .fn-login-marca-contenido {
+        padding: 26px 24px;
+        gap: 16px;
+    }
+
+    .fn-login-mensaje {
+        margin-top: 0;
+    }
+
+        .fn-login-mensaje h1 {
+            font-size: 26px;
+            margin-bottom: 0;
+        }
+
+        .fn-login-mensaje p,
+        .fn-login-puntos,
+        .fn-login-pie {
+            display: none;
+        }
+
+    .fn-login-panel {
+        align-items: flex-start;
+        padding: 32px 20px 40px;
+    }
+}
+
+/* Aviso amarillo en el menú: labores que esperan la revisión del administrador */
+.fn-nav-badge-revision {
+    background: #E5B33F;
+    color: #3B2A20;
+}
+
+/* Pantallas de acceso: ícono redondo sobre el título y enlace para volver */
+.fn-login-insignia {
+    width: 60px;
+    height: 60px;
+    margin-bottom: 18px;
+    border-radius: 18px;
+    background: var(--fn-hoja-claro);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+    .fn-login-insignia svg {
+        width: 30px;
+        height: 30px;
+        fill: none;
+        stroke: var(--fn-hoja-oscuro);
+        stroke-width: 1.8;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+.fn-login-volver {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 22px;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--fn-texto-2);
+    text-decoration: none;
+}
+
+    .fn-login-volver:hover {
+        color: var(--fn-hoja-oscuro);
+    }
+
+    .fn-login-volver svg {
+        width: 20px;
+        height: 20px;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+.fn-login-ojo.activo {
+    color: var(--fn-hoja-oscuro);
+    background: var(--fn-hoja-claro);
+}
+
+/* =========================================================
+   DETALLE DE LABOR (mismo estilo que «Asignar labor»)
+   ========================================================= */
+
+/* Ubicación de referencia bajo el nombre del lugar */
+.fn-resumen-ref {
+    display: block;
+    margin-top: 3px;
+    font-size: 14.5px;
+    color: var(--fn-texto-suave);
+}
+
+/* Datos principales en mosaico con ícono */
+.fn-datos {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.fn-dato {
+    display: flex;
+    gap: 12px;
+    padding: 14px 16px;
+    border: 1px solid var(--fn-borde);
+    border-radius: 11px;
+    background: #fff;
+}
+
+    .fn-dato > svg {
+        width: 24px;
+        height: 24px;
+        flex-shrink: 0;
+        margin-top: 2px;
+        fill: none;
+        stroke: var(--fn-hoja);
+        stroke-width: 1.8;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+    .fn-dato span {
+        display: block;
+        font-size: 14px;
+        color: var(--fn-texto-suave);
+    }
+
+    .fn-dato strong {
+        display: block;
+        font-size: 17px;
+        color: var(--fn-texto);
+    }
+
+    .fn-dato small {
+        display: block;
+        font-size: 14.5px;
+        color: var(--fn-texto-suave);
+    }
+
+.fn-instrucciones {
+    margin-top: 16px;
+    padding: 16px 18px;
+    border-radius: 11px;
+    background: var(--fn-crema-2);
+    border-left: 4px solid var(--fn-trigo);
+}
+
+    .fn-instrucciones span {
+        display: block;
+        margin-bottom: 4px;
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--fn-texto-2);
+    }
+
+    .fn-instrucciones p {
+        margin: 0;
+        font-size: 16.5px;
+        color: var(--fn-texto);
+    }
+
+.fn-instrucciones-ok {
+    background: #EEF3E4;
+    border-left-color: var(--fn-hoja);
+}
+
+/* Tarjetas de colaborador con sus cifras y el estado de su parte */
+.fn-colab {
+    height: 100%;
+    padding: 16px;
+    border: 1.5px solid var(--fn-borde-fuerte);
+    border-radius: 12px;
+    background: #fff;
+}
+
+.fn-colab-lista {
+    border-color: var(--fn-hoja);
+    background: #F4F8EC;
+}
+
+.fn-colab-yo {
+    box-shadow: 0 0 0 3px rgba(201, 151, 58, .25);
+}
+
+.fn-colab-cabecera {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.fn-colab-cifras {
+    display: flex;
+    gap: 8px;
+    margin: 14px 0 12px;
+}
+
+    .fn-colab-cifras > div {
+        flex: 1;
+        padding: 8px 6px;
+        border-radius: 9px;
+        background: var(--fn-crema-2);
+        text-align: center;
+        line-height: 1.2;
+    }
+
+    .fn-colab-cifras strong {
+        display: block;
+        font-size: 16.5px;
+        color: var(--fn-texto);
+    }
+
+    .fn-colab-cifras span {
+        font-size: 13px;
+        color: var(--fn-texto-suave);
+    }
+
+.fn-colab-estado {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+    .fn-colab-estado small {
+        font-size: 14px;
+        color: var(--fn-texto-suave);
+    }
+
+/* Barra de progreso de partes terminadas */
+.fn-progreso {
+    height: 10px;
+    margin-top: 8px;
+    border-radius: 999px;
+    background: var(--fn-neutro-claro);
+    overflow: hidden;
+}
+
+    .fn-progreso > div {
+        height: 100%;
+        border-radius: 999px;
+        background: var(--fn-hoja);
+        transition: width .3s ease;
+    }
+
+/* Tarjetas destacadas: mi parte (colaborador) y revisión (administrador) */
+.fn-card-miparte {
+    border: 2px solid var(--fn-hoja);
+}
+
+    .fn-card-miparte .fn-card-header {
+        background: #EEF3E4;
+    }
+
+.fn-card-revision {
+    border: 2px solid #E5B33F;
+}
+
+    .fn-card-revision .fn-card-header {
+        background: var(--fn-trigo-claro);
+    }
+
+.fn-subtitulo {
+    margin-bottom: 12px;
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--fn-texto);
+}
+
+@media (min-width: 992px) {
+    .fn-revision-devolver {
+        border-left: 1px solid var(--fn-borde);
+    }
+}
+
+@media (max-width: 767px) {
+    .fn-datos {
+        grid-template-columns: 1fr;
+    }
+}
