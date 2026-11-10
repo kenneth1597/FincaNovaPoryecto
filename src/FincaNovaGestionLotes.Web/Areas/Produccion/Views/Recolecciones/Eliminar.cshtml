@@ -1,0 +1,45 @@
+﻿@model FincaNovaGestionLotes.Web.Domain.Produccion.Recoleccion
+
+@{
+    ViewData["Title"] = "Eliminar Recolección";
+}
+
+<div class="container-fluid px-4">
+    <h1 class="mt-4">Eliminar Recolección</h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a asp-action="Index">Recolecciones</a></li>
+        <li class="breadcrumb-item active">Eliminar Registro</li>
+    </ol>
+
+    <div class="card mb-4 border-danger">
+        <div class="card-header bg-danger text-white">
+            <i class="fas fa-exclamation-triangle me-1"></i> ¿Está seguro de que desea eliminar este registro?
+        </div>
+        <div class="card-body">
+            <h3>Detalles del Registro</h3>
+            <hr />
+            <dl class="row">
+                <dt class="col-sm-3">Fecha</dt>
+                <dd class="col-sm-9">@Model.Fecha.ToString("dd/MM/yyyy")</dd>
+
+                <dt class="col-sm-3">Colaborador</dt>
+                <dd class="col-sm-9">@Model.Colaborador?.Nombre</dd>
+
+                <dt class="col-sm-3">Lote / Terreno</dt>
+                <dd class="col-sm-9">@Model.Terreno?.Nombre</dd>
+
+                <dt class="col-sm-3">Cajuelas</dt>
+                <dd class="col-sm-9">@Model.Cajuelas</dd>
+
+                <dt class="col-sm-3">Peso Estimado</dt>
+                <dd class="col-sm-9">@Model.PesoEstimadoKg.ToString("N2") kg</dd>
+            </dl>
+
+            <form asp-action="Eliminar">
+                <input type="hidden" asp-for="Id" />
+                <button type="submit" class="btn btn-danger"><i class="fas fa-trash"></i> Sí, Eliminar</button>
+                <a asp-action="Index" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Cancelar</a>
+            </form>
+        </div>
+    </div>
+</div>
