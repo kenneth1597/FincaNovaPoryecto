@@ -1,5 +1,7 @@
 ﻿using FincaNovaGestionLotes.Web.Data;
 using FincaNovaGestionLotes.Web.Domain.Produccion;
+using FincaNovaGestionLotes.Web.Filters;
+using FincaNovaGestionLotes.Web.ViewSupport;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -7,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 namespace FincaNovaGestionLotes.Web.Areas.Produccion.Controllers;
 
 [Area("Produccion")]
+[RequiereRol(Roles.Administrador, Roles.Duenio)]
 public class RecoleccionesController : Controller
 {
     private readonly AppDbContext _context;
@@ -23,6 +26,8 @@ public class RecoleccionesController : Controller
             .Include(r => r.Colaborador)
             .Include(r => r.Terreno)
             .Include(r => r.PeriodoProductivo)
+            .OrderByDescending(r => r.Fecha)
+            .ThenByDescending(r => r.Id)
             .ToListAsync();
         return View(recolecciones);
     }
@@ -30,11 +35,8 @@ public class RecoleccionesController : Controller
     // GET: Produccion/Recolecciones/Crear
     public async Task<IActionResult> Crear()
     {
-        ViewData["Colaboradores"] = new SelectList(await _context.Colaboradores.Where(c => c.Activo).ToListAsync(), "Id", "Nombre");
-        ViewData["Terrenos"] = new SelectList(await _context.Terrenos.Where(t => t.Eliminado == false).ToListAsync(), "Id", "Nombre");
-        ViewData["PeriodosProductivos"] = new SelectList(await _context.PeriodosProductivos.ToListAsync(), "Id", "Id");
-
-        return View();
+        await CargarListasAsync();
+        return View(new Recoleccion { Fecha = DateTime.Today });
     }
 
     [HttpPost]
@@ -45,6 +47,7 @@ public class RecoleccionesController : Controller
         ModelState.Remove(nameof(Recoleccion.Terreno));
         ModelState.Remove(nameof(Recoleccion.PeriodoProductivo));
         ModelState.Remove(nameof(Recoleccion.PeriodoTerreno));
+        ValidarFecha(recoleccion);
 
         if (ModelState.IsValid)
         {
@@ -58,7 +61,7 @@ public class RecoleccionesController : Controller
                 _context.Add(recoleccion);
                 await _context.SaveChangesAsync();
 
-                TempData["SuccessMessage"] = "Recolección diaria registrada correctamente.";
+                TempData["Ok"] = "Recolección diaria registrada correctamente.";
                 return RedirectToAction(nameof(Index));
             }
             catch (DbUpdateException)
@@ -68,10 +71,7 @@ public class RecoleccionesController : Controller
             }
         }
 
-        ViewData["Colaboradores"] = new SelectList(await _context.Colaboradores.Where(c => c.Activo).ToListAsync(), "Id", "Nombre", recoleccion.ColaboradorId);
-        ViewData["Terrenos"] = new SelectList(await _context.Terrenos.Where(t => t.Eliminado == false).ToListAsync(), "Id", "Nombre", recoleccion.TerrenoId);
-        ViewData["PeriodosProductivos"] = new SelectList(await _context.PeriodosProductivos.ToListAsync(), "Id", "Id", recoleccion.PeriodoProductivoId);
-
+        await CargarListasAsync(recoleccion);
         return View(recoleccion);
     }
 
@@ -89,10 +89,7 @@ public class RecoleccionesController : Controller
             return NotFound();
         }
 
-        ViewData["Colaboradores"] = new SelectList(await _context.Colaboradores.Where(c => c.Activo).ToListAsync(), "Id", "Nombre", recoleccion.ColaboradorId);
-        ViewData["Terrenos"] = new SelectList(await _context.Terrenos.Where(t => t.Eliminado == false).ToListAsync(), "Id", "Nombre", recoleccion.TerrenoId);
-        ViewData["PeriodosProductivos"] = new SelectList(await _context.PeriodosProductivos.ToListAsync(), "Id", "Id", recoleccion.PeriodoProductivoId);
-
+        await CargarListasAsync(recoleccion);
         return View(recoleccion);
     }
 
@@ -110,6 +107,7 @@ public class RecoleccionesController : Controller
         ModelState.Remove(nameof(Recoleccion.Terreno));
         ModelState.Remove(nameof(Recoleccion.PeriodoProductivo));
         ModelState.Remove(nameof(Recoleccion.PeriodoTerreno));
+        ValidarFecha(recoleccion);
 
         if (ModelState.IsValid)
         {
@@ -120,7 +118,7 @@ public class RecoleccionesController : Controller
                 _context.Update(recoleccion);
                 await _context.SaveChangesAsync();
 
-                TempData["SuccessMessage"] = "Recolección actualizada correctamente.";
+                TempData["Ok"] = "Recolección actualizada correctamente.";
                 return RedirectToAction(nameof(Index));
             }
             catch (DbUpdateConcurrencyException)
@@ -141,10 +139,7 @@ public class RecoleccionesController : Controller
             }
         }
 
-        ViewData["Colaboradores"] = new SelectList(await _context.Colaboradores.Where(c => c.Activo).ToListAsync(), "Id", "Nombre", recoleccion.ColaboradorId);
-        ViewData["Terrenos"] = new SelectList(await _context.Terrenos.Where(t => t.Eliminado == false).ToListAsync(), "Id", "Nombre", recoleccion.TerrenoId);
-        ViewData["PeriodosProductivos"] = new SelectList(await _context.PeriodosProductivos.ToListAsync(), "Id", "Id", recoleccion.PeriodoProductivoId);
-
+        await CargarListasAsync(recoleccion);
         return View(recoleccion);
     }
 
@@ -181,12 +176,33 @@ public class RecoleccionesController : Controller
         {
             _context.Recolecciones.Remove(recoleccion);
             await _context.SaveChangesAsync();
-            TempData["SuccessMessage"] = "Recolección eliminada correctamente.";
+            TempData["Ok"] = "Recolección eliminada correctamente.";
         }
 
         return RedirectToAction(nameof(Index));
     }
 
+    // Una recolección no puede tener fecha futura.
+    private void ValidarFecha(Recoleccion recoleccion)
+    {
+        if (recoleccion.Fecha.Date > DateTime.Today)
+            ModelState.AddModelError(nameof(Recoleccion.Fecha), "La fecha de la recolección no puede ser futura.");
+    }
 
+    // Carga las listas desplegables del formulario; con la recolección, deja marcada la opción elegida.
+    private async Task CargarListasAsync(Recoleccion? r = null)
+    {
+        ViewData["Colaboradores"] = new SelectList(
+            await _context.Colaboradores.Where(c => c.Activo).OrderBy(c => c.Nombre).ToListAsync(),
+            "Id", "Nombre", r?.ColaboradorId);
 
+        ViewData["Terrenos"] = new SelectList(
+            await _context.Terrenos.Where(t => t.Eliminado == false).OrderBy(t => t.Nombre).ToListAsync(),
+            "Id", "Nombre", r?.TerrenoId);
+
+        // Se muestra el nombre del período, no su número.
+        ViewData["PeriodosProductivos"] = new SelectList(
+            await _context.PeriodosProductivos.OrderByDescending(p => p.FechaInicio).ToListAsync(),
+            "Id", "Nombre", r?.PeriodoProductivoId);
+    }
 }

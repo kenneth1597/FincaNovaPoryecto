@@ -1,67 +1,76 @@
-﻿@model IEnumerable<FincaNovaGestionLotes.Web.Domain.Produccion.Recoleccion>
+﻿@model IEnumerable<Recoleccion>
 
 @{
-    ViewData["Title"] = "Listado de Recolecciones";
+    ViewData["Title"] = "Recolecciones";
 }
 
-<div class="container-fluid px-4">
-    <h1 class="mt-4">Control de Recolecciones</h1>
-    <ol class="breadcrumb mb-4">
-        <li class="breadcrumb-item active">Producción y Recolección Diaria</li>
-    </ol>
+<div class="fn-page-header">
+    <div>
+        <h1 class="fn-page-title">Control de recolecciones</h1>
+        <p class="fn-page-subtitle">
+            Producción diaria en cajuelas por colaborador y lote, con el peso estimado en kilogramos.
+        </p>
+    </div>
+    <a asp-action="Crear" class="fn-btn fn-btn-primary">+ Registrar recolección</a>
+</div>
 
-    <div class="mb-3">
-        <a asp-action="Crear" class="btn btn-success"><i class="fas fa-plus"></i> Registrar Nueva Recolección</a>
+@if (TempData["Ok"] is string ok)
+{
+    <div class="alert alert-success border-0 shadow-sm">@ok</div>
+}
+
+<div class="fn-card">
+    <div class="fn-card-header d-flex justify-content-between align-items-center">
+        <h2 class="fn-card-title">Historial de recolecciones</h2>
+        <span class="fn-count">@Model.Count() registro(s)</span>
     </div>
 
-    <div class="card mb-4">
-        <div class="card-header">
-            <i class="fas fa-table me-1"></i> Historial de Recolecciones Registradas
+    @if (!Model.Any())
+    {
+        <div class="fn-empty">
+            <div class="fn-empty-title">No hay recolecciones registradas.</div>
+            <div class="fn-empty-text">Registra la primera recolección para empezar a llevar la producción diaria.</div>
         </div>
-        <div class="card-body">
-            <table class="table table-striped table-bordered">
-                <thead>
-                    <tr>
-                        <th>Fecha</th>
-                        <th>Colaborador</th>
-                        <th>Lote</th>
-                        <th>Cajuelas</th>
-                        <th>Peso Estimado (Kg)</th>
-                        <th>Registrado Por</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @if (Model != null && Model.Any())
-                    {
-                        foreach (var item in Model)
+    }
+    else
+    {
+        <div class="fn-card-body">
+            <div class="fn-table-wrapper">
+                <table class="fn-table">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Colaborador</th>
+                            <th>Lote</th>
+                            <th>Período</th>
+                            <th class="text-end">Cajuelas</th>
+                            <th class="text-end">Peso estimado</th>
+                            <th>Registrado por</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
                         {
                             <tr>
                                 <td>@item.Fecha.ToString("dd/MM/yyyy")</td>
-                                <td>@item.Colaborador?.Nombre</td>
+                                <td class="fw-bold">@item.Colaborador?.Nombre</td>
                                 <td>@item.Terreno?.Nombre</td>
-                                <td>@item.Cajuelas.ToString("N2")</td>
-                                <td><strong>@item.PesoEstimadoKg.ToString("N2") kg</strong></td>
-                                <td>@item.RegistradoPor</td>
-                                <td>
-                                    <a asp-action="Editar" asp-route-id="@item.Id" class="btn btn-sm btn-primary">
-                                        <i class="fas fa-edit"></i> Editar
-                                    </a>
-                                    <a asp-action="Eliminar" asp-route-id="@item.Id" class="btn btn-sm btn-danger">
-                                        <i class="fas fa-trash"></i> Eliminar
-                                    </a>
+                                <td>@item.PeriodoProductivo?.Nombre</td>
+                                <td class="text-end">@item.Cajuelas.ToString("N2")</td>
+                                <td class="text-end fw-bold">@item.PesoEstimadoKg.ToString("N2") kg</td>
+                                <td>@(item.RegistradoPor ?? "—")</td>
+                                <td class="text-end">
+                                    <div class="d-flex gap-2 justify-content-end">
+                                        <a asp-action="Editar" asp-route-id="@item.Id" class="fn-btn fn-btn-outline">Editar</a>
+                                        <a asp-action="Eliminar" asp-route-id="@item.Id" class="fn-btn fn-btn-outline">Eliminar</a>
+                                    </div>
                                 </td>
                             </tr>
                         }
-                    }
-                    else
-                    {
-                        <tr>
-                            <td colspan="6" class="text-center text-muted">No hay registros de recolección guardados todavía.</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
+            </div>
         </div>
-    </div>
+    }
 </div>

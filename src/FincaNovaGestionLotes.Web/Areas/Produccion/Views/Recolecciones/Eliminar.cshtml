@@ -1,45 +1,49 @@
-﻿@model FincaNovaGestionLotes.Web.Domain.Produccion.Recoleccion
+﻿@model Recoleccion
 
 @{
-    ViewData["Title"] = "Eliminar Recolección";
+    ViewData["Title"] = "Eliminar recolección";
 }
 
-<div class="container-fluid px-4">
-    <h1 class="mt-4">Eliminar Recolección</h1>
-    <ol class="breadcrumb mb-4">
-        <li class="breadcrumb-item"><a asp-action="Index">Recolecciones</a></li>
-        <li class="breadcrumb-item active">Eliminar Registro</li>
-    </ol>
+<div class="fn-page-header">
+    <div>
+        <h1 class="fn-page-title">Eliminar recolección</h1>
+        <p class="fn-page-subtitle">Revisa los datos antes de confirmar. Esta acción no se puede deshacer.</p>
+    </div>
+    <a asp-action="Index" class="fn-btn fn-btn-outline">Volver</a>
+</div>
 
-    <div class="card mb-4 border-danger">
-        <div class="card-header bg-danger text-white">
-            <i class="fas fa-exclamation-triangle me-1"></i> ¿Está seguro de que desea eliminar este registro?
+<div class="fn-card">
+    <div class="fn-card-body">
+        <div class="alert alert-danger border-0 shadow-sm">
+            <strong>¿Seguro que quieres eliminar este registro?</strong>
         </div>
-        <div class="card-body">
-            <h3>Detalles del Registro</h3>
-            <hr />
-            <dl class="row">
-                <dt class="col-sm-3">Fecha</dt>
-                <dd class="col-sm-9">@Model.Fecha.ToString("dd/MM/yyyy")</dd>
 
-                <dt class="col-sm-3">Colaborador</dt>
-                <dd class="col-sm-9">@Model.Colaborador?.Nombre</dd>
+        <dl class="row mb-4">
+            <dt class="col-sm-3">Fecha</dt>
+            <dd class="col-sm-9">@Model.Fecha.ToString("dd/MM/yyyy")</dd>
 
-                <dt class="col-sm-3">Lote / Terreno</dt>
-                <dd class="col-sm-9">@Model.Terreno?.Nombre</dd>
+            <dt class="col-sm-3">Colaborador</dt>
+            <dd class="col-sm-9">@Model.Colaborador?.Nombre</dd>
 
-                <dt class="col-sm-3">Cajuelas</dt>
-                <dd class="col-sm-9">@Model.Cajuelas</dd>
+            <dt class="col-sm-3">Lote / terreno</dt>
+            <dd class="col-sm-9">@Model.Terreno?.Nombre</dd>
 
-                <dt class="col-sm-3">Peso Estimado</dt>
-                <dd class="col-sm-9">@Model.PesoEstimadoKg.ToString("N2") kg</dd>
-            </dl>
+            <dt class="col-sm-3">Período</dt>
+            <dd class="col-sm-9">@Model.PeriodoProductivo?.Nombre</dd>
 
-            <form asp-action="Eliminar">
-                <input type="hidden" asp-for="Id" />
-                <button type="submit" class="btn btn-danger"><i class="fas fa-trash"></i> Sí, Eliminar</button>
-                <a asp-action="Index" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Cancelar</a>
-            </form>
-        </div>
+            <dt class="col-sm-3">Cajuelas</dt>
+            <dd class="col-sm-9">@Model.Cajuelas.ToString("N2")</dd>
+
+            <dt class="col-sm-3">Peso estimado</dt>
+            <dd class="col-sm-9">@Model.PesoEstimadoKg.ToString("N2") kg</dd>
+        </dl>
+
+        <form asp-action="Eliminar" method="post">
+            <input type="hidden" asp-for="Id" />
+            <div class="d-flex gap-2">
+                <button type="submit" class="fn-btn fn-btn-primary">Sí, eliminar</button>
+                <a asp-action="Index" class="fn-btn fn-btn-outline">Cancelar</a>
+            </div>
+        </form>
     </div>
 </div>
