@@ -1,0 +1,76 @@
+@model GastoFormViewModel
+
+<div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+<div class="row g-3">
+    <div class="col-md-4">
+        <label asp-for="Fecha" class="fn-form-label"></label>
+        <input asp-for="Fecha" type="date" max="@DateTime.Today.ToString("yyyy-MM-dd")" class="fn-form-control" />
+        <span asp-validation-for="Fecha" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-4">
+        <label asp-for="Monto" class="fn-form-label"></label>
+        <input asp-for="Monto" type="number" step="0.01" min="0.01" class="fn-form-control" />
+        <span asp-validation-for="Monto" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-4">
+        <label asp-for="CategoriaGastoId" class="fn-form-label"></label>
+        <select asp-for="CategoriaGastoId" class="fn-form-select" asp-items="Model.Categorias">
+            <option value="">-- Seleccione la categoría --</option>
+        </select>
+        <span asp-validation-for="CategoriaGastoId" class="text-danger"></span>
+    </div>
+
+    <div class="col-12">
+        <label asp-for="Descripcion" class="fn-form-label"></label>
+        <input asp-for="Descripcion" class="fn-form-control" placeholder="Ej. Compra de fertilizante para el lote 2" />
+        <span asp-validation-for="Descripcion" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-4">
+        <label asp-for="Proveedor" class="fn-form-label"></label>
+        <input asp-for="Proveedor" class="fn-form-control" placeholder="Ej. Almacén agrícola" />
+        <span asp-validation-for="Proveedor" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-4">
+        <label asp-for="TerrenoId" class="fn-form-label"></label>
+        <select asp-for="TerrenoId" class="fn-form-select" asp-items="Model.Terrenos">
+            <option value="">-- Gasto general --</option>
+        </select>
+        <span asp-validation-for="TerrenoId" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-4">
+        <label asp-for="PeriodoProductivoId" class="fn-form-label"></label>
+        <select asp-for="PeriodoProductivoId" class="fn-form-select" asp-items="Model.Periodos">
+            <option value="">-- Sin período --</option>
+        </select>
+        <span asp-validation-for="PeriodoProductivoId" class="text-danger"></span>
+    </div>
+
+    <div class="col-12">
+        <label asp-for="Comprobante" class="fn-form-label"></label>
+        <input asp-for="Comprobante" type="file" accept=".pdf,.jpg,.jpeg,.png" class="fn-form-control" />
+        <span asp-validation-for="Comprobante" class="text-danger"></span>
+
+        @if (!string.IsNullOrEmpty(Model.ComprobanteActual))
+        {
+            <div class="form-text">
+                Comprobante actual:
+                <a asp-action="Comprobante" asp-route-id="@Model.Id" class="text-decoration-none">@Model.ComprobanteActual</a>.
+                Si subes otro archivo, reemplaza al actual.
+            </div>
+            <div class="form-check mt-2">
+                <input asp-for="QuitarComprobante" class="form-check-input" />
+                <label asp-for="QuitarComprobante" class="form-check-label"></label>
+            </div>
+        }
+        else
+        {
+            <div class="form-text">Es opcional. Puedes adjuntarlo después editando el gasto.</div>
+        }
+    </div>
+</div>
