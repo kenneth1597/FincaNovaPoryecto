@@ -1,0 +1,32 @@
+@model VentaFormViewModel
+
+@{
+    ViewData["Title"] = "Editar venta";
+}
+
+<div class="fn-page-header">
+    <div>
+        <h1 class="fn-page-title">Editar venta de café</h1>
+        <p class="fn-page-subtitle">Corrige los datos de la venta. El cambio queda en la bitácora.</p>
+    </div>
+    <a asp-action="Index" class="fn-btn fn-btn-outline">Volver</a>
+</div>
+
+<div class="fn-card">
+    <div class="fn-card-body">
+        <form asp-action="Editar" asp-route-id="@Model.Id" method="post">
+            <input type="hidden" asp-for="Id" />
+            <partial name="_FormFields" model="Model" />
+
+            <div class="d-flex gap-2 mt-4">
+                <button type="submit" class="fn-btn fn-btn-primary">Guardar cambios</button>
+                <a asp-action="Index" class="fn-btn fn-btn-outline">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <partial name="_TotalVentaScript" />
+}
