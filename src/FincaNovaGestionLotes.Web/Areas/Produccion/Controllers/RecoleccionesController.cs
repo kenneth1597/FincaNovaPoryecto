@@ -189,4 +189,71 @@ public class RecoleccionesController : Controller
 
 
 
+    // GET: Produccion/Recolecciones/ConsultaPeriodo
+    public async Task<IActionResult> ConsultaPeriodo(int? periodoId)
+    {
+        // Cargamos los períodos para el selector de filtro
+        ViewData["PeriodosProductivos"] = new SelectList(await _context.PeriodosProductivos.ToListAsync(), "Id", "Id", periodoId);
+
+        var query = _context.Recolecciones
+            .Include(r => r.Colaborador)
+            .Include(r => r.Terreno)
+            .Include(r => r.PeriodoProductivo)
+            .AsQueryable();
+
+        // Si el usuario seleccionó un período específico en el filtro, lo aplicamos
+        if (periodoId.HasValue)
+        {
+            query = query.Where(r => r.PeriodoProductivoId == periodoId.Value);
+        }
+
+        var listaRecolecciones = await query.OrderByDescending(r => r.Fecha).ToListAsync();
+
+        // Calculamos totales rápidos para mostrar en tarjetas resumen
+        ViewBag.TotalCajuelas = listaRecolecciones.Sum(r => r.Cajuelas);
+        ViewBag.TotalKilos = listaRecolecciones.Sum(r => r.PesoEstimadoKg);
+
+        return View(listaRecolecciones);
+    }
+
+
+
+    // GET: Produccion/Recolecciones/CalcularPagos
+    public async Task<IActionResult> CalcularPagos(DateTime? fechaInicio, DateTime? fechaFin, decimal tarifaCajuela = 1500m)
+    {
+        // Si no se seleccionan fechas, por defecto consultamos la última semana
+        var inicio = fechaInicio ?? DateTime.Today.AddDays(-7);
+        var fin = fechaFin ?? DateTime.Today;
+
+        ViewBag.FechaInicio = inicio.ToString("yyyy-MM-dd");
+        ViewBag.FechaFin = fin.ToString("yyyy-MM-dd");
+        ViewBag.TarifaCajuela = tarifaCajuela;
+
+        // Consultamos las recolecciones en ese rango de fechas
+        var recolecciones = await _context.Recolecciones
+            .Include(r => r.Colaborador)
+            .Where(r => r.Fecha >= inicio && r.Fecha <= fin)
+            .ToListAsync();
+
+        // Agrupamos por colaborador para calcular su total de cajuelas y el pago correspondiente
+        var resumenPagos = recolecciones
+            .GroupBy(r => new { r.ColaboradorId, NombreColaborador = r.Colaborador != null ? r.Colaborador.Nombre : "Sin Nombre" })
+            .Select(g => new
+            {
+                ColaboradorId = g.Key.ColaboradorId,
+                Nombre = g.Key.NombreColaborador,
+                TotalCajuelas = g.Sum(r => r.Cajuelas),
+                TotalKilos = g.Sum(r => r.PesoEstimadoKg),
+                MontoAPagar = g.Sum(r => r.Cajuelas) * tarifaCajuela
+            })
+            .ToList();
+
+        ViewBag.GranTotalPagar = resumenPagos.Sum(x => x.MontoAPagar);
+        ViewBag.GranTotalCajuelas = resumenPagos.Sum(x => x.TotalCajuelas);
+
+        return View(resumenPagos);
+    }
+
+
+
 }

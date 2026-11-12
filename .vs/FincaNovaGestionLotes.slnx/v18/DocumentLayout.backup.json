@@ -3,36 +3,28 @@
   "WorkspaceRootPath": "D:\\FincaNOVADocs\\FINCA Git DESTOk\\FincaNovaPoryecto\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{8A44D1AC-59C7-13D5-0657-F398984E606B}|src\\FincaNovaGestionLotes.Web\\FincaNovaGestionLotes.Web.csproj|d:\\fincanovadocs\\finca git destok\\fincanovaporyecto\\src\\fincanovagestionlotes.web\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{8A44D1AC-59C7-13D5-0657-F398984E606B}|src\\FincaNovaGestionLotes.Web\\FincaNovaGestionLotes.Web.csproj|solutionrelative:src\\fincanovagestionlotes.web\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{8A44D1AC-59C7-13D5-0657-F398984E606B}|src\\FincaNovaGestionLotes.Web\\FincaNovaGestionLotes.Web.csproj|d:\\fincanovadocs\\finca git destok\\fincanovaporyecto\\src\\fincanovagestionlotes.web\\views\\shared\\_paginacion.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{8A44D1AC-59C7-13D5-0657-F398984E606B}|src\\FincaNovaGestionLotes.Web\\FincaNovaGestionLotes.Web.csproj|solutionrelative:src\\fincanovagestionlotes.web\\views\\shared\\_paginacion.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{8A44D1AC-59C7-13D5-0657-F398984E606B}|src\\FincaNovaGestionLotes.Web\\FincaNovaGestionLotes.Web.csproj|d:\\fincanovadocs\\finca git destok\\fincanovaporyecto\\src\\fincanovagestionlotes.web\\areas\\terrenos\\views\\terrenos\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{8A44D1AC-59C7-13D5-0657-F398984E606B}|src\\FincaNovaGestionLotes.Web\\FincaNovaGestionLotes.Web.csproj|solutionrelative:src\\fincanovagestionlotes.web\\areas\\terrenos\\views\\terrenos\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+      "AbsoluteMoniker": "D:0:0:{8A44D1AC-59C7-13D5-0657-F398984E606B}|src\\FincaNovaGestionLotes.Web\\FincaNovaGestionLotes.Web.csproj|d:\\fincanovadocs\\finca git destok\\fincanovaporyecto\\src\\fincanovagestionlotes.web\\areas\\produccion\\views\\recolecciones\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{8A44D1AC-59C7-13D5-0657-F398984E606B}|src\\FincaNovaGestionLotes.Web\\FincaNovaGestionLotes.Web.csproj|solutionrelative:src\\fincanovagestionlotes.web\\areas\\produccion\\views\\recolecciones\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{8A44D1AC-59C7-13D5-0657-F398984E606B}|src\\FincaNovaGestionLotes.Web\\FincaNovaGestionLotes.Web.csproj|d:\\fincanovadocs\\finca git destok\\fincanovaporyecto\\src\\fincanovagestionlotes.web\\areas\\bitacora\\views\\bitacora\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{8A44D1AC-59C7-13D5-0657-F398984E606B}|src\\FincaNovaGestionLotes.Web\\FincaNovaGestionLotes.Web.csproj|solutionrelative:src\\fincanovagestionlotes.web\\areas\\bitacora\\views\\bitacora\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{8A44D1AC-59C7-13D5-0657-F398984E606B}|src\\FincaNovaGestionLotes.Web\\FincaNovaGestionLotes.Web.csproj|d:\\fincanovadocs\\finca git destok\\fincanovaporyecto\\src\\fincanovagestionlotes.web\\areas\\produccion\\views\\recolecciones\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{8A44D1AC-59C7-13D5-0657-F398984E606B}|src\\FincaNovaGestionLotes.Web\\FincaNovaGestionLotes.Web.csproj|solutionrelative:src\\fincanovagestionlotes.web\\areas\\produccion\\views\\recolecciones\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{8A44D1AC-59C7-13D5-0657-F398984E606B}|src\\FincaNovaGestionLotes.Web\\FincaNovaGestionLotes.Web.csproj|d:\\fincanovadocs\\finca git destok\\fincanovaporyecto\\src\\fincanovagestionlotes.web\\areas\\produccion\\views\\recolecciones\\eliminar.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{8A44D1AC-59C7-13D5-0657-F398984E606B}|src\\FincaNovaGestionLotes.Web\\FincaNovaGestionLotes.Web.csproj|solutionrelative:src\\fincanovagestionlotes.web\\areas\\produccion\\views\\recolecciones\\eliminar.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+      "AbsoluteMoniker": "D:0:0:{8A44D1AC-59C7-13D5-0657-F398984E606B}|src\\FincaNovaGestionLotes.Web\\FincaNovaGestionLotes.Web.csproj|d:\\fincanovadocs\\finca git destok\\fincanovaporyecto\\src\\fincanovagestionlotes.web\\areas\\produccion\\views\\recolecciones\\calcularpagos.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{8A44D1AC-59C7-13D5-0657-F398984E606B}|src\\FincaNovaGestionLotes.Web\\FincaNovaGestionLotes.Web.csproj|solutionrelative:src\\fincanovagestionlotes.web\\areas\\produccion\\views\\recolecciones\\calcularpagos.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{8A44D1AC-59C7-13D5-0657-F398984E606B}|src\\FincaNovaGestionLotes.Web\\FincaNovaGestionLotes.Web.csproj|d:\\fincanovadocs\\finca git destok\\fincanovaporyecto\\src\\fincanovagestionlotes.web\\areas\\produccion\\controllers\\recoleccionescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{8A44D1AC-59C7-13D5-0657-F398984E606B}|src\\FincaNovaGestionLotes.Web\\FincaNovaGestionLotes.Web.csproj|solutionrelative:src\\fincanovagestionlotes.web\\areas\\produccion\\controllers\\recoleccionescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{8A44D1AC-59C7-13D5-0657-F398984E606B}|src\\FincaNovaGestionLotes.Web\\FincaNovaGestionLotes.Web.csproj|d:\\fincanovadocs\\finca git destok\\fincanovaporyecto\\src\\fincanovagestionlotes.web\\areas\\produccion\\views\\recolecciones\\editar.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{8A44D1AC-59C7-13D5-0657-F398984E606B}|src\\FincaNovaGestionLotes.Web\\FincaNovaGestionLotes.Web.csproj|solutionrelative:src\\fincanovagestionlotes.web\\areas\\produccion\\views\\recolecciones\\editar.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+      "AbsoluteMoniker": "D:0:0:{8A44D1AC-59C7-13D5-0657-F398984E606B}|src\\FincaNovaGestionLotes.Web\\FincaNovaGestionLotes.Web.csproj|d:\\fincanovadocs\\finca git destok\\fincanovaporyecto\\src\\fincanovagestionlotes.web\\areas\\produccion\\views\\recolecciones\\consultaperiodo.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{8A44D1AC-59C7-13D5-0657-F398984E606B}|src\\FincaNovaGestionLotes.Web\\FincaNovaGestionLotes.Web.csproj|solutionrelative:src\\fincanovagestionlotes.web\\areas\\produccion\\views\\recolecciones\\consultaperiodo.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8A44D1AC-59C7-13D5-0657-F398984E606B}|src\\FincaNovaGestionLotes.Web\\FincaNovaGestionLotes.Web.csproj|d:\\fincanovadocs\\finca git destok\\fincanovaporyecto\\src\\fincanovagestionlotes.web\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{8A44D1AC-59C7-13D5-0657-F398984E606B}|src\\FincaNovaGestionLotes.Web\\FincaNovaGestionLotes.Web.csproj|solutionrelative:src\\fincanovagestionlotes.web\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{8A44D1AC-59C7-13D5-0657-F398984E606B}|src\\FincaNovaGestionLotes.Web\\FincaNovaGestionLotes.Web.csproj|d:\\fincanovadocs\\finca git destok\\fincanovaporyecto\\src\\fincanovagestionlotes.web\\areas\\produccion\\views\\recolecciones\\crear.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
@@ -43,16 +35,8 @@
       "RelativeMoniker": "D:0:0:{8A44D1AC-59C7-13D5-0657-F398984E606B}|src\\FincaNovaGestionLotes.Web\\FincaNovaGestionLotes.Web.csproj|solutionrelative:src\\fincanovagestionlotes.web\\areas\\produccion\\views\\periodos\\crear.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{8A44D1AC-59C7-13D5-0657-F398984E606B}|src\\FincaNovaGestionLotes.Web\\FincaNovaGestionLotes.Web.csproj|d:\\fincanovadocs\\finca git destok\\fincanovaporyecto\\src\\fincanovagestionlotes.web\\areas\\produccion\\views\\periodos\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{8A44D1AC-59C7-13D5-0657-F398984E606B}|src\\FincaNovaGestionLotes.Web\\FincaNovaGestionLotes.Web.csproj|solutionrelative:src\\fincanovagestionlotes.web\\areas\\produccion\\views\\periodos\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{8A44D1AC-59C7-13D5-0657-F398984E606B}|src\\FincaNovaGestionLotes.Web\\FincaNovaGestionLotes.Web.csproj|d:\\fincanovadocs\\finca git destok\\fincanovaporyecto\\src\\fincanovagestionlotes.web\\domain\\produccion\\recoleccion.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{8A44D1AC-59C7-13D5-0657-F398984E606B}|src\\FincaNovaGestionLotes.Web\\FincaNovaGestionLotes.Web.csproj|solutionrelative:src\\fincanovagestionlotes.web\\domain\\produccion\\recoleccion.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{8A44D1AC-59C7-13D5-0657-F398984E606B}|src\\FincaNovaGestionLotes.Web\\FincaNovaGestionLotes.Web.csproj|d:\\fincanovadocs\\finca git destok\\fincanovaporyecto\\src\\fincanovagestionlotes.web\\areas\\produccion\\views\\periodos\\_terrenosseleccion.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{8A44D1AC-59C7-13D5-0657-F398984E606B}|src\\FincaNovaGestionLotes.Web\\FincaNovaGestionLotes.Web.csproj|solutionrelative:src\\fincanovagestionlotes.web\\areas\\produccion\\views\\periodos\\_terrenosseleccion.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{8A44D1AC-59C7-13D5-0657-F398984E606B}|src\\FincaNovaGestionLotes.Web\\FincaNovaGestionLotes.Web.csproj|d:\\fincanovadocs\\finca git destok\\fincanovaporyecto\\src\\fincanovagestionlotes.web\\data\\appdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -114,7 +98,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 5,
+          "SelectedChildIndex": 9,
           "Children": [
             {
               "$type": "Bookmark",
@@ -126,33 +110,33 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "_Paginacion.cshtml",
-              "DocumentMoniker": "D:\\FincaNOVADocs\\FINCA Git DESTOk\\FincaNovaPoryecto\\src\\FincaNovaGestionLotes.Web\\Views\\Shared\\_Paginacion.cshtml",
-              "RelativeDocumentMoniker": "src\\FincaNovaGestionLotes.Web\\Views\\Shared\\_Paginacion.cshtml",
-              "ToolTip": "D:\\FincaNOVADocs\\FINCA Git DESTOk\\FincaNovaPoryecto\\src\\FincaNovaGestionLotes.Web\\Views\\Shared\\_Paginacion.cshtml",
-              "RelativeToolTip": "src\\FincaNovaGestionLotes.Web\\Views\\Shared\\_Paginacion.cshtml",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-11-10T06:33:15.197Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
               "DocumentIndex": 2,
-              "Title": "Index.cshtml",
-              "DocumentMoniker": "D:\\FincaNOVADocs\\FINCA Git DESTOk\\FincaNovaPoryecto\\src\\FincaNovaGestionLotes.Web\\Areas\\Terrenos\\Views\\Terrenos\\Index.cshtml",
-              "RelativeDocumentMoniker": "src\\FincaNovaGestionLotes.Web\\Areas\\Terrenos\\Views\\Terrenos\\Index.cshtml",
-              "ToolTip": "D:\\FincaNOVADocs\\FINCA Git DESTOk\\FincaNovaPoryecto\\src\\FincaNovaGestionLotes.Web\\Areas\\Terrenos\\Views\\Terrenos\\Index.cshtml",
-              "RelativeToolTip": "src\\FincaNovaGestionLotes.Web\\Areas\\Terrenos\\Views\\Terrenos\\Index.cshtml",
-              "ViewState": "AgIAAKIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Title": "CalcularPagos.cshtml",
+              "DocumentMoniker": "D:\\FincaNOVADocs\\FINCA Git DESTOk\\FincaNovaPoryecto\\src\\FincaNovaGestionLotes.Web\\Areas\\Produccion\\Views\\Recolecciones\\CalcularPagos.cshtml",
+              "RelativeDocumentMoniker": "src\\FincaNovaGestionLotes.Web\\Areas\\Produccion\\Views\\Recolecciones\\CalcularPagos.cshtml",
+              "ToolTip": "D:\\FincaNOVADocs\\FINCA Git DESTOk\\FincaNovaPoryecto\\src\\FincaNovaGestionLotes.Web\\Areas\\Produccion\\Views\\Recolecciones\\CalcularPagos.cshtml",
+              "RelativeToolTip": "src\\FincaNovaGestionLotes.Web\\Areas\\Produccion\\Views\\Recolecciones\\CalcularPagos.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAA4AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-11-10T06:38:54.321Z",
+              "WhenOpened": "2026-11-11T04:58:48.586Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 4,
+              "Title": "ConsultaPeriodo.cshtml",
+              "DocumentMoniker": "D:\\FincaNOVADocs\\FINCA Git DESTOk\\FincaNovaPoryecto\\src\\FincaNovaGestionLotes.Web\\Areas\\Produccion\\Views\\Recolecciones\\ConsultaPeriodo.cshtml",
+              "RelativeDocumentMoniker": "src\\FincaNovaGestionLotes.Web\\Areas\\Produccion\\Views\\Recolecciones\\ConsultaPeriodo.cshtml",
+              "ToolTip": "D:\\FincaNOVADocs\\FINCA Git DESTOk\\FincaNovaPoryecto\\src\\FincaNovaGestionLotes.Web\\Areas\\Produccion\\Views\\Recolecciones\\ConsultaPeriodo.cshtml",
+              "RelativeToolTip": "src\\FincaNovaGestionLotes.Web\\Areas\\Produccion\\Views\\Recolecciones\\ConsultaPeriodo.cshtml",
+              "ViewState": "AgIAADgAAAAAAAAAAAAIwFkAAAAGAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-11-11T04:47:35.955Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
               "Title": "Index.cshtml",
               "DocumentMoniker": "D:\\FincaNOVADocs\\FINCA Git DESTOk\\FincaNovaPoryecto\\src\\FincaNovaGestionLotes.Web\\Areas\\Bitacora\\Views\\Bitacora\\Index.cshtml",
               "RelativeDocumentMoniker": "src\\FincaNovaGestionLotes.Web\\Areas\\Bitacora\\Views\\Bitacora\\Index.cshtml",
@@ -165,46 +149,20 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 5,
               "Title": "_Layout.cshtml",
               "DocumentMoniker": "D:\\FincaNOVADocs\\FINCA Git DESTOk\\FincaNovaPoryecto\\src\\FincaNovaGestionLotes.Web\\Views\\Shared\\_Layout.cshtml",
               "RelativeDocumentMoniker": "src\\FincaNovaGestionLotes.Web\\Views\\Shared\\_Layout.cshtml",
               "ToolTip": "D:\\FincaNOVADocs\\FINCA Git DESTOk\\FincaNovaPoryecto\\src\\FincaNovaGestionLotes.Web\\Views\\Shared\\_Layout.cshtml",
               "RelativeToolTip": "src\\FincaNovaGestionLotes.Web\\Views\\Shared\\_Layout.cshtml",
-              "ViewState": "AgIAABQAAAAAAAAAAAAxwCgAAABUAAAAAAAAAA==",
+              "ViewState": "AgIAAAUAAAAAAAAAAAAxwCgAAABUAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
               "WhenOpened": "2026-11-10T06:34:03.807Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "Eliminar.cshtml",
-              "DocumentMoniker": "D:\\FincaNOVADocs\\FINCA Git DESTOk\\FincaNovaPoryecto\\src\\FincaNovaGestionLotes.Web\\Areas\\Produccion\\Views\\Recolecciones\\Eliminar.cshtml",
-              "RelativeDocumentMoniker": "src\\FincaNovaGestionLotes.Web\\Areas\\Produccion\\Views\\Recolecciones\\Eliminar.cshtml",
-              "ToolTip": "D:\\FincaNOVADocs\\FINCA Git DESTOk\\FincaNovaPoryecto\\src\\FincaNovaGestionLotes.Web\\Areas\\Produccion\\Views\\Recolecciones\\Eliminar.cshtml",
-              "RelativeToolTip": "src\\FincaNovaGestionLotes.Web\\Areas\\Produccion\\Views\\Recolecciones\\Eliminar.cshtml",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAACwAAAAGAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-11-10T06:29:41.435Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
               "DocumentIndex": 7,
-              "Title": "Editar.cshtml",
-              "DocumentMoniker": "D:\\FincaNOVADocs\\FINCA Git DESTOk\\FincaNovaPoryecto\\src\\FincaNovaGestionLotes.Web\\Areas\\Produccion\\Views\\Recolecciones\\Editar.cshtml",
-              "RelativeDocumentMoniker": "src\\FincaNovaGestionLotes.Web\\Areas\\Produccion\\Views\\Recolecciones\\Editar.cshtml",
-              "ToolTip": "D:\\FincaNOVADocs\\FINCA Git DESTOk\\FincaNovaPoryecto\\src\\FincaNovaGestionLotes.Web\\Areas\\Produccion\\Views\\Recolecciones\\Editar.cshtml",
-              "RelativeToolTip": "src\\FincaNovaGestionLotes.Web\\Areas\\Produccion\\Views\\Recolecciones\\Editar.cshtml",
-              "ViewState": "AgIAAAwAAAAAAAAAAAAAABUAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-11-10T06:10:59.733Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 9,
               "Title": "Crear.cshtml",
               "DocumentMoniker": "D:\\FincaNOVADocs\\FINCA Git DESTOk\\FincaNovaPoryecto\\src\\FincaNovaGestionLotes.Web\\Areas\\Produccion\\Views\\Periodos\\Crear.cshtml",
               "RelativeDocumentMoniker": "src\\FincaNovaGestionLotes.Web\\Areas\\Produccion\\Views\\Periodos\\Crear.cshtml",
@@ -212,25 +170,11 @@
               "RelativeToolTip": "src\\FincaNovaGestionLotes.Web\\Areas\\Produccion\\Views\\Periodos\\Crear.cshtml",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAAkAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-11-10T05:39:05.743Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-11-10T05:39:05.743Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 10,
-              "Title": "Index.cshtml",
-              "DocumentMoniker": "D:\\FincaNOVADocs\\FINCA Git DESTOk\\FincaNovaPoryecto\\src\\FincaNovaGestionLotes.Web\\Areas\\Produccion\\Views\\Periodos\\Index.cshtml",
-              "RelativeDocumentMoniker": "src\\FincaNovaGestionLotes.Web\\Areas\\Produccion\\Views\\Periodos\\Index.cshtml",
-              "ToolTip": "D:\\FincaNOVADocs\\FINCA Git DESTOk\\FincaNovaPoryecto\\src\\FincaNovaGestionLotes.Web\\Areas\\Produccion\\Views\\Periodos\\Index.cshtml",
-              "RelativeToolTip": "src\\FincaNovaGestionLotes.Web\\Areas\\Produccion\\Views\\Periodos\\Index.cshtml",
-              "ViewState": "AgIAAHgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-11-10T05:38:58.953Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 11,
+              "DocumentIndex": 8,
               "Title": "Recoleccion.cs",
               "DocumentMoniker": "D:\\FincaNOVADocs\\FINCA Git DESTOk\\FincaNovaPoryecto\\src\\FincaNovaGestionLotes.Web\\Domain\\Produccion\\Recoleccion.cs",
               "RelativeDocumentMoniker": "src\\FincaNovaGestionLotes.Web\\Domain\\Produccion\\Recoleccion.cs",
@@ -238,12 +182,11 @@
               "RelativeToolTip": "src\\FincaNovaGestionLotes.Web\\Domain\\Produccion\\Recoleccion.cs",
               "ViewState": "AgIAAAwAAAAAAAAAAAAgwCcAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-11-10T05:35:08.805Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-11-10T05:35:08.805Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 6,
               "Title": "Crear.cshtml",
               "DocumentMoniker": "D:\\FincaNOVADocs\\FINCA Git DESTOk\\FincaNovaPoryecto\\src\\FincaNovaGestionLotes.Web\\Areas\\Produccion\\Views\\Recolecciones\\Crear.cshtml",
               "RelativeDocumentMoniker": "src\\FincaNovaGestionLotes.Web\\Areas\\Produccion\\Views\\Recolecciones\\Crear.cshtml",
@@ -251,51 +194,37 @@
               "RelativeToolTip": "src\\FincaNovaGestionLotes.Web\\Areas\\Produccion\\Views\\Recolecciones\\Crear.cshtml",
               "ViewState": "AgIAADMAAAAAAAAAAAAAAEQAAAAWAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-11-10T04:02:39.239Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-11-10T04:02:39.239Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 0,
               "Title": "Index.cshtml",
               "DocumentMoniker": "D:\\FincaNOVADocs\\FINCA Git DESTOk\\FincaNovaPoryecto\\src\\FincaNovaGestionLotes.Web\\Areas\\Produccion\\Views\\Recolecciones\\Index.cshtml",
               "RelativeDocumentMoniker": "src\\FincaNovaGestionLotes.Web\\Areas\\Produccion\\Views\\Recolecciones\\Index.cshtml",
               "ToolTip": "D:\\FincaNOVADocs\\FINCA Git DESTOk\\FincaNovaPoryecto\\src\\FincaNovaGestionLotes.Web\\Areas\\Produccion\\Views\\Recolecciones\\Index.cshtml",
               "RelativeToolTip": "src\\FincaNovaGestionLotes.Web\\Areas\\Produccion\\Views\\Recolecciones\\Index.cshtml",
-              "ViewState": "AgIAABQAAAAAAAAAAAAAAEAAAAAOAAAAAAAAAA==",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAAA8AAABHAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
               "WhenOpened": "2026-11-10T04:02:23.617Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 12,
-              "Title": "_TerrenosSeleccion.cshtml",
-              "DocumentMoniker": "D:\\FincaNOVADocs\\FINCA Git DESTOk\\FincaNovaPoryecto\\src\\FincaNovaGestionLotes.Web\\Areas\\Produccion\\Views\\Periodos\\_TerrenosSeleccion.cshtml",
-              "RelativeDocumentMoniker": "src\\FincaNovaGestionLotes.Web\\Areas\\Produccion\\Views\\Periodos\\_TerrenosSeleccion.cshtml",
-              "ToolTip": "D:\\FincaNOVADocs\\FINCA Git DESTOk\\FincaNovaPoryecto\\src\\FincaNovaGestionLotes.Web\\Areas\\Produccion\\Views\\Periodos\\_TerrenosSeleccion.cshtml",
-              "RelativeToolTip": "src\\FincaNovaGestionLotes.Web\\Areas\\Produccion\\Views\\Periodos\\_TerrenosSeleccion.cshtml",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-11-10T04:01:18.519Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 3,
               "Title": "RecoleccionesController.cs",
               "DocumentMoniker": "D:\\FincaNOVADocs\\FINCA Git DESTOk\\FincaNovaPoryecto\\src\\FincaNovaGestionLotes.Web\\Areas\\Produccion\\Controllers\\RecoleccionesController.cs",
               "RelativeDocumentMoniker": "src\\FincaNovaGestionLotes.Web\\Areas\\Produccion\\Controllers\\RecoleccionesController.cs",
               "ToolTip": "D:\\FincaNOVADocs\\FINCA Git DESTOk\\FincaNovaPoryecto\\src\\FincaNovaGestionLotes.Web\\Areas\\Produccion\\Controllers\\RecoleccionesController.cs",
               "RelativeToolTip": "src\\FincaNovaGestionLotes.Web\\Areas\\Produccion\\Controllers\\RecoleccionesController.cs",
-              "ViewState": "AgIAALAAAAAAAAAAAAA0wLsAAAAFAAAAAAAAAA==",
+              "ViewState": "AgIAAOQAAAAAAAAAAAAiwP4AAAAFAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-11-10T04:00:06.292Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 13,
+              "DocumentIndex": 9,
               "Title": "AppDbContext.cs",
               "DocumentMoniker": "D:\\FincaNOVADocs\\FINCA Git DESTOk\\FincaNovaPoryecto\\src\\FincaNovaGestionLotes.Web\\Data\\AppDbContext.cs",
               "RelativeDocumentMoniker": "src\\FincaNovaGestionLotes.Web\\Data\\AppDbContext.cs",
@@ -303,12 +232,11 @@
               "RelativeToolTip": "src\\FincaNovaGestionLotes.Web\\Data\\AppDbContext.cs",
               "ViewState": "AgIAANgBAAAAAAAAAAAIwPgBAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-11-10T03:57:35.901Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-11-10T03:57:35.901Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 15,
+              "DocumentIndex": 11,
               "Title": "Perfil.cshtml",
               "DocumentMoniker": "D:\\FincaNOVADocs\\FINCA Git DESTOk\\FincaNovaPoryecto\\src\\FincaNovaGestionLotes.Web\\Views\\Account\\Perfil.cshtml",
               "RelativeDocumentMoniker": "src\\FincaNovaGestionLotes.Web\\Views\\Account\\Perfil.cshtml",
@@ -320,7 +248,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 17,
+              "DocumentIndex": 13,
               "Title": "ResetPassword.cshtml",
               "DocumentMoniker": "D:\\FincaNOVADocs\\FINCA Git DESTOk\\FincaNovaPoryecto\\src\\FincaNovaGestionLotes.Web\\Views\\Account\\ResetPassword.cshtml",
               "RelativeDocumentMoniker": "src\\FincaNovaGestionLotes.Web\\Views\\Account\\ResetPassword.cshtml",
@@ -332,7 +260,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 18,
+              "DocumentIndex": 14,
               "Title": "ResetPasswordViewModel.cs",
               "DocumentMoniker": "D:\\FincaNOVADocs\\FINCA Git DESTOk\\FincaNovaPoryecto\\src\\FincaNovaGestionLotes.Web\\Models\\ResetPasswordViewModel.cs",
               "RelativeDocumentMoniker": "src\\FincaNovaGestionLotes.Web\\Models\\ResetPasswordViewModel.cs",
@@ -344,7 +272,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 25,
+              "DocumentIndex": 21,
               "Title": "RegisterViewModel.cs",
               "DocumentMoniker": "D:\\FincaNOVADocs\\FINCA Git DESTOk\\FincaNovaPoryecto\\src\\FincaNovaGestionLotes.Web\\Models\\RegisterViewModel.cs",
               "RelativeDocumentMoniker": "src\\FincaNovaGestionLotes.Web\\Models\\RegisterViewModel.cs",
@@ -356,7 +284,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 19,
+              "DocumentIndex": 15,
               "Title": "EmailService.cs",
               "DocumentMoniker": "D:\\FincaNOVADocs\\FINCA Git DESTOk\\FincaNovaPoryecto\\src\\FincaNovaGestionLotes.Web\\Services\\EmailService.cs",
               "RelativeDocumentMoniker": "src\\FincaNovaGestionLotes.Web\\Services\\EmailService.cs",
@@ -368,7 +296,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 14,
+              "DocumentIndex": 10,
               "Title": "AccountController.cs",
               "DocumentMoniker": "D:\\FincaNOVADocs\\FINCA Git DESTOk\\FincaNovaPoryecto\\src\\FincaNovaGestionLotes.Web\\Controllers\\AccountController.cs",
               "RelativeDocumentMoniker": "src\\FincaNovaGestionLotes.Web\\Controllers\\AccountController.cs",
@@ -376,12 +304,11 @@
               "RelativeToolTip": "src\\FincaNovaGestionLotes.Web\\Controllers\\AccountController.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABcAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-10-01T06:02:30.933Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-10-01T06:02:30.933Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 20,
+              "DocumentIndex": 16,
               "Title": "appsettings.json",
               "DocumentMoniker": "D:\\FincaNOVADocs\\FINCA Git DESTOk\\FincaNovaPoryecto\\src\\FincaNovaGestionLotes.Web\\appsettings.json",
               "RelativeDocumentMoniker": "src\\FincaNovaGestionLotes.Web\\appsettings.json",
@@ -393,7 +320,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 24,
+              "DocumentIndex": 20,
               "Title": "20261005025452_AddTokensNuevos.cs",
               "DocumentMoniker": "D:\\FincaNOVADocs\\FINCA Git DESTOk\\FincaNovaPoryecto\\src\\FincaNovaGestionLotes.Web\\Data\\Migrations\\20261005025452_AddTokensNuevos.cs",
               "RelativeDocumentMoniker": "src\\FincaNovaGestionLotes.Web\\Data\\Migrations\\20261005025452_AddTokensNuevos.cs",
@@ -405,7 +332,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 16,
+              "DocumentIndex": 12,
               "Title": "Usuario.cs",
               "DocumentMoniker": "D:\\FincaNOVADocs\\FINCA Git DESTOk\\FincaNovaPoryecto\\src\\FincaNovaGestionLotes.Web\\Domain\\Usuarios\\Usuario.cs",
               "RelativeDocumentMoniker": "src\\FincaNovaGestionLotes.Web\\Domain\\Usuarios\\Usuario.cs",
@@ -417,7 +344,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 21,
+              "DocumentIndex": 17,
               "Title": "ForgotPasswordViewModel.cs",
               "DocumentMoniker": "D:\\FincaNOVADocs\\FINCA Git DESTOk\\FincaNovaPoryecto\\src\\FincaNovaGestionLotes.Web\\Models\\ForgotPasswordViewModel.cs",
               "RelativeDocumentMoniker": "src\\FincaNovaGestionLotes.Web\\Models\\ForgotPasswordViewModel.cs",
@@ -429,7 +356,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 22,
+              "DocumentIndex": 18,
               "Title": "UsuariosController.cs",
               "DocumentMoniker": "D:\\FincaNOVADocs\\FINCA Git DESTOk\\FincaNovaPoryecto\\src\\FincaNovaGestionLotes.Web\\Controllers\\UsuariosController.cs",
               "RelativeDocumentMoniker": "src\\FincaNovaGestionLotes.Web\\Controllers\\UsuariosController.cs",
@@ -441,7 +368,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 23,
+              "DocumentIndex": 19,
               "Title": "Edit.cshtml",
               "DocumentMoniker": "D:\\FincaNOVADocs\\FINCA Git DESTOk\\FincaNovaPoryecto\\src\\FincaNovaGestionLotes.Web\\Views\\Usuarios\\Edit.cshtml",
               "RelativeDocumentMoniker": "src\\FincaNovaGestionLotes.Web\\Views\\Usuarios\\Edit.cshtml",
