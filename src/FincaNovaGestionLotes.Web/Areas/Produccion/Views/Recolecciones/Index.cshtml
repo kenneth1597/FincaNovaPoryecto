@@ -11,7 +11,11 @@
             Producción diaria en cajuelas por colaborador y lote, con el peso estimado en kilogramos.
         </p>
     </div>
-    <a asp-action="Crear" class="fn-btn fn-btn-primary">+ Registrar recolección</a>
+    <div class="d-flex flex-wrap gap-2">
+        <a asp-action="ConsultaPeriodo" class="fn-btn fn-btn-outline">Total por período</a>
+        <a asp-action="CalcularPagos" class="fn-btn fn-btn-outline">Calcular pago a trabajadores</a>
+        <a asp-action="Crear" class="fn-btn fn-btn-primary">+ Registrar recolección</a>
+    </div>
 </div>
 
 @if (TempData["Ok"] is string ok)

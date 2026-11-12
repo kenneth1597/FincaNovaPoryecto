@@ -1,0 +1,101 @@
+﻿@model IEnumerable<dynamic>
+
+@{
+    ViewData["Title"] = "Cálculo de Pago a Trabajadores";
+}
+
+<div class="container-fluid px-4">
+    <h1 class="mt-4">Cálculo de Pago a Trabajadores</h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a asp-action="Index">Recolecciones</a></li>
+        <li class="breadcrumb-item active">Cálculo de Pagos </li>
+    </ol>
+
+    <!-- Filtros de Fecha y Tarifa por Cajuela -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-filter me-1"></i> Parámetros de Cálculo
+        </div>
+        <div class="card-body">
+            <form method="get" asp-action="CalcularPagos" class="row g-3 align-items-end">
+                <div class="col-md-3">
+                    <label class="form-label">Fecha Desde:</label>
+                    <input type="date" name="fechaInicio" class="form-control" value="@ViewBag.FechaInicio" />
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Fecha Hasta:</label>
+                    <input type="date" name="fechaFin" class="form-control" value="@ViewBag.FechaFin" />
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Tarifa por Cajuela (₡):</label>
+                    <input type="number" step="50" name="tarifaCajuela" class="form-control" value="@ViewBag.TarifaCajuela" />
+                </div>
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-calculator me-1"></i> Calcular
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tarjetas con Resumen Financiero -->
+    <div class="row mb-4">
+        <div class="col-xl-6 col-md-6">
+            <div class="card bg-success text-white mb-4">
+                <div class="card-body">
+                    <h5>Total Cajuelas en el Período</h5>
+                    <h3>@ViewBag.GranTotalCajuelas.ToString("N2") cajuelas</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-6 col-md-6">
+            <div class="card bg-primary text-white mb-4">
+                <div class="card-body">
+                    <h5>Monto Total a Planilla (₡)</h5>
+                    <h3>₡@ViewBag.GranTotalPagar.ToString("N2")</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabla Detallada de Pagos por Colaborador -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-users me-1"></i> Desglose de Pagos por Colaborador
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Colaborador</th>
+                            <th>Total Cajuelas</th>
+                            <th>Peso Est. (Kg)</th>
+                            <th>Tarifa Unid.</th>
+                            <th>Total a Pagar</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td><strong>@item.Nombre</strong></td>
+                                <td>@item.TotalCajuelas.ToString("N2")</td>
+                                <td>@item.TotalKilos.ToString("N2") kg</td>
+                                <td>₡@ViewBag.TarifaCajuela.ToString("N2")</td>
+                                <td><span class="badge bg-success fs-6">₡@item.MontoAPagar.ToString("N2")</span></td>
+                            </tr>
+                        }
+                        @if (!Model.Any())
+                        {
+                            <tr>
+                                <td colspan="5" class="text-center text-muted">No hay registros de recolección en el rango de fechas seleccionado.</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
