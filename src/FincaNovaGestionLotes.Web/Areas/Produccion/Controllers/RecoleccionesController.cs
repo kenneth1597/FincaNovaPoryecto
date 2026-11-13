@@ -209,8 +209,10 @@ public class RecoleccionesController : Controller
     // GET: Produccion/Recolecciones/ConsultaPeriodo
     public async Task<IActionResult> ConsultaPeriodo(int? periodoId)
     {
-        // Cargamos los períodos para el selector de filtro
-        ViewData["PeriodosProductivos"] = new SelectList(await _context.PeriodosProductivos.ToListAsync(), "Id", "Id", periodoId);
+        // Cargamos los períodos para el selector de filtro (se muestra el nombre, no el número)
+        ViewData["PeriodosProductivos"] = new SelectList(
+            await _context.PeriodosProductivos.OrderByDescending(p => p.FechaInicio).ToListAsync(),
+            "Id", "Nombre", periodoId);
 
         var query = _context.Recolecciones
             .Include(r => r.Colaborador)
