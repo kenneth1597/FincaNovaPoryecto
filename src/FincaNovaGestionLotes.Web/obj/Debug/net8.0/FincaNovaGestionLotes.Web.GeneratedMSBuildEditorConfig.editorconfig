@@ -99,6 +99,50 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcRmluYW56YXNcVmlld3NcQ29udHJvbEZpbmFuY2llcm9cSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
+[D:/FincaNOVADocs/FINCA Git DESTOk/FincaNovaPoryecto/src/FincaNovaGestionLotes.Web/Areas/Finanzas/Views/Gastos/Crear.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXNcRmluYW56YXNcVmlld3NcR2FzdG9zXENyZWFyLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/FincaNOVADocs/FINCA Git DESTOk/FincaNovaPoryecto/src/FincaNovaGestionLotes.Web/Areas/Finanzas/Views/Gastos/Editar.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXNcRmluYW56YXNcVmlld3NcR2FzdG9zXEVkaXRhci5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/FincaNOVADocs/FINCA Git DESTOk/FincaNovaPoryecto/src/FincaNovaGestionLotes.Web/Areas/Finanzas/Views/Gastos/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXNcRmluYW56YXNcVmlld3NcR2FzdG9zXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/FincaNOVADocs/FINCA Git DESTOk/FincaNovaPoryecto/src/FincaNovaGestionLotes.Web/Areas/Finanzas/Views/Gastos/_FormFields.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXNcRmluYW56YXNcVmlld3NcR2FzdG9zXF9Gb3JtRmllbGRzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/FincaNOVADocs/FINCA Git DESTOk/FincaNovaPoryecto/src/FincaNovaGestionLotes.Web/Areas/Finanzas/Views/Ventas/Crear.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXNcRmluYW56YXNcVmlld3NcVmVudGFzXENyZWFyLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/FincaNOVADocs/FINCA Git DESTOk/FincaNovaPoryecto/src/FincaNovaGestionLotes.Web/Areas/Finanzas/Views/Ventas/Editar.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXNcRmluYW56YXNcVmlld3NcVmVudGFzXEVkaXRhci5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/FincaNOVADocs/FINCA Git DESTOk/FincaNovaPoryecto/src/FincaNovaGestionLotes.Web/Areas/Finanzas/Views/Ventas/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXNcRmluYW56YXNcVmlld3NcVmVudGFzXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/FincaNOVADocs/FINCA Git DESTOk/FincaNovaPoryecto/src/FincaNovaGestionLotes.Web/Areas/Finanzas/Views/Ventas/_FormFields.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXNcRmluYW56YXNcVmlld3NcVmVudGFzXF9Gb3JtRmllbGRzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/FincaNOVADocs/FINCA Git DESTOk/FincaNovaPoryecto/src/FincaNovaGestionLotes.Web/Areas/Finanzas/Views/Ventas/_TotalVentaScript.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXNcRmluYW56YXNcVmlld3NcVmVudGFzXF9Ub3RhbFZlbnRhU2NyaXB0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/FincaNOVADocs/FINCA Git DESTOk/FincaNovaPoryecto/src/FincaNovaGestionLotes.Web/Areas/Finanzas/Views/_ViewImports.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXNcRmluYW56YXNcVmlld3NcX1ZpZXdJbXBvcnRzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/FincaNOVADocs/FINCA Git DESTOk/FincaNovaPoryecto/src/FincaNovaGestionLotes.Web/Areas/Finanzas/Views/_ViewStart.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXNcRmluYW56YXNcVmlld3NcX1ZpZXdTdGFydC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
 [D:/FincaNOVADocs/FINCA Git DESTOk/FincaNovaPoryecto/src/FincaNovaGestionLotes.Web/Areas/Inventario/Views/Insumos/Alertas.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcSW52ZW50YXJpb1xWaWV3c1xJbnN1bW9zXEFsZXJ0YXMuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
@@ -155,36 +199,8 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcTGFib3Jlc1xWaWV3c1xfVmlld1N0YXJ0LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/FincaNOVADocs/FINCA Git DESTOk/FincaNovaPoryecto/src/FincaNovaGestionLotes.Web/Areas/Lotes/Views/Lotes/Crear.cshtml]
-build_metadata.AdditionalFiles.TargetPath = QXJlYXNcTG90ZXNcVmlld3NcTG90ZXNcQ3JlYXIuY3NodG1s
-build_metadata.AdditionalFiles.CssScope = 
-
-[D:/FincaNOVADocs/FINCA Git DESTOk/FincaNovaPoryecto/src/FincaNovaGestionLotes.Web/Areas/Lotes/Views/Lotes/Detalle.cshtml]
-build_metadata.AdditionalFiles.TargetPath = QXJlYXNcTG90ZXNcVmlld3NcTG90ZXNcRGV0YWxsZS5jc2h0bWw=
-build_metadata.AdditionalFiles.CssScope = 
-
-[D:/FincaNOVADocs/FINCA Git DESTOk/FincaNovaPoryecto/src/FincaNovaGestionLotes.Web/Areas/Lotes/Views/Lotes/Editar.cshtml]
-build_metadata.AdditionalFiles.TargetPath = QXJlYXNcTG90ZXNcVmlld3NcTG90ZXNcRWRpdGFyLmNzaHRtbA==
-build_metadata.AdditionalFiles.CssScope = 
-
-[D:/FincaNOVADocs/FINCA Git DESTOk/FincaNovaPoryecto/src/FincaNovaGestionLotes.Web/Areas/Lotes/Views/Lotes/Index.cshtml]
-build_metadata.AdditionalFiles.TargetPath = QXJlYXNcTG90ZXNcVmlld3NcTG90ZXNcSW5kZXguY3NodG1s
-build_metadata.AdditionalFiles.CssScope = 
-
 [D:/FincaNOVADocs/FINCA Git DESTOk/FincaNovaPoryecto/src/FincaNovaGestionLotes.Web/Areas/Lotes/Views/Lotes/Panel.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcTG90ZXNcVmlld3NcTG90ZXNcUGFuZWwuY3NodG1s
-build_metadata.AdditionalFiles.CssScope = 
-
-[D:/FincaNOVADocs/FINCA Git DESTOk/FincaNovaPoryecto/src/FincaNovaGestionLotes.Web/Areas/Lotes/Views/Lotes/_FormFields.cshtml]
-build_metadata.AdditionalFiles.TargetPath = QXJlYXNcTG90ZXNcVmlld3NcTG90ZXNcX0Zvcm1GaWVsZHMuY3NodG1s
-build_metadata.AdditionalFiles.CssScope = 
-
-[D:/FincaNOVADocs/FINCA Git DESTOk/FincaNovaPoryecto/src/FincaNovaGestionLotes.Web/Areas/Lotes/Views/_ViewImports.cshtml]
-build_metadata.AdditionalFiles.TargetPath = QXJlYXNcTG90ZXNcVmlld3NcX1ZpZXdJbXBvcnRzLmNzaHRtbA==
-build_metadata.AdditionalFiles.CssScope = 
-
-[D:/FincaNOVADocs/FINCA Git DESTOk/FincaNovaPoryecto/src/FincaNovaGestionLotes.Web/Areas/Lotes/Views/_ViewStart.cshtml]
-build_metadata.AdditionalFiles.TargetPath = QXJlYXNcTG90ZXNcVmlld3NcX1ZpZXdTdGFydC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
 [D:/FincaNOVADocs/FINCA Git DESTOk/FincaNovaPoryecto/src/FincaNovaGestionLotes.Web/Areas/Produccion/Views/Periodos/Crear.cshtml]
@@ -225,6 +241,10 @@ build_metadata.AdditionalFiles.CssScope =
 
 [D:/FincaNOVADocs/FINCA Git DESTOk/FincaNovaPoryecto/src/FincaNovaGestionLotes.Web/Areas/Produccion/Views/Recolecciones/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcUHJvZHVjY2lvblxWaWV3c1xSZWNvbGVjY2lvbmVzXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/FincaNOVADocs/FINCA Git DESTOk/FincaNovaPoryecto/src/FincaNovaGestionLotes.Web/Areas/Produccion/Views/Recolecciones/_FormFields.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXNcUHJvZHVjY2lvblxWaWV3c1xSZWNvbGVjY2lvbmVzXF9Gb3JtRmllbGRzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
 [D:/FincaNOVADocs/FINCA Git DESTOk/FincaNovaPoryecto/src/FincaNovaGestionLotes.Web/Areas/Produccion/Views/_ViewImports.cshtml]
@@ -299,6 +319,10 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9Db2ZmZWVCZWFuSWNvbi5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
+[D:/FincaNOVADocs/FINCA Git DESTOk/FincaNovaPoryecto/src/FincaNovaGestionLotes.Web/Views/Shared/_Layout.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9MYXlvdXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
 [D:/FincaNOVADocs/FINCA Git DESTOk/FincaNovaPoryecto/src/FincaNovaGestionLotes.Web/Views/Shared/_Paginacion.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9QYWdpbmFjaW9uLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
@@ -326,7 +350,3 @@ build_metadata.AdditionalFiles.CssScope =
 [D:/FincaNOVADocs/FINCA Git DESTOk/FincaNovaPoryecto/src/FincaNovaGestionLotes.Web/Views/_ViewStart.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdTdGFydC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
-
-[D:/FincaNOVADocs/FINCA Git DESTOk/FincaNovaPoryecto/src/FincaNovaGestionLotes.Web/Views/Shared/_Layout.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9MYXlvdXQuY3NodG1s
-build_metadata.AdditionalFiles.CssScope = b-hipgpuykmi

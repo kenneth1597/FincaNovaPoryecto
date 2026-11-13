@@ -1,22 +1,97 @@
+@using Microsoft.AspNetCore.Http
+@inject FincaNovaGestionLotes.Web.Data.AppDbContext Db
+@{
+    var usuarioNombre = Context.Session.GetString("UsuarioNombre");
+    var usuarioRol = Context.Session.GetString("UsuarioRol");
+    var haySesion = !string.IsNullOrEmpty(usuarioNombre);
+    var esAdmin = Roles.EsAdmin(usuarioRol);
+
+    var areaActual = ViewContext.RouteData.Values["area"]?.ToString() ?? "";
+    var controladorActual = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+    var accionActual = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
+
+    // Avisos del menú para el administrador: insumos en el stock mínimo (rojo)
+    // y labores terminadas que esperan su revisión (amarillo).
+    var alertasStock = haySesion && esAdmin ? Db.AlertasStock.Count(a => a.Activa) : 0;
+    var laboresEnRevision = haySesion && esAdmin ? Db.Labores.Count(l => l.Estado == EstadoLabor.EnRevision) : 0;
+
+    var iniciales = string.Concat((usuarioNombre ?? "")
+        .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+        .Take(2)
+        .Select(p => char.ToUpper(p[0])));
+
+    var menu = new (string Seccion, string Texto, string Area, string Controlador, string Accion, string? Excluir, string Icono, bool SoloAdmin)[]
+    {
+        ("Producción", "Fincas y lotes", "Terrenos", "Terrenos", "Index", null,
+            "<path d='M12 21v-9'/><path d='M12 12C12 8 9.5 5.5 5 5.5c0 4.2 2.8 6.5 7 6.5Z'/><path d='M12 14c0-3.2 2.4-5.5 7-5.5 0 3.6-2.6 5.5-7 5.5Z'/><path d='M7 21h10'/>", true),
+        ("Producción", "Períodos productivos", "Produccion", "Periodos", "Index", null,
+            "<rect x='4' y='5' width='16' height='15' rx='2'/><path d='M8 3v4M16 3v4M4 10h16'/>", true),
+        ("Producción", "Recolecciones", "Produccion", "Recolecciones", "Index", null,
+            "<path d='M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z'/><path d='M6 7h12'/><path d='M6 11h12'/><path d='M6 15h8'/>", true),
+        ("Trabajo de campo", "Labores", "Labores", "Labores", "Index", null,
+            "<rect x='6' y='4' width='12' height='17' rx='2'/><path d='M9 4h6v3H9z'/><path d='M9.5 13.5l2 2 3.5-4'/>", false),
+        ("Trabajo de campo", "Colaboradores", "Colaboradores", "Colaboradores", "Index", null,
+            "<circle cx='9' cy='8' r='3.5'/><path d='M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6'/><path d='M16 4.6a3.2 3.2 0 0 1 0 6.2'/><path d='M17.5 14.3c2.1.7 3.5 2.7 3.5 5.7'/>", true),
+        ("Sanidad", "Enfermedades", "Enfermedades", "Enfermedades", "Index", "Alertas",
+            "<path d='M5 19c0-8 5-14 14-14 0 9-6 14-14 14Z'/><path d='M5 19l7-7'/><circle cx='14.5' cy='9.5' r='1'/>", false),
+        ("Sanidad", "Alertas", "Enfermedades", "Enfermedades", "Alertas", null,
+            "<path d='M18 9a6 6 0 0 0-12 0c0 6.5-3 7.5-3 9h18c0-1.5-3-2.5-3-9'/><path d='M10 21h4'/>", true),
+        ("Inventario", "Insumos", "Inventario", "Insumos", "Index", "Alertas",
+            "<path d='M3 7l9-4 9 4-9 4-9-4Z'/><path d='M3 7v10l9 4 9-4V7'/><path d='M12 11v10'/>", false),
+        ("Inventario", "Alertas de stock", "Inventario", "Insumos", "Alertas", null,
+            "<path d='M12 3l9.5 17h-19L12 3Z'/><path d='M12 10v4M12 17.5v.5'/>", true),
+        ("Finanzas", "Control financiero", "Finanzas", "ControlFinanciero", "Index", null,
+            "<path d='M4 20V10'/><path d='M10 20V4'/><path d='M16 20v-7'/><path d='M22 20H2'/>", true),
+        ("Finanzas", "Gastos", "Finanzas", "Gastos", "Index", null,
+            "<path d='M6 3h12v18l-3-2-3 2-3-2-3 2V3z'/><path d='M9 8h6'/><path d='M9 12h6'/>", true),
+        ("Finanzas", "Ventas de café", "Finanzas", "Ventas", "Index", null,
+            "<path d='M4 7h16v12H4z'/><path d='M4 7l2-3h12l2 3'/><path d='M12 11v4'/><path d='M14 12h-3a1 1 0 0 0 0 2h2a1 1 0 0 1 0 2h-3'/>", true),
+        ("Administración", "Bitácora", "Bitacora", "Bitacora", "Index", null,
+            "<path d='M3 12a9 9 0 1 0 2.8-6.5'/><path d='M3 4v5h5'/><path d='M12 8v4l3 2'/>", true),
+        ("Administración", "Gestión de usuarios", "", "Usuarios", "Index", null,
+            "<path d='M12 3l7 3v5c0 4.6-3 8.4-7 10-4-1.6-7-5.4-7-10V6l7-3Z'/><circle cx='12' cy='10' r='2.2'/><path d='M8.5 16c.8-1.6 2-2.4 3.5-2.4s2.7.8 3.5 2.4'/>", true),
+        ("Mi cuenta", "Mi perfil", "", "Account", "Perfil", null,
+            "<circle cx='8' cy='8' r='4' transform='translate(4 0)'/><path d='M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8'/>", false)
+    };
+
+    bool EsActivo(string area, string controlador, string accion, string? excluir)
+    {
+        if (!string.Equals(areaActual, area, StringComparison.OrdinalIgnoreCase)) return false;
+        if (!string.Equals(controladorActual, controlador, StringComparison.OrdinalIgnoreCase)) return false;
+        if (excluir is not null) return !string.Equals(accionActual, excluir, StringComparison.OrdinalIgnoreCase);
+        if (accion == "Index") return true;
+        return string.Equals(accionActual, accion, StringComparison.OrdinalIgnoreCase);
+    }
+}
 <!DOCTYPE html>
 
 <html lang="es">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - FincaNova · Gestión de Lotes</title>
-    <link rel="icon" type="image/svg+xml" href="~/favicon.svg" />
+    <title>@ViewData["Title"] - FincaNova</title>
+    <link rel="icon" type="image/svg+xml" href="~/favicon.svg" asp-append-version="true" />
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>
-<body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-dark fn-navbar mb-4">
-            <div class="container-fluid">
-                <a class="navbar-brand fw-semibold d-flex align-items-center gap-2" asp-area="" asp-controller="Home" asp-action="Index">
-                    <partial name="_CoffeeBeanIcon" model="28" />
-                    FincaNova · Lotes
+<body class="@(haySesion ? "fn-con-menu" : "fn-sin-menu")">
+
+    @if (haySesion)
+    {
+        <div class="fn-app">
+
+            <aside class="fn-sidebar" id="fnSidebar">
+
+                <a class="fn-brand" asp-area="" asp-controller="Home" asp-action="Index">
+                    <span class="fn-brand-icon">
+                        <partial name="_CoffeeBeanIcon" model="20" />
+                    </span>
+                    <span>
+                        <span class="fn-brand-title">FincaNova</span>
+                        <span class="fn-brand-subtitle">Café Chaperno · Poás</span>
+                    </span>
                 </a>
+<<<<<<< HEAD
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse">
                     <span class="navbar-toggler-icon"></span>
                 </button>
@@ -63,26 +138,109 @@
 </ul>
                     </ul>
                    
-                </div>
-            </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
+=======
 
-    <footer class="border-top footer text-muted mt-4">
-        <div class="container py-2">
-            FincaNova · Gestión de Lotes y Micro lotes
+                <nav class="fn-sidebar-nav">
+                    @foreach (var seccion in menu.Where(m => !m.SoloAdmin || esAdmin).GroupBy(m => m.Seccion))
+                    {
+                        <div class="fn-nav-section">@seccion.Key</div>
+
+                        @foreach (var item in seccion)
+                        {
+                            var activo = EsActivo(item.Area, item.Controlador, item.Accion, item.Excluir);
+                            <a class="fn-nav-link @(activo ? "active" : "")"
+                               aria-current="@(activo ? "page" : null)"
+                               asp-area="@item.Area" asp-controller="@item.Controlador" asp-action="@item.Accion">
+                                <span class="fn-nav-icon">
+                                    <svg viewBox="0 0 24 24" aria-hidden="true">@Html.Raw(item.Icono)</svg>
+                                </span>
+                                @item.Texto
+                                @if (item.Texto == "Alertas de stock" && alertasStock > 0)
+                                {
+                                    <span class="fn-nav-badge" title="Insumos en el stock mínimo">@alertasStock</span>
+                                }
+                                else if (item.Texto == "Labores" && laboresEnRevision > 0)
+                                {
+                                    <span class="fn-nav-badge fn-nav-badge-revision" title="Labores que esperan su revisión">@laboresEnRevision</span>
+                                }
+                            </a>
+                        }
+                    }
+                </nav>
+
+                <div class="fn-sidebar-user">
+                    <a class="fn-user" asp-area="" asp-controller="Account" asp-action="Perfil" title="Mi perfil">
+                        <span class="fn-user-avatar">@iniciales</span>
+                        <span class="fn-user-text">
+                            <strong>@usuarioNombre</strong>
+                            <span>@usuarioRol</span>
+                        </span>
+                    </a>
+                    <a class="fn-logout" asp-area="" asp-controller="Account" asp-action="Logout" title="Cerrar sesión" aria-label="Cerrar sesión">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3"/><path d="M10 17l5-5-5-5"/><path d="M15 12H3"/></svg>
+                    </a>
+>>>>>>> parent of 02865a7 (Commit inicialBase del proyecto, pimeras tablas y historias de la 30 a la 35 hechas, se tiene que revisar la info y seguir con lo penidemte)
+                </div>
+
+            </aside>
+
+            <div class="fn-backdrop" id="fnBackdrop"></div>
+
+            <div class="fn-main">
+
+                <div class="fn-mobilebar">
+                    <button type="button" class="fn-menu-button" id="fnMenuButton" aria-label="Abrir menú" aria-controls="fnSidebar" aria-expanded="false">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+                    </button>
+                    <span class="fn-mobilebar-brand">
+                        <partial name="_CoffeeBeanIcon" model="16" />
+                        FincaNova
+                    </span>
+                </div>
+
+                <main class="fn-content">
+                    @RenderBody()
+                </main>
+
+                <footer class="fn-footer">
+                    FincaNova · Gestión de la finca Café Chaperno
+                </footer>
+
+            </div>
+
         </div>
-    </footer>
+    }
+    else if (ViewData["PantallaCompleta"] is true)
+    {
+        @* Páginas que dibujan su propio diseño a pantalla completa (ej. el login). *@
+        @RenderBody()
+    }
+    else
+    {
+        <div class="fn-auth">
+            <div class="fn-auth-brand">
+                <span class="fn-brand-icon">
+                    <partial name="_CoffeeBeanIcon" model="22" />
+                </span>
+                <span>
+                    <span class="fn-brand-title">FincaNova</span>
+                    <span class="fn-brand-subtitle">Café Chaperno · Poás</span>
+                </span>
+            </div>
+
+            <main class="fn-auth-content">
+                @RenderBody()
+            </main>
+        </div>
+    }
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
     <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+
     @await RenderSectionAsync("Scripts", required: false)
+
 </body>
 </html>
