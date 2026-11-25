@@ -1,0 +1,168 @@
+@model LoteDetalleViewModel
+@{
+    var lote = Model.Lote;
+    ViewData["Title"] = $"{lote.Codigo} — {lote.Nombre}";
+}
+
+@if (TempData["Ok"] is string ok)
+{
+    <div class="alert alert-success">@ok</div>
+}
+@if (TempData["Error"] is string error)
+{
+    <div class="alert alert-danger">@error</div>
+}
+
+<div class="d-flex justify-content-between align-items-start mb-3">
+    <div>
+        <h1 class="h3 mb-1">@lote.Codigo — @lote.Nombre</h1>
+        <span class="badge bg-@Ui.EstadoLoteColor(lote.Estado)">@Ui.EstadoLoteTexto(lote.Estado)</span>
+        <span class="badge bg-dark">@Ui.TipoLoteTexto(lote.Tipo)</span>
+        @if (lote.Tipo == TipoLote.MicroLote && lote.LotePadre is not null)
+        {
+            <a asp-action="Detalle" asp-route-id="@lote.LotePadreId" class="small ms-2">
+                Pertenece a @lote.LotePadre.Codigo
+            </a>
+        }
+    </div>
+    <div class="btn-group">
+        <a asp-action="Index" class="btn btn-outline-secondary">Volver al listado</a>
+        <a asp-action="Editar" asp-route-id="@lote.Id" class="btn btn-outline-primary">Editar</a>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-md-7">
+        <div class="card h-100">
+            <div class="card-header">Ficha técnica</div>
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-4">Área</dt><dd class="col-sm-8">@lote.AreaHectareas.ToString("N2") ha</dd>
+                    <dt class="col-sm-4">Variedad de café</dt><dd class="col-sm-8">@(lote.VariedadCafe ?? "—")</dd>
+                    <dt class="col-sm-4">Año de siembra</dt><dd class="col-sm-8">@(lote.AnioSiembra?.ToString() ?? "—")</dd>
+                    <dt class="col-sm-4">Ubicación</dt><dd class="col-sm-8">@(lote.Ubicacion ?? "—")</dd>
+                    <dt class="col-sm-4">Observaciones</dt><dd class="col-sm-8">@(lote.Observaciones ?? "—")</dd>
+                    <dt class="col-sm-4">Registrado</dt><dd class="col-sm-8">@lote.FechaCreacion.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</dd>
+                    <dt class="col-sm-4">Último cambio de estado</dt>
+                    <dd class="col-sm-8">
+                        @(lote.FechaUltimoCambioEstado?.ToLocalTime().ToString("dd/MM/yyyy HH:mm") ?? "—")
+                        @if (!string.IsNullOrEmpty(lote.EstadoCambiadoPor))
+                        {
+                            <span class="text-muted">por @lote.EstadoCambiadoPor</span>
+                        }
+                    </dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-5">
+        <div class="card h-100">
+            <div class="card-header">Estado operativo</div>
+            <div class="card-body">
+                <form asp-action="CambiarEstado" method="post" class="d-flex gap-2 mb-3">
+                    <input type="hidden" name="id" value="@lote.Id" />
+                    <select name="estado" class="form-select">
+                        @foreach (EstadoLote e in Enum.GetValues<EstadoLote>())
+                        {
+                            if (e == lote.Estado || e == EstadoLote.Inactivo) { continue; }
+                            <option value="@e">@Ui.EstadoLoteTexto(e)</option>
+                        }
+                    </select>
+                    <button type="submit" class="btn btn-outline-success text-nowrap">Cambiar estado</button>
+                </form>
+
+                <hr />
+
+                <button type="button" class="btn btn-outline-warning w-100 mb-2" data-bs-toggle="modal" data-bs-target="#modalDesactivar">Desactivar</button>
+                <button type="button" class="btn btn-outline-danger w-100" data-bs-toggle="modal" data-bs-target="#modalEliminar">Eliminar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (lote.Tipo == TipoLote.Lote)
+{
+    <div class="card mt-3">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <span>Micro lotes de @lote.Codigo</span>
+            <a asp-action="Crear" asp-route-tipo="MicroLote" asp-route-padreId="@lote.Id" class="btn btn-sm btn-outline-success">+ Nuevo micro lote</a>
+        </div>
+        <div class="card-body">
+            @if (!Model.MicroLotes.Any())
+            {
+                <p class="text-muted mb-0">Este lote todavía no tiene micro lotes registrados.</p>
+            }
+            else
+            {
+                <table class="table table-sm mb-0">
+                    <thead><tr><th>Código</th><th>Nombre</th><th>Área (ha)</th><th>Estado</th><th></th></tr></thead>
+                    <tbody>
+                        @foreach (var m in Model.MicroLotes)
+                        {
+                            <tr>
+                                <td>@m.Codigo</td>
+                                <td>@m.Nombre</td>
+                                <td>@m.AreaHectareas.ToString("N2")</td>
+                                <td><span class="badge bg-@Ui.EstadoLoteColor(m.Estado)">@Ui.EstadoLoteTexto(m.Estado)</span></td>
+                                <td class="text-end"><a asp-action="Detalle" asp-route-id="@m.Id" class="btn btn-sm btn-outline-secondary">Ver</a></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+    </div>
+}
+
+<div class="modal fade" id="modalDesactivar" tabindex="-1" aria-labelledby="modalDesactivarLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form asp-action="Desactivar" method="post">
+                <input type="hidden" name="id" value="@lote.Id" />
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalDesactivarLabel">Desactivar @Ui.TipoLoteTexto(lote.Tipo).ToLower()</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Estás a punto de desactivar <strong>@lote.Codigo — @lote.Nombre</strong>.</p>
+                    <p class="text-muted small mb-0">
+                        Pasará a estado <strong>Inactivo</strong> y dejará de aparecer entre los registros
+                        activos, pero su historial se conserva y puedes reactivarlo más adelante cambiando
+                        su estado.
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-warning">Sí, desactivar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalEliminar" tabindex="-1" aria-labelledby="modalEliminarLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form asp-action="Eliminar" method="post">
+                <input type="hidden" name="id" value="@lote.Id" />
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalEliminarLabel">Eliminar @Ui.TipoLoteTexto(lote.Tipo).ToLower()</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Estás a punto de eliminar <strong>@lote.Codigo — @lote.Nombre</strong> de la base de datos.</p>
+                    <p class="text-danger small mb-0">
+                        <strong>Esta acción no se puede deshacer.</strong> Si tiene micro lotes u otra
+                        información asociada, el sistema no permitirá continuar y deberás usar
+                        «Desactivar» para conservar su historial.
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-danger">Sí, eliminar definitivamente</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
