@@ -1,0 +1,115 @@
+@model LoteFormViewModel
+
+<div class="row g-3">
+    <div class="col-md-4">
+        <label asp-for="Codigo" class="form-label"></label>
+        @if (Model.EsEdicion)
+        {
+            <input class="form-control" value="@Model.Codigo" disabled />
+            <input type="hidden" asp-for="Codigo" />
+        }
+        else
+        {
+            <input asp-for="Codigo" class="form-control" placeholder="Ej. LOTE-01" />
+        }
+        <span asp-validation-for="Codigo" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-4">
+        <label asp-for="Tipo" class="form-label"></label>
+        @if (Model.EsEdicion)
+        {
+            <input class="form-control" value="@Ui.TipoLoteTexto(Model.Tipo)" disabled />
+            <input type="hidden" asp-for="Tipo" />
+        }
+        else
+        {
+            <select asp-for="Tipo" class="form-select" id="tipoSelect">
+                @foreach (TipoLote t in Enum.GetValues<TipoLote>())
+                {
+                    <option value="@t" selected="@(Model.Tipo == t)">@Ui.TipoLoteTexto(t)</option>
+                }
+            </select>
+        }
+    </div>
+
+    <div class="col-md-4" id="padreBlock" style="@(Model.EsEdicion && Model.Tipo != TipoLote.MicroLote ? "display:none" : "")">
+        <label asp-for="LotePadreId" class="form-label"></label>
+        @if (Model.EsEdicion)
+        {
+            var texto = Model.LotesPadre.FirstOrDefault(p => p.Id == Model.LotePadreId).Texto;
+            <input class="form-control" value="@texto" disabled />
+            <input type="hidden" asp-for="LotePadreId" />
+        }
+        else
+        {
+            <select asp-for="LotePadreId" class="form-select">
+                <option value="">-- Seleccione --</option>
+                @foreach (var (id, texto) in Model.LotesPadre)
+                {
+                    <option value="@id" selected="@(Model.LotePadreId == id)">@texto</option>
+                }
+            </select>
+        }
+        <span asp-validation-for="LotePadreId" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="Nombre" class="form-label"></label>
+        <input asp-for="Nombre" class="form-control" />
+        <span asp-validation-for="Nombre" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-3">
+        <label asp-for="AreaHectareas" class="form-label"></label>
+        <input asp-for="AreaHectareas" class="form-control" type="number" step="0.01" min="0.01" />
+        <span asp-validation-for="AreaHectareas" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-3">
+        <label asp-for="AnioSiembra" class="form-label"></label>
+        <input asp-for="AnioSiembra" class="form-control" type="number" min="1900" max="2100" />
+        <span asp-validation-for="AnioSiembra" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="VariedadCafe" class="form-label"></label>
+        <input asp-for="VariedadCafe" class="form-control" list="variedades" />
+        <datalist id="variedades">
+            <option value="Caturra" />
+            <option value="Catuaí" />
+            <option value="Typica" />
+            <option value="Bourbon" />
+            <option value="Geisha" />
+            <option value="Villa Sarchí" />
+            <option value="Obatá" />
+            <option value="Marsellesa" />
+        </datalist>
+        <span asp-validation-for="VariedadCafe" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="Ubicacion" class="form-label"></label>
+        <input asp-for="Ubicacion" class="form-control" />
+        <span asp-validation-for="Ubicacion" class="text-danger"></span>
+    </div>
+
+    <div class="col-12">
+        <label asp-for="Observaciones" class="form-label"></label>
+        <textarea asp-for="Observaciones" class="form-control" rows="3"></textarea>
+    </div>
+</div>
+
+<script>
+    (function () {
+        var tipoSelect = document.getElementById('tipoSelect');
+        var padreBlock = document.getElementById('padreBlock');
+        if (!tipoSelect || !padreBlock) return;
+        var microLoteValue = '@TipoLote.MicroLote';
+        function actualizar() {
+            padreBlock.style.display = tipoSelect.value === microLoteValue ? '' : 'none';
+        }
+        tipoSelect.addEventListener('change', actualizar);
+        actualizar();
+    })();
+</script>

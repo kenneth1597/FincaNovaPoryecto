@@ -4,6 +4,5 @@ namespace FincaNovaGestionLotes.Web.Services.Auditoria;
 
 public interface IAuditService
 {
-    Task RegistrarAsync(AccionAuditoria accion, string entidad, string entidadId, string descripcion,
-        string? valorAnterior = null, string? valorNuevo = null);
+    Task RegistrarAsync(AccionAuditoria accion, string entidad, string entidadId, string descripcion);
 }
