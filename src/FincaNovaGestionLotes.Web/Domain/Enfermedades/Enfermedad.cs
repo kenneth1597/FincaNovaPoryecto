@@ -1,15 +1,15 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using FincaNovaGestionLotes.Web.Domain.Common;
-using FincaNovaGestionLotes.Web.Domain.Lotes;
+using FincaNovaGestionLotes.Web.Domain.Terrenos;
 
 namespace FincaNovaGestionLotes.Web.Domain.Enfermedades;
 
 public class Enfermedad : AuditableEntity
 {
     [Required]
-    public int LoteId { get; set; }
+    public int TerrenoId { get; set; }
 
-    public Lote Lote { get; set; } = null!;
+    public Terreno Terreno { get; set; } = null!;
 
     [Required, StringLength(150)]
     public string Nombre { get; set; } = string.Empty;
@@ -31,6 +31,22 @@ public class Enfermedad : AuditableEntity
     public DateTime? FechaAtendida { get; set; }
 
     public string? AtendidaPor { get; set; }
+
+    public EstadoEnfermedad Estado { get; set; } = EstadoEnfermedad.Activa;
+
+    public DateTime? FechaCierre { get; set; }
+
+    [StringLength(150)]
+    public string? CerradaPor { get; set; }
+
+    public ResultadoCierreEnfermedad? ResultadoCierre { get; set; }
+
+    [StringLength(500)]
+    public string? ComentarioCierre { get; set; }
+
+    public int? TratamientoEfectivoId { get; set; }
+
+    public TratamientoEnfermedad? TratamientoEfectivo { get; set; }
 
     public ICollection<TratamientoEnfermedad> Tratamientos { get; set; }
         = new List<TratamientoEnfermedad>();

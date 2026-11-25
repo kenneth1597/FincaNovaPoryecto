@@ -1,0 +1,111 @@
+@model AlertasStockViewModel
+
+@{
+    ViewData["Title"] = "Alertas de stock";
+}
+
+<div class="fn-page-header">
+    <div>
+        <h1 class="fn-page-title">
+            <span class="fn-page-title-icon">
+                <svg viewBox="0 0 24 24">
+                    <path d="M12 3l9.5 17h-19L12 3Z" />
+                    <path d="M12 10v4M12 17.5v.5" />
+                </svg>
+            </span>
+            Alertas de stock mínimo
+        </h1>
+        <p class="fn-page-subtitle">
+            Cada alerta se mantiene activa hasta que el insumo se reabastece por encima del mínimo.
+        </p>
+    </div>
+    <a asp-action="Index" class="fn-btn fn-btn-outline">Ir al inventario</a>
+</div>
+
+<div class="fn-card">
+    <div class="fn-card-header d-flex justify-content-between align-items-center">
+        <h2 class="fn-card-title">Alertas activas</h2>
+        <span class="fn-count">@Model.Activas.Count alerta(s)</span>
+    </div>
+
+    @if (!Model.Activas.Any())
+    {
+        <div class="fn-empty">
+            <div class="fn-empty-title">No hay insumos en el stock mínimo.</div>
+            <div class="fn-empty-text">Todas las existencias están por encima del mínimo configurado.</div>
+        </div>
+    }
+    else
+    {
+        <div class="fn-card-body">
+            <div class="fn-table-wrapper">
+                <table class="fn-table">
+                    <thead>
+                        <tr>
+                            <th>Insumo</th>
+                            <th class="text-end">Cantidad actual</th>
+                            <th class="text-end">Stock mínimo</th>
+                            <th>Desde</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var a in Model.Activas)
+                        {
+                            <tr class="fn-fila-alerta">
+                                <td>
+                                    <strong>@a.Insumo</strong>
+                                    <div class="small fn-texto-alerta">⚠ Alerta: Stock por debajo del mínimo crítico</div>
+                                </td>
+                                <td class="text-end fw-bold">@Ui.CantidadConUnidad(a.StockActual, a.Unidad)</td>
+                                <td class="text-end">@Ui.CantidadConUnidad(a.StockMinimo, a.Unidad)</td>
+                                <td>@a.FechaAlerta.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</td>
+                                <td class="text-end">
+                                    <a asp-action="Ingreso" asp-route-insumoId="@a.InsumoId" class="fn-btn fn-btn-primary">Reabastecer</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</div>
+
+@if (Model.Resueltas.Any())
+{
+    <div class="fn-card">
+        <div class="fn-card-header">
+            <h2 class="fn-card-title">Resueltas recientemente</h2>
+        </div>
+        <div class="fn-card-body">
+            <div class="fn-table-wrapper">
+                <table class="fn-table">
+                    <thead>
+                        <tr>
+                            <th>Insumo</th>
+                            <th class="text-end">Llegó a</th>
+                            <th class="text-end">Mínimo</th>
+                            <th>Alerta</th>
+                            <th>Reabastecido</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var a in Model.Resueltas)
+                        {
+                            <tr>
+                                <td>
+                                    <a asp-action="Detalle" asp-route-id="@a.InsumoId" class="text-decoration-none">@a.Insumo</a>
+                                </td>
+                                <td class="text-end">@Ui.CantidadConUnidad(a.StockActual, a.Unidad)</td>
+                                <td class="text-end">@Ui.CantidadConUnidad(a.StockMinimo, a.Unidad)</td>
+                                <td>@a.FechaAlerta.ToLocalTime().ToString("dd/MM/yyyy")</td>
+                                <td>@(a.FechaResolucion?.ToLocalTime().ToString("dd/MM/yyyy") ?? "—")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+}

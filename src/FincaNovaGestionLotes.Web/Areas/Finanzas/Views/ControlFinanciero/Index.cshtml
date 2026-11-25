@@ -1,0 +1,163 @@
+@model ControlFinancieroViewModel
+
+@{
+    ViewData["Title"] = "Control financiero";
+    var hayFiltros = Model.Desde.HasValue || Model.Hasta.HasValue || Model.PeriodoProductivoId.HasValue;
+}
+
+<div class="fn-page-header">
+    <div>
+        <h1 class="fn-page-title">Control financiero</h1>
+        <p class="fn-page-subtitle">
+            Ingresos por ventas de café, egresos por gastos y el balance de la finca.
+        </p>
+    </div>
+</div>
+
+<div class="fn-card">
+    <div class="fn-card-body">
+        <form method="get" asp-action="Index">
+            <div class="row g-3 align-items-end">
+                <div class="col-md-3">
+                    <label asp-for="Desde" class="fn-form-label">Desde</label>
+                    <input asp-for="Desde" type="date" class="fn-form-control" />
+                </div>
+                <div class="col-md-3">
+                    <label asp-for="Hasta" class="fn-form-label">Hasta</label>
+                    <input asp-for="Hasta" type="date" class="fn-form-control" />
+                    <span asp-validation-for="Hasta" class="text-danger small"></span>
+                </div>
+                <div class="col-md-3">
+                    <label asp-for="PeriodoProductivoId" class="fn-form-label">Período</label>
+                    <select asp-for="PeriodoProductivoId" asp-items="Model.Periodos" class="fn-form-control">
+                        <option value="">Todos</option>
+                    </select>
+                </div>
+                <div class="col-md-3 d-flex gap-2">
+                    <button type="submit" class="fn-btn fn-btn-primary">Filtrar</button>
+                    <a asp-action="Index" class="fn-btn fn-btn-outline">Limpiar</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="row g-3 mb-3">
+    <div class="col-md-4">
+        <div class="fn-card h-100 mb-0">
+            <div class="fn-card-body">
+                <div class="fn-form-label">Ingresos</div>
+                <div class="fs-3 fw-bold">₡@Model.TotalIngresos.ToString("N2")</div>
+                <div class="fn-empty-text">Ventas de café</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="fn-card h-100 mb-0">
+            <div class="fn-card-body">
+                <div class="fn-form-label">Egresos</div>
+                <div class="fs-3 fw-bold">₡@Model.TotalEgresos.ToString("N2")</div>
+                <div class="fn-empty-text">Gastos registrados</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="fn-card h-100 mb-0">
+            <div class="fn-card-body">
+                <div class="fn-form-label">Balance</div>
+                <div class="fs-3 fw-bold">@(Model.Balance < 0 ? "−" : "")₡@Math.Abs(Model.Balance).ToString("N2")</div>
+                <span class="fn-badge @(Model.Balance < 0 ? "fn-badge-danger" : "fn-badge-success")">
+                    @(Model.Balance < 0 ? "Pérdida" : Model.Balance == 0 ? "Sin diferencia" : "Ganancia")
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (Model.EgresosPorCategoria.Any())
+{
+    <div class="fn-card">
+        <div class="fn-card-header">
+            <h2 class="fn-card-title">Egresos por categoría</h2>
+        </div>
+        <div class="fn-card-body">
+            <div class="fn-table-wrapper">
+                <table class="fn-table">
+                    <thead>
+                        <tr>
+                            <th>Categoría</th>
+                            <th class="text-end">Total</th>
+                            <th class="text-end">% de los egresos</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var c in Model.EgresosPorCategoria)
+                        {
+                            <tr>
+                                <td class="fw-bold">@c.Categoria</td>
+                                <td class="text-end">₡@c.Total.ToString("N2")</td>
+                                <td class="text-end">@((c.Total / Model.TotalEgresos * 100).ToString("0.#"))%</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+}
+
+<div class="fn-card">
+    <div class="fn-card-header d-flex justify-content-between align-items-center">
+        <h2 class="fn-card-title">Movimientos</h2>
+        <span class="fn-count">@Model.Paginacion.Total movimiento(s)</span>
+    </div>
+
+    @if (!Model.Movimientos.Any())
+    {
+        <div class="fn-empty">
+            <div class="fn-empty-title">No hay movimientos.</div>
+            <div class="fn-empty-text">
+                @(hayFiltros
+                    ? "Ningún ingreso ni egreso coincide con los filtros elegidos."
+                    : "Registra una venta o un gasto y aparecerán aquí.")
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="fn-card-body">
+            <div class="fn-table-wrapper">
+                <table class="fn-table">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Tipo</th>
+                            <th>Concepto</th>
+                            <th>Detalle</th>
+                            <th>Período</th>
+                            <th class="text-end">Monto</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var m in Model.Movimientos)
+                        {
+                            <tr>
+                                <td>@m.Fecha.ToString("dd/MM/yyyy")</td>
+                                <td>
+                                    <span class="fn-badge @(m.EsIngreso ? "fn-badge-success" : "fn-badge-danger")">
+                                        @(m.EsIngreso ? "Ingreso" : "Egreso")
+                                    </span>
+                                </td>
+                                <td class="fw-bold">@m.Concepto</td>
+                                <td>@(m.Detalle ?? "—")</td>
+                                <td>@(m.Periodo ?? "—")</td>
+                                <td class="text-end fw-bold">@(m.EsIngreso ? "+" : "−")₡@m.Monto.ToString("N2")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <partial name="_Paginacion" model="Model.Paginacion" />
+    }
+</div>

@@ -1,0 +1,29 @@
+@model LaborFormViewModel
+
+@{
+    ViewData["Title"] = "Editar labor";
+}
+
+<nav class="fn-migas" aria-label="Ruta">
+    <a asp-action="Index">Labores</a>
+    <span>/</span>
+    <a asp-action="Detalle" asp-route-id="@Model.Id">Labor</a>
+    <span>/</span>
+    <span>Editar</span>
+</nav>
+
+<div class="fn-page-header">
+    <div>
+        <h1 class="fn-page-title">Editar labor</h1>
+        <p class="fn-page-subtitle">Los avances ya registrados se conservan.</p>
+    </div>
+</div>
+
+<form asp-action="Editar" method="post">
+    <input type="hidden" asp-for="Id" />
+    <partial name="_FormFields" />
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

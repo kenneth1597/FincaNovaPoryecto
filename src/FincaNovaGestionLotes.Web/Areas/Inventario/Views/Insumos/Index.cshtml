@@ -1,0 +1,202 @@
+@model InsumoFiltroViewModel
+
+@{
+    ViewData["Title"] = "Inventario de insumos";
+}
+
+<div class="fn-page-header">
+    <div>
+        <h1 class="fn-page-title">
+            <span class="fn-page-title-icon">
+                <svg viewBox="0 0 24 24">
+                    <path d="M3 7l9-4 9 4-9 4-9-4Z" />
+                    <path d="M3 7v10l9 4 9-4V7" />
+                    <path d="M12 11v10" />
+                </svg>
+            </span>
+            Inventario de insumos
+        </h1>
+        <p class="fn-page-subtitle">
+            Existencias actuales de fertilizantes, químicos y herramientas antes de programar una labor.
+        </p>
+    </div>
+
+    @if (Model.EsAdmin)
+    {
+        <a asp-action="Ingreso" class="fn-btn fn-btn-primary">+ Registrar ingreso</a>
+    }
+</div>
+
+@if (TempData["Ok"] is string ok)
+{
+    <div class="alert alert-success border-0 shadow-sm">@ok</div>
+}
+@if (TempData["Error"] is string error)
+{
+    <div class="alert alert-danger border-0 shadow-sm">@error</div>
+}
+
+@if (Model.AlertasActivas > 0)
+{
+    <div class="alert alert-danger border-0 shadow-sm d-flex justify-content-between align-items-center">
+        <span>
+            <strong>⚠ @Model.AlertasActivas insumo(s)</strong> están en el stock mínimo o por debajo.
+        </span>
+        @if (Model.EsAdmin)
+        {
+            <a asp-action="Alertas" class="fn-btn fn-btn-outline">Ver alertas</a>
+        }
+    </div>
+}
+
+<div class="fn-card">
+    <div class="fn-card-body">
+        <form method="get" asp-action="Index" id="filtroInsumos">
+            <div class="row g-3 align-items-end">
+                <div class="col-md-5">
+                    <label class="fn-form-label" for="buscarInsumo">Buscar</label>
+                    <input type="search" id="buscarInsumo" name="Q" value="@Model.Q" class="fn-form-control"
+                           placeholder="Escribe parte del nombre, ej. Phon..." autocomplete="off" />
+                </div>
+                <div class="col-md-3">
+                    <label class="fn-form-label">Tipo</label>
+                    <select name="CategoriaId" class="fn-form-select">
+                        <option value="">Todos los tipos</option>
+                        @foreach (var c in Model.Categorias)
+                        {
+                            <option value="@c.Id" selected="@(Model.CategoriaId == c.Id)">@c.Texto</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="fn-form-label">Estado</label>
+                    <select name="Estado" class="fn-form-select">
+                        <option value="Activos" selected="@(Model.Estado == "Activos")">Activos</option>
+                        <option value="Inactivos" selected="@(Model.Estado == "Inactivos")">Inactivos</option>
+                        <option value="Todos" selected="@(Model.Estado == "Todos")">Todos</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" name="SoloBajoMinimo" value="true"
+                               id="soloBajoMinimo" checked="@Model.SoloBajoMinimo" />
+                        <label class="form-check-label" for="soloBajoMinimo">Solo bajo mínimo</label>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="resultadosInsumos">
+    <div class="fn-card">
+        <div class="fn-card-header d-flex justify-content-between align-items-center">
+            <h2 class="fn-card-title">Existencias</h2>
+            <span class="fn-count">@Model.Paginacion.Total insumo(s)</span>
+        </div>
+
+        @if (!Model.Resultados.Any())
+        {
+            <div class="fn-empty">
+                <div class="fn-empty-title">No se encontraron insumos.</div>
+                <div class="fn-empty-text">
+                    @(string.IsNullOrWhiteSpace(Model.Q)
+                        ? "Registra el primer ingreso para empezar a controlar las existencias."
+                        : $"Ningún insumo coincide con «{Model.Q}».")
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="fn-card-body">
+                <div class="fn-table-wrapper">
+                    <table class="fn-table">
+                        <thead>
+                            <tr>
+                                <th>Insumo</th>
+                                <th>Tipo</th>
+                                <th class="text-end">Existencias</th>
+                                <th class="text-end">Mínimo</th>
+                                <th>Próximo vencimiento</th>
+                                <th>Estado</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var i in Model.Resultados)
+                            {
+                                <tr class="@(i.BajoMinimo ? "fn-fila-alerta" : "")">
+                                    <td>
+                                        <a asp-action="Detalle" asp-route-id="@i.Id" class="fw-bold text-decoration-none">@i.Nombre</a>
+                                        @if (i.BajoMinimo)
+                                        {
+                                            <div class="small fn-texto-alerta" title="El stock está en el mínimo o por debajo">
+                                                ⚠ Alerta: Stock por debajo del mínimo crítico
+                                            </div>
+                                        }
+                                    </td>
+                                    <td>@i.Categoria</td>
+                                    <td class="text-end fw-bold">@Ui.CantidadConUnidad(i.StockActual, i.Unidad)</td>
+                                    <td class="text-end">@(i.StockMinimo > 0 ? Ui.CantidadConUnidad(i.StockMinimo, i.Unidad) : "—")</td>
+                                    <td>@(i.ProximoVencimiento?.ToString("dd/MM/yyyy") ?? "—")</td>
+                                    <td>
+                                        @if (!i.Activo)
+                                        {
+                                            <span class="fn-badge fn-badge-neutral">Inactivo</span>
+                                        }
+                                        else if (i.BajoMinimo)
+                                        {
+                                            <span class="fn-badge fn-badge-danger">Bajo mínimo</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="fn-badge fn-badge-success">Disponible</span>
+                                        }
+                                    </td>
+                                    <td class="text-end">
+                                        <div class="d-flex gap-2 justify-content-end">
+                                            <a asp-action="Detalle" asp-route-id="@i.Id" class="fn-btn fn-btn-outline">Movimientos</a>
+                                            @if (Model.EsAdmin && i.Activo)
+                                            {
+                                                <a asp-action="Ingreso" asp-route-insumoId="@i.Id" class="fn-btn fn-btn-outline">Ingreso</a>
+                                            }
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <partial name="_Paginacion" model="Model.Paginacion" />
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // HU-23 esc. 2: la lista se filtra mientras se escribe, sin recargar la página.
+        (function () {
+            const form = document.getElementById('filtroInsumos');
+            const buscar = document.getElementById('buscarInsumo');
+            const destino = document.getElementById('resultadosInsumos');
+            let espera, ultima;
+
+            async function actualizar() {
+                const url = form.action + '?' + new URLSearchParams(new FormData(form)).toString();
+                if (url === ultima) return;
+                ultima = url;
+                const html = await (await fetch(url, { headers: { 'X-Requested-With': 'fetch' } })).text();
+                const nuevo = new DOMParser().parseFromString(html, 'text/html').getElementById('resultadosInsumos');
+                if (nuevo && url === ultima) {
+                    destino.innerHTML = nuevo.innerHTML;
+                    history.replaceState(null, '', url);
+                }
+            }
+
+            buscar.addEventListener('input', () => { clearTimeout(espera); espera = setTimeout(actualizar, 250); });
+            form.querySelectorAll('select, input[type=checkbox]').forEach(el => el.addEventListener('change', actualizar));
+            form.addEventListener('submit', e => { e.preventDefault(); actualizar(); });
+        })();
+    </script>
+}

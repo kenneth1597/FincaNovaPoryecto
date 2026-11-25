@@ -1,0 +1,30 @@
+@model LaborFormViewModel
+
+@{
+    ViewData["Title"] = "Asignar labor";
+}
+
+<nav class="fn-migas" aria-label="Ruta">
+    <a asp-action="Index">Labores</a>
+    <span>/</span>
+    <span>Nueva labor</span>
+</nav>
+
+<div class="fn-page-header">
+    <div>
+        <h1 class="fn-page-title">@(Model.PuedeElegirColaboradores ? "Asignar labor agrícola" : "Registrar labor agrícola")</h1>
+        <p class="fn-page-subtitle">
+            @(Model.PuedeElegirColaboradores
+                ? "Defina el trabajo y elija quiénes lo realizarán."
+                : "Registre una labor que realizó; después podrá agregar sus horas y terminar su parte.")
+        </p>
+    </div>
+</div>
+
+<form asp-action="Crear" method="post">
+    <partial name="_FormFields" />
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

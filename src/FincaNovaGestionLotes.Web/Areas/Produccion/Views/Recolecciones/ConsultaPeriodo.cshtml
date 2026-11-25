@@ -1,0 +1,90 @@
+﻿@model IEnumerable<FincaNovaGestionLotes.Web.Domain.Produccion.Recoleccion>
+
+@{
+    ViewData["Title"] = "Consulta por Período";
+}
+
+<div class="container-fluid px-4">
+    <h1 class="mt-4">Consulta de Recolecciones por Período</h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a asp-action="Index">Recolecciones</a></li>
+        <li class="breadcrumb-item active">Consulta y Totales</li>
+    </ol>
+
+    <!-- Formulario de Filtro por Período -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" asp-action="ConsultaPeriodo" class="row g-3 align-items-center">
+                <div class="col-auto">
+                    <label for="periodoId" class="col-form-label"><strong>Filtrar por Período Productivo:</strong></label>
+                </div>
+                <div class="col-auto">
+                    <select name="periodoId" class="form-select" asp-items="ViewBag.PeriodosProductivos" onchange="this.form.submit()">
+                        <option value="">-- Todos los períodos --</option>
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <a asp-action="ConsultaPeriodo" class="btn btn-secondary">Limpiar Filtro</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tarjetas de Resumen de Totales -->
+    <div class="row mb-4">
+        <div class="col-xl-6 col-md-6">
+            <div class="card bg-primary text-white mb-4">
+                <div class="card-body">
+                    <h5>Total Cajuelas Recolectadas</h5>
+                    <h3>@ViewBag.TotalCajuelas.ToString("N2") cajuelas</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-6 col-md-6">
+            <div class="card bg-success text-white mb-4">
+                <div class="card-body">
+                    <h5>Peso Estimado Total</h5>
+                    <h3>@ViewBag.TotalKilos.ToString("N2") kg</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabla de Resultados Detallados -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-table me-1"></i> Detalle de Recolecciones en el Período
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Período</th>
+                            <th>Colaborador</th>
+                            <th>Lote / Terreno</th>
+                            <th>Cajuelas</th>
+                            <th>Peso Estimado</th>
+                            <th>Registrado Por</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.Fecha.ToString("dd/MM/yyyy")</td>
+                                <td>@item.PeriodoProductivoId</td>
+                                <td>@item.Colaborador?.Nombre</td>
+                                <td>@item.Terreno?.Nombre</td>
+                                <td>@item.Cajuelas.ToString("N2")</td>
+                                <td>@item.PesoEstimadoKg.ToString("N2") kg</td>
+                                <td>@item.RegistradoPor</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

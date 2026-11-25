@@ -12,3 +12,5 @@ obj/
 ## Logs
 *.log
 .claude/
+## Comprobantes subidos por los usuarios
+src/FincaNovaGestionLotes.Web/App_Data/

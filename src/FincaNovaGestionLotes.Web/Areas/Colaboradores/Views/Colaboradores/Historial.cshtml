@@ -1,0 +1,188 @@
+@model ColaboradorHistorialViewModel
+
+@{
+    ViewData["Title"] = $"Historial de {Model.Nombre}";
+}
+
+<div class="fn-page-header">
+    <div>
+        <h1 class="fn-page-title">
+            @Model.Nombre
+            @if (Model.Activo)
+            {
+                <span class="fn-badge fn-badge-success">Activo</span>
+            }
+            else
+            {
+                <span class="fn-badge fn-badge-neutral">Inactivo</span>
+            }
+        </h1>
+        <p class="fn-page-subtitle">@Model.Cargo · Historial de labores en las que ha participado</p>
+    </div>
+    <div class="d-flex gap-2 flex-wrap">
+        <a asp-action="Index" class="fn-btn fn-btn-outline">Volver</a>
+        <a asp-action="Editar" asp-route-id="@Model.Id" class="fn-btn fn-btn-outline">Editar</a>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-lg-5">
+        <div class="fn-card h-100">
+            <div class="fn-card-header"><h2 class="fn-card-title">Información</h2></div>
+            <div class="fn-card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-5">Identificación</dt>
+                    <dd class="col-sm-7">@Model.Identificacion</dd>
+                    <dt class="col-sm-5">Teléfono</dt>
+                    <dd class="col-sm-7">@Model.Telefono</dd>
+                    <dt class="col-sm-5">Cargo</dt>
+                    <dd class="col-sm-7">@Model.Cargo</dd>
+                    <dt class="col-sm-5">Tarifa por jornada</dt>
+                    <dd class="col-sm-7">₡@Model.TarifaJornada.ToString("N2") (@Model.HorasPorJornada.ToString("0.##") h)</dd>
+                    <dt class="col-sm-5">Usuario del sistema</dt>
+                    <dd class="col-sm-7">@(Model.UsuarioEmail ?? "Sin usuario vinculado")</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-7">
+        <div class="fn-card h-100">
+            <div class="fn-card-header d-flex justify-content-between align-items-center">
+                <h2 class="fn-card-title">Resumen</h2>
+                @if (Model.HayFiltros)
+                {
+                    <span class="small text-muted">Según los filtros aplicados</span>
+                }
+            </div>
+            <div class="fn-card-body">
+                <div class="row row-cols-2 row-cols-md-3 g-2">
+                    <div class="col">
+                        <div class="card text-center"><div class="card-body py-2">
+                            <div class="fs-4 fw-bold">@Model.TotalLabores</div>
+                            <div class="small text-muted">Labores</div>
+                        </div></div>
+                    </div>
+                    <div class="col">
+                        <div class="card text-center"><div class="card-body py-2">
+                            <div class="fs-4 fw-bold">@Model.TotalDias</div>
+                            <div class="small text-muted">Días trabajados</div>
+                        </div></div>
+                    </div>
+                    <div class="col">
+                        <div class="card text-center"><div class="card-body py-2">
+                            <div class="fs-4 fw-bold">@Model.TotalHoras.ToString("N2")</div>
+                            <div class="small text-muted">Horas</div>
+                        </div></div>
+                    </div>
+                    <div class="col">
+                        <div class="card text-center"><div class="card-body py-2">
+                            <div class="fs-4 fw-bold">@Model.TotalJornadas.ToString("N2")</div>
+                            <div class="small text-muted">Jornadas</div>
+                        </div></div>
+                    </div>
+                    <div class="col">
+                        <div class="card text-center"><div class="card-body py-2">
+                            <div class="fs-4 fw-bold">₡@Model.TotalMonto.ToString("N0")</div>
+                            <div class="small text-muted">Monto generado</div>
+                        </div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="fn-card mt-3">
+    <div class="fn-card-body">
+        <form method="get" asp-action="Historial" asp-route-id="@Model.Id">
+            <div class="row g-3 align-items-end">
+                <div class="col-md-4">
+                    <label class="fn-form-label">Finca / lote</label>
+                    <select name="terrenoId" class="fn-form-select">
+                        <option value="">Todas</option>
+                        @foreach (var (id, texto) in Model.Terrenos)
+                        {
+                            <option value="@id" selected="@(Model.TerrenoId == id)">@texto</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="fn-form-label">Desde</label>
+                    <input type="date" name="desde" value="@Model.Desde?.ToString("yyyy-MM-dd")" class="fn-form-control" />
+                </div>
+                <div class="col-md-3">
+                    <label class="fn-form-label">Hasta</label>
+                    <input type="date" name="hasta" value="@Model.Hasta?.ToString("yyyy-MM-dd")" class="fn-form-control" />
+                </div>
+                <div class="col-md-2 d-flex gap-2">
+                    <button type="submit" class="fn-btn fn-btn-primary flex-fill">Filtrar</button>
+                    @if (Model.HayFiltros)
+                    {
+                        <a asp-action="Historial" asp-route-id="@Model.Id" class="fn-btn fn-btn-outline" title="Quitar filtros">✕</a>
+                    }
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="fn-card">
+    <div class="fn-card-header d-flex justify-content-between align-items-center">
+        <h2 class="fn-card-title">Labores en las que participó</h2>
+        <span class="fn-count">@Model.Paginacion.Total labor(es)</span>
+    </div>
+
+    @if (!Model.Historial.Any())
+    {
+        <div class="fn-empty">
+            <div class="fn-empty-title">
+                @(Model.HayFiltros ? "No hay labores que coincidan con los filtros." : "Este colaborador todavía no ha participado en labores.")
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="fn-card-body">
+            <div class="fn-table-wrapper">
+                <table class="fn-table">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Finca / lote</th>
+                            <th>Labor</th>
+                            <th>Estado</th>
+                            <th>Días</th>
+                            <th>Horas</th>
+                            <th>Jornadas</th>
+                            <th>Monto</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var h in Model.Historial)
+                        {
+                            <tr>
+                                <td>@h.Fecha.ToString("dd/MM/yyyy")</td>
+                                <td>
+                                    <strong>@h.TerrenoCodigo</strong>
+                                    <div class="small text-muted">@h.TerrenoNombre</div>
+                                </td>
+                                <td>@h.NombreLabor</td>
+                                <td><span class="fn-badge @Ui.EstadoLaborBadge(h.Estado)">@Ui.EstadoLaborTexto(h.Estado)</span></td>
+                                <td>@h.Dias</td>
+                                <td>@h.Horas.ToString("N2")</td>
+                                <td>@h.Jornadas.ToString("N2")</td>
+                                <td>₡@h.Monto.ToString("N2")</td>
+                                <td class="text-end">
+                                    <a asp-area="Labores" asp-controller="Labores" asp-action="Detalle" asp-route-id="@h.LaborId" class="fn-btn fn-btn-outline">Ver</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <partial name="_Paginacion" model="Model.Paginacion" />
+    }
+</div>

@@ -1,0 +1,48 @@
+@model Recoleccion
+
+<div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+<div class="row g-3">
+    <div class="col-md-6">
+        <label asp-for="ColaboradorId" class="fn-form-label">Colaborador</label>
+        <select asp-for="ColaboradorId" class="fn-form-select" asp-items="ViewBag.Colaboradores">
+            <option value="">-- Seleccione un colaborador --</option>
+        </select>
+        <span asp-validation-for="ColaboradorId" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="TerrenoId" class="fn-form-label">Lote / terreno</label>
+        <select asp-for="TerrenoId" class="fn-form-select" asp-items="ViewBag.Terrenos">
+            <option value="">-- Seleccione un lote --</option>
+        </select>
+        <span asp-validation-for="TerrenoId" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="PeriodoProductivoId" class="fn-form-label">Período productivo</label>
+        <select asp-for="PeriodoProductivoId" class="fn-form-select" asp-items="ViewBag.PeriodosProductivos">
+            <option value="">-- Seleccione el período --</option>
+        </select>
+        <span asp-validation-for="PeriodoProductivoId" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="Fecha" class="fn-form-label">Fecha de recolección</label>
+        <input asp-for="Fecha" type="date" max="@DateTime.Today.ToString("yyyy-MM-dd")" class="fn-form-control" />
+        <span asp-validation-for="Fecha" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="Cajuelas" class="fn-form-label">Cantidad (cajuelas)</label>
+        <input asp-for="Cajuelas" type="number" step="0.01" min="0.01" class="fn-form-control" placeholder="Ej. 15.5" />
+        <span asp-validation-for="Cajuelas" class="text-danger"></span>
+        <div class="form-text">El peso estimado se calcula solo, con 12,5 kg por cajuela.</div>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="Observaciones" class="fn-form-label">Observaciones</label>
+        <textarea asp-for="Observaciones" class="fn-form-control" rows="2"></textarea>
+        <span asp-validation-for="Observaciones" class="text-danger"></span>
+    </div>
+</div>

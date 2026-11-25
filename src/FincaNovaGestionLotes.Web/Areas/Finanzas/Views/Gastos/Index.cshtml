@@ -1,0 +1,118 @@
+@model GastoFiltroViewModel
+
+@{
+    ViewData["Title"] = "Gastos";
+}
+
+<div class="fn-page-header">
+    <div>
+        <h1 class="fn-page-title">Gastos de la finca</h1>
+        <p class="fn-page-subtitle">
+            Historial de los egresos de la finca, con su categoría y el comprobante cuando existe.
+        </p>
+    </div>
+    <a asp-action="Crear" class="fn-btn fn-btn-primary">+ Registrar gasto</a>
+</div>
+
+@if (TempData["Ok"] is string ok)
+{
+    <div class="alert alert-success border-0 shadow-sm">@ok</div>
+}
+
+<div class="fn-card">
+    <div class="fn-card-body">
+        <form method="get" asp-action="Index">
+            <div class="row g-3 align-items-end">
+                <div class="col-md-3">
+                    <label asp-for="Desde" class="fn-form-label">Desde</label>
+                    <input asp-for="Desde" type="date" class="fn-form-control" />
+                </div>
+                <div class="col-md-3">
+                    <label asp-for="Hasta" class="fn-form-label">Hasta</label>
+                    <input asp-for="Hasta" type="date" class="fn-form-control" />
+                </div>
+                <div class="col-md-3">
+                    <label asp-for="CategoriaId" class="fn-form-label">Categoría</label>
+                    <select asp-for="CategoriaId" class="fn-form-select" asp-items="Model.Categorias">
+                        <option value="">Todas las categorías</option>
+                    </select>
+                </div>
+                <div class="col-md-3 d-flex gap-2">
+                    <button type="submit" class="fn-btn fn-btn-primary">Filtrar</button>
+                    <a asp-action="Index" class="fn-btn fn-btn-outline">Limpiar</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="fn-card">
+    <div class="fn-card-header d-flex justify-content-between align-items-center">
+        <h2 class="fn-card-title">Gastos registrados</h2>
+        <span class="fn-count">@Model.Paginacion.Total gasto(s) · Total gastado ₡@Model.TotalGastado.ToString("N2")</span>
+    </div>
+
+    @if (!Model.Resultados.Any())
+    {
+        <div class="fn-empty">
+            <div class="fn-empty-title">No hay gastos registrados.</div>
+            <div class="fn-empty-text">
+                @(Model.Desde.HasValue || Model.Hasta.HasValue || Model.CategoriaId.HasValue
+                    ? "Ningún gasto coincide con los filtros elegidos."
+                    : "Registra el primer gasto para empezar a llevar el control de los egresos.")
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="fn-card-body">
+            <div class="fn-table-wrapper">
+                <table class="fn-table">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Descripción</th>
+                            <th>Categoría</th>
+                            <th>Finca o lote</th>
+                            <th class="text-end">Monto</th>
+                            <th>Comprobante</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var g in Model.Resultados)
+                        {
+                            <tr>
+                                <td>@g.Fecha.ToString("dd/MM/yyyy")</td>
+                                <td>
+                                    <div class="fw-bold">@g.Descripcion</div>
+                                    @if (!string.IsNullOrWhiteSpace(g.Proveedor))
+                                    {
+                                        <div class="small text-muted">@g.Proveedor</div>
+                                    }
+                                </td>
+                                <td>@g.Categoria</td>
+                                <td>@(g.Terreno ?? "General")</td>
+                                <td class="text-end fw-bold">₡@g.Monto.ToString("N2")</td>
+                                <td>
+                                    @if (g.TieneComprobante)
+                                    {
+                                        <a asp-action="Comprobante" asp-route-id="@g.Id" class="text-decoration-none">Descargar</a>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">—</span>
+                                    }
+                                </td>
+                                <td class="text-end">
+                                    <a asp-action="Editar" asp-route-id="@g.Id" class="fn-btn fn-btn-outline">Editar</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <partial name="_Paginacion" model="Model.Paginacion" />
+    }
+</div>

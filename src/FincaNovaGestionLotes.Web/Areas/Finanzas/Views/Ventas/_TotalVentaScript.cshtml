@@ -1,0 +1,17 @@
+<script>
+    // Muestra el total (cantidad × precio unitario) mientras se escribe.
+    (function () {
+        const cantidad = document.getElementById('cantidad');
+        const precio = document.getElementById('precioUnitario');
+        const total = document.getElementById('totalVenta');
+
+        function calcular() {
+            const valor = (parseFloat(cantidad.value) || 0) * (parseFloat(precio.value) || 0);
+            total.textContent = '₡' + valor.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        cantidad.addEventListener('input', calcular);
+        precio.addEventListener('input', calcular);
+        calcular();
+    })();
+</script>

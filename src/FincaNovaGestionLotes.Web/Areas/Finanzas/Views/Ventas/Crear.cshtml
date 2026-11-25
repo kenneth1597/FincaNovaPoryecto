@@ -1,0 +1,31 @@
+@model VentaFormViewModel
+
+@{
+    ViewData["Title"] = "Registrar venta";
+}
+
+<div class="fn-page-header">
+    <div>
+        <h1 class="fn-page-title">Registrar venta de café</h1>
+        <p class="fn-page-subtitle">El total se calcula con la cantidad por el precio unitario.</p>
+    </div>
+    <a asp-action="Index" class="fn-btn fn-btn-outline">Volver</a>
+</div>
+
+<div class="fn-card">
+    <div class="fn-card-body">
+        <form asp-action="Crear" method="post">
+            <partial name="_FormFields" model="Model" />
+
+            <div class="d-flex gap-2 mt-4">
+                <button type="submit" class="fn-btn fn-btn-primary">Registrar venta</button>
+                <a asp-action="Index" class="fn-btn fn-btn-outline">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <partial name="_TotalVentaScript" />
+}

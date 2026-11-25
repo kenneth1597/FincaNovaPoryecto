@@ -1,0 +1,146 @@
+@model IngresoFormViewModel
+
+@{
+    ViewData["Title"] = "Registrar ingreso";
+}
+
+<div class="fn-page-header">
+    <div>
+        <h1 class="fn-page-title">Registrar ingreso de insumos</h1>
+        <p class="fn-page-subtitle">Suma fertilizantes, pesticidas o herramientas al inventario.</p>
+    </div>
+    <a asp-action="Index" class="fn-btn fn-btn-outline">Volver</a>
+</div>
+
+<div class="fn-card">
+    <div class="fn-card-body">
+        <form asp-action="Ingreso" method="post" id="formIngreso">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="mb-3">
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="EsNuevo" id="modoExistente" value="false"
+                           checked="@(!Model.EsNuevo)" disabled="@(!Model.Insumos.Any())" />
+                    <label class="form-check-label" for="modoExistente">Insumo existente</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="EsNuevo" id="modoNuevo" value="true"
+                           checked="@Model.EsNuevo" />
+                    <label class="form-check-label" for="modoNuevo">Insumo nuevo</label>
+                </div>
+            </div>
+
+            <div class="row g-3">
+                <div class="col-md-6" data-modo="existente">
+                    <label asp-for="InsumoId" class="fn-form-label"></label>
+                    <select asp-for="InsumoId" class="fn-form-select" id="insumoId">
+                        <option value="">-- Seleccione el insumo --</option>
+                        @foreach (var i in Model.Insumos)
+                        {
+                            <option value="@i.Id" data-vence="@(i.RequiereVencimiento ? "1" : "0")"
+                                    selected="@(Model.InsumoId == i.Id)">@i.Texto</option>
+                        }
+                    </select>
+                    <span asp-validation-for="InsumoId" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6" data-modo="nuevo">
+                    <label asp-for="Nombre" class="fn-form-label"></label>
+                    <input asp-for="Nombre" class="fn-form-control" placeholder="Ej. Phoenix 50 SC" />
+                    <span asp-validation-for="Nombre" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6" data-modo="nuevo">
+                    <label asp-for="CategoriaInsumoId" class="fn-form-label"></label>
+                    <select asp-for="CategoriaInsumoId" class="fn-form-select" id="categoriaId">
+                        <option value="">-- Seleccione el tipo --</option>
+                        @foreach (var c in Model.Categorias)
+                        {
+                            <option value="@c.Id" data-vence="@(c.RequiereVencimiento ? "1" : "0")"
+                                    selected="@(Model.CategoriaInsumoId == c.Id)">@c.Texto</option>
+                        }
+                    </select>
+                    <span asp-validation-for="CategoriaInsumoId" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-3" data-modo="nuevo">
+                    <label asp-for="UnidadMedidaId" class="fn-form-label"></label>
+                    <select asp-for="UnidadMedidaId" class="fn-form-select">
+                        <option value="">-- Unidad --</option>
+                        @foreach (var u in Model.Unidades)
+                        {
+                            <option value="@u.Id" selected="@(Model.UnidadMedidaId == u.Id)">@u.Texto</option>
+                        }
+                    </select>
+                    <span asp-validation-for="UnidadMedidaId" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-3" data-modo="nuevo">
+                    <label asp-for="StockMinimo" class="fn-form-label"></label>
+                    <input asp-for="StockMinimo" type="number" step="0.01" min="0" class="fn-form-control" placeholder="0 = sin alerta" />
+                    <span asp-validation-for="StockMinimo" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-4">
+                    <label asp-for="Cantidad" class="fn-form-label"></label>
+                    <input asp-for="Cantidad" type="number" step="0.01" min="0.01" class="fn-form-control" />
+                    <span asp-validation-for="Cantidad" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-4">
+                    <label asp-for="Fecha" class="fn-form-label"></label>
+                    <input asp-for="Fecha" type="date" max="@DateTime.Today.ToString("yyyy-MM-dd")" class="fn-form-control" />
+                    <span asp-validation-for="Fecha" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-4">
+                    <label asp-for="FechaVencimiento" class="fn-form-label">
+                        Fecha de vencimiento <span id="venceObligatorio" class="text-danger" hidden>*</span>
+                    </label>
+                    <input asp-for="FechaVencimiento" type="date" class="fn-form-control" />
+                    <div class="form-text" id="venceAyuda" hidden>Obligatoria para insumos químicos.</div>
+                    <span asp-validation-for="FechaVencimiento" class="text-danger"></span>
+                </div>
+
+                <div class="col-12">
+                    <label asp-for="Observaciones" class="fn-form-label"></label>
+                    <textarea asp-for="Observaciones" class="fn-form-control" rows="2"
+                              placeholder="Ej. Compra en el almacén agrícola, factura 1234."></textarea>
+                    <span asp-validation-for="Observaciones" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="d-flex gap-2 mt-4">
+                <button type="submit" class="fn-btn fn-btn-primary">Registrar Ingreso</button>
+                <a asp-action="Index" class="fn-btn fn-btn-outline">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        (function () {
+            const nuevo = document.getElementById('modoNuevo');
+            const insumo = document.getElementById('insumoId');
+            const categoria = document.getElementById('categoriaId');
+
+            // Muestra los campos del modo elegido y marca si el vencimiento es obligatorio.
+            function refrescar() {
+                const esNuevo = nuevo.checked;
+                document.querySelectorAll('[data-modo]').forEach(el =>
+                    el.hidden = (el.dataset.modo === 'nuevo') !== esNuevo);
+                const sel = esNuevo ? categoria : insumo;
+                const vence = sel.selectedOptions[0]?.dataset.vence === '1';
+                document.getElementById('venceObligatorio').hidden = !vence;
+                document.getElementById('venceAyuda').hidden = !vence;
+            }
+
+            document.querySelectorAll('input[name=EsNuevo]').forEach(r => r.addEventListener('change', refrescar));
+            insumo.addEventListener('change', refrescar);
+            categoria.addEventListener('change', refrescar);
+            refrescar();
+        })();
+    </script>
+}
