@@ -3,6 +3,7 @@ using FincaNovaGestionLotes.Web.Data;
 using FincaNovaGestionLotes.Web.Domain;
 using FincaNovaGestionLotes.Web.Domain.Finanzas;
 using FincaNovaGestionLotes.Web.Filters;
+using FincaNovaGestionLotes.Web.Services.Archivos;
 using FincaNovaGestionLotes.Web.Services.Auditoria;
 using FincaNovaGestionLotes.Web.ViewSupport;
 using Microsoft.AspNetCore.Mvc;
@@ -15,17 +16,6 @@ namespace FincaNovaGestionLotes.Web.Areas.Finanzas.Controllers;
 [RequiereRol(Roles.Administrador, Roles.Duenio)]
 public class GastosController : Controller
 {
-    private const long TamanoMaximoBytes = 5 * 1024 * 1024;
-
-    // Solo se aceptan estos tipos de comprobante (HU-52).
-    private static readonly Dictionary<string, string> TiposPermitidos = new(StringComparer.OrdinalIgnoreCase)
-    {
-        [".pdf"] = "application/pdf",
-        [".jpg"] = "image/jpeg",
-        [".jpeg"] = "image/jpeg",
-        [".png"] = "image/png"
-    };
-
     private readonly AppDbContext _db;
     private readonly IAuditService _audit;
     private readonly IWebHostEnvironment _env;
@@ -47,6 +37,14 @@ public class GastosController : Controller
     public async Task<IActionResult> Index(GastoFiltroViewModel filtro)
     {
         var query = _db.Gastos.AsNoTracking().AsQueryable();
+
+        // Con el rango al revés no se muestran datos: solo el aviso.
+        var rangoInvalido = filtro.Desde.HasValue && filtro.Hasta.HasValue && filtro.Desde > filtro.Hasta;
+        if (rangoInvalido)
+        {
+            ModelState.AddModelError(nameof(filtro.Hasta), "La fecha final no puede ser anterior a la inicial.");
+            query = query.Where(g => false);
+        }
 
         if (filtro.Desde.HasValue)
             query = query.Where(g => g.Fecha >= filtro.Desde.Value.Date);
@@ -272,40 +270,10 @@ public class GastosController : Controller
             !await _db.PeriodosProductivos.AnyAsync(p => p.Id == periodoId))
             ModelState.AddModelError(nameof(model.PeriodoProductivoId), "El período seleccionado no existe.");
 
-        var errorComprobante = await ValidarComprobanteAsync(model.Comprobante);
+        var errorComprobante = await ValidadorArchivos.ValidarAsync(model.Comprobante, "El comprobante");
         if (errorComprobante is not null)
             ModelState.AddModelError(nameof(model.Comprobante), errorComprobante);
     }
-
-    // Revisa tamaño, extensión y que el contenido sea realmente de ese tipo (no solo el nombre).
-    private static async Task<string?> ValidarComprobanteAsync(IFormFile? archivo)
-    {
-        if (archivo is null || archivo.Length == 0) return null;
-
-        if (archivo.Length > TamanoMaximoBytes)
-            return "El comprobante no puede pesar más de 5 MB.";
-
-        var extension = Path.GetExtension(archivo.FileName);
-        if (!TiposPermitidos.ContainsKey(extension))
-            return "El comprobante debe ser un archivo PDF, JPG o PNG.";
-
-        var cabecera = new byte[8];
-        await using var flujo = archivo.OpenReadStream();
-        var leidos = await flujo.ReadAsync(cabecera.AsMemory(0, cabecera.Length));
-
-        if (!CabeceraCoincide(extension.ToLowerInvariant(), cabecera.AsSpan(0, leidos)))
-            return "El contenido del archivo no corresponde a un PDF, JPG o PNG válido.";
-
-        return null;
-    }
-
-    private static bool CabeceraCoincide(string extension, ReadOnlySpan<byte> cabecera) => extension switch
-    {
-        ".pdf" => cabecera.StartsWith("%PDF"u8),
-        ".jpg" or ".jpeg" => cabecera.StartsWith(new byte[] { 0xFF, 0xD8, 0xFF }),
-        ".png" => cabecera.StartsWith(new byte[] { 0x89, 0x50, 0x4E, 0x47 }),
-        _ => false
-    };
 
     // Guarda el archivo con un nombre interno aleatorio y anota sus datos en el gasto.
     private async Task<string> GuardarComprobanteAsync(IFormFile archivo, Gasto gasto)
@@ -323,7 +291,7 @@ public class GastosController : Controller
         var nombreOriginal = Path.GetFileName(archivo.FileName);
         gasto.AdjuntoNombreOriginal = nombreOriginal.Length > 255 ? nombreOriginal[..255] : nombreOriginal;
         gasto.AdjuntoRuta = nombreInterno;
-        gasto.AdjuntoTipoContenido = TiposPermitidos[extension];
+        gasto.AdjuntoTipoContenido = ValidadorArchivos.TipoContenido(extension);
         gasto.AdjuntoTamanoBytes = archivo.Length;
 
         return nombreInterno;

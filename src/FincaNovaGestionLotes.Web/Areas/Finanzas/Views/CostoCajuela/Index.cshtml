@@ -1,0 +1,132 @@
+@model CostoCajuelaViewModel
+
+@{
+    ViewData["Title"] = "Costo por cajuela";
+}
+
+<div class="fn-page-header">
+    <div>
+        <h1 class="fn-page-title">Costo por cajuela</h1>
+        <p class="fn-page-subtitle">
+            Gastos de cada período entre las cajuelas recolectadas en ese mismo período.
+        </p>
+    </div>
+</div>
+
+<div class="fn-card">
+    <div class="fn-card-body">
+        <form method="get" asp-action="Index">
+            <div class="row g-3 align-items-end">
+                <div class="col-md-6">
+                    <label asp-for="PeriodoProductivoId" class="fn-form-label">Período</label>
+                    <select asp-for="PeriodoProductivoId" asp-items="Model.Periodos" class="fn-form-control">
+                        <option value="">Todos</option>
+                    </select>
+                </div>
+                <div class="col-md-6 d-flex gap-2">
+                    <button type="submit" class="fn-btn fn-btn-primary">Filtrar</button>
+                    <a asp-action="Index" class="fn-btn fn-btn-outline">Limpiar</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="row g-3 mb-3">
+    <div class="col-md-4">
+        <div class="fn-card h-100 mb-0">
+            <div class="fn-card-body">
+                <div class="fn-form-label">Gastos</div>
+                <div class="fs-3 fw-bold">₡@Model.TotalGastos.ToString("N2")</div>
+                <div class="fn-empty-text">Gastos asignados al período</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="fn-card h-100 mb-0">
+            <div class="fn-card-body">
+                <div class="fn-form-label">Cajuelas recolectadas</div>
+                <div class="fs-3 fw-bold">@Model.TotalCajuelas.ToString("N2")</div>
+                <div class="fn-empty-text">Recolecciones registradas</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="fn-card h-100 mb-0">
+            <div class="fn-card-body">
+                <div class="fn-form-label">Costo por cajuela</div>
+                @if (Model.CostoPorCajuela is { } costo)
+                {
+                    <div class="fs-3 fw-bold">₡@costo.ToString("N2")</div>
+                    <div class="fn-empty-text">Gastos ÷ cajuelas</div>
+                }
+                else
+                {
+                    <div class="fs-3 fw-bold">—</div>
+                    <span class="fn-badge fn-badge-warning">Sin cajuelas recolectadas</span>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (Model.GastosSinPeriodo > 0)
+{
+    <p class="fn-empty-text mb-3">
+        Hay ₡@Model.GastosSinPeriodo.ToString("N2") en gastos sin período asignado. No se incluyen en este cálculo.
+    </p>
+}
+
+<div class="fn-card">
+    <div class="fn-card-header d-flex justify-content-between align-items-center">
+        <h2 class="fn-card-title">Costo por período</h2>
+        <span class="fn-count">@Model.Paginacion.Total período(s)</span>
+    </div>
+
+    @if (!Model.Filas.Any())
+    {
+        <div class="fn-empty">
+            <div class="fn-empty-title">No hay períodos.</div>
+            <div class="fn-empty-text">Crea un período productivo y registra gastos y recolecciones para ver el costo.</div>
+        </div>
+    }
+    else
+    {
+        <div class="fn-card-body">
+            <div class="fn-table-wrapper">
+                <table class="fn-table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Período</th>
+                            <th scope="col">Fechas</th>
+                            <th scope="col">Estado</th>
+                            <th scope="col" class="text-end">Gastos</th>
+                            <th scope="col" class="text-end">Cajuelas</th>
+                            <th scope="col" class="text-end">Costo por cajuela</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var f in Model.Filas)
+                        {
+                            <tr>
+                                <td class="fw-bold">@f.Periodo</td>
+                                <td>@f.FechaInicio.ToString("dd/MM/yyyy") – @(f.FechaFin?.ToString("dd/MM/yyyy") ?? (f.Cerrado ? "sin fecha final" : "en curso"))</td>
+                                <td>
+                                    <span class="fn-badge @(f.Cerrado ? "fn-badge-neutral" : "fn-badge-success")">
+                                        @(f.Cerrado ? "Cerrado" : "Abierto")
+                                    </span>
+                                </td>
+                                <td class="text-end">₡@f.Gastos.ToString("N2")</td>
+                                <td class="text-end">@f.Cajuelas.ToString("N2")</td>
+                                <td class="text-end fw-bold">
+                                    @(f.CostoPorCajuela is { } c ? "₡" + c.ToString("N2") : "Sin cajuelas")
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <partial name="_Paginacion" model="Model.Paginacion" />
+    }
+</div>

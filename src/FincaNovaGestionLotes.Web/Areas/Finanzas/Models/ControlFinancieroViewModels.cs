@@ -35,6 +35,7 @@ public class ControlFinancieroViewModel
 public class MovimientoViewModel
 {
     public DateTime Fecha { get; set; }
+    public DateTime Creado { get; set; }
     public bool EsIngreso { get; set; }
     public string Concepto { get; set; } = string.Empty;
     public string? Detalle { get; set; }

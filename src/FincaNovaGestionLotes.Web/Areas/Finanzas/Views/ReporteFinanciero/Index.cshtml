@@ -1,0 +1,164 @@
+@model ReporteFinancieroViewModel
+
+@{
+    ViewData["Title"] = "Reporte financiero";
+}
+
+@functions {
+    static string Dinero(decimal valor) => (valor < 0 ? "−" : "") + "₡" + Math.Abs(valor).ToString("N2");
+}
+
+<div class="fn-page-header">
+    <div>
+        <h1 class="fn-page-title">Reporte financiero</h1>
+        <p class="fn-page-subtitle">
+            Ingresos, egresos y balance de la finca, por período productivo y por mes.
+        </p>
+    </div>
+</div>
+
+<div class="fn-card">
+    <div class="fn-card-body">
+        <form method="get" asp-action="Index">
+            <div class="row g-3 align-items-end">
+                <div class="col-md-6">
+                    <label asp-for="PeriodoProductivoId" class="fn-form-label">Período</label>
+                    <select asp-for="PeriodoProductivoId" asp-items="Model.Periodos" class="fn-form-control">
+                        <option value="">Todos</option>
+                    </select>
+                </div>
+                <div class="col-md-6 d-flex gap-2">
+                    <button type="submit" class="fn-btn fn-btn-primary">Filtrar</button>
+                    <a asp-action="Index" class="fn-btn fn-btn-outline">Limpiar</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="row g-3 mb-3">
+    <div class="col-md-4">
+        <div class="fn-card h-100 mb-0">
+            <div class="fn-card-body">
+                <div class="fn-form-label">Ingresos</div>
+                <div class="fs-3 fw-bold">₡@Model.TotalIngresos.ToString("N2")</div>
+                <div class="fn-empty-text">Ventas de café</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="fn-card h-100 mb-0">
+            <div class="fn-card-body">
+                <div class="fn-form-label">Egresos</div>
+                <div class="fs-3 fw-bold">₡@Model.TotalEgresos.ToString("N2")</div>
+                <div class="fn-empty-text">Gastos registrados</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="fn-card h-100 mb-0">
+            <div class="fn-card-body">
+                <div class="fn-form-label">Balance</div>
+                <div class="fs-3 fw-bold">@Dinero(Model.Balance)</div>
+                <span class="fn-badge @(Model.Balance < 0 ? "fn-badge-danger" : "fn-badge-success")">
+                    @(Model.Balance < 0 ? "Pérdida" : Model.Balance == 0 ? "Sin diferencia" : "Ganancia")
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (!Model.PorPeriodo.Any())
+{
+    <div class="fn-card">
+        <div class="fn-empty">
+            <div class="fn-empty-title">No hay movimientos para el reporte.</div>
+            <div class="fn-empty-text">Registra ventas o gastos y el reporte los consolidará aquí.</div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="fn-card">
+        <div class="fn-card-header">
+            <h2 class="fn-card-title">Por período productivo</h2>
+        </div>
+        <div class="fn-card-body">
+            <div class="fn-table-wrapper">
+                <table class="fn-table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Período</th>
+                            <th scope="col" class="text-end">Ingresos</th>
+                            <th scope="col" class="text-end">Egresos</th>
+                            <th scope="col" class="text-end">Balance</th>
+                            <th scope="col">Resultado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var p in Model.PorPeriodo)
+                        {
+                            <tr>
+                                <td class="fw-bold">@p.Nombre</td>
+                                <td class="text-end">₡@p.Ingresos.ToString("N2")</td>
+                                <td class="text-end">₡@p.Egresos.ToString("N2")</td>
+                                <td class="text-end fw-bold">@Dinero(p.Balance)</td>
+                                <td>
+                                    <span class="fn-badge @(p.Balance < 0 ? "fn-badge-danger" : "fn-badge-success")">
+                                        @(p.Balance < 0 ? "Pérdida" : p.Balance == 0 ? "Sin diferencia" : "Ganancia")
+                                    </span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th scope="row">Total</th>
+                            <th class="text-end">₡@Model.TotalIngresos.ToString("N2")</th>
+                            <th class="text-end">₡@Model.TotalEgresos.ToString("N2")</th>
+                            <th class="text-end">@Dinero(Model.Balance)</th>
+                            <th></th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="fn-card">
+        <div class="fn-card-header">
+            <h2 class="fn-card-title">Por mes</h2>
+        </div>
+        <div class="fn-card-body">
+            <div class="fn-table-wrapper">
+                <table class="fn-table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Mes</th>
+                            <th scope="col" class="text-end">Ingresos</th>
+                            <th scope="col" class="text-end">Egresos</th>
+                            <th scope="col" class="text-end">Balance</th>
+                            <th scope="col">Resultado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var m in Model.PorMes)
+                        {
+                            <tr>
+                                <td class="fw-bold">@m.Nombre</td>
+                                <td class="text-end">₡@m.Ingresos.ToString("N2")</td>
+                                <td class="text-end">₡@m.Egresos.ToString("N2")</td>
+                                <td class="text-end fw-bold">@Dinero(m.Balance)</td>
+                                <td>
+                                    <span class="fn-badge @(m.Balance < 0 ? "fn-badge-danger" : "fn-badge-success")">
+                                        @(m.Balance < 0 ? "Pérdida" : m.Balance == 0 ? "Sin diferencia" : "Ganancia")
+                                    </span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+}

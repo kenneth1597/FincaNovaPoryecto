@@ -25,7 +25,6 @@
                 <div class="col-md-3">
                     <label asp-for="Hasta" class="fn-form-label">Hasta</label>
                     <input asp-for="Hasta" type="date" class="fn-form-control" />
-                    <span asp-validation-for="Hasta" class="text-danger small"></span>
                 </div>
                 <div class="col-md-3">
                     <label asp-for="PeriodoProductivoId" class="fn-form-label">Período</label>
@@ -38,10 +37,13 @@
                     <a asp-action="Index" class="fn-btn fn-btn-outline">Limpiar</a>
                 </div>
             </div>
+            <span asp-validation-for="Hasta" class="text-danger small d-block mt-2"></span>
         </form>
     </div>
 </div>
 
+@if (ViewData.ModelState.IsValid)
+{
 <div class="row g-3 mb-3">
     <div class="col-md-4">
         <div class="fn-card h-100 mb-0">
@@ -74,7 +76,9 @@
     </div>
 </div>
 
-@if (Model.EgresosPorCategoria.Any())
+}
+
+@if (ViewData.ModelState.IsValid && Model.EgresosPorCategoria.Any())
 {
     <div class="fn-card">
         <div class="fn-card-header">
@@ -96,7 +100,7 @@
                             <tr>
                                 <td class="fw-bold">@c.Categoria</td>
                                 <td class="text-end">₡@c.Total.ToString("N2")</td>
-                                <td class="text-end">@((c.Total / Model.TotalEgresos * 100).ToString("0.#"))%</td>
+                                <td class="text-end">@((c.Total / Model.TotalEgresos * 100).ToString("0.0"))%</td>
                             </tr>
                         }
                     </tbody>
@@ -106,6 +110,8 @@
     </div>
 }
 
+@if (ViewData.ModelState.IsValid)
+{
 <div class="fn-card">
     <div class="fn-card-header d-flex justify-content-between align-items-center">
         <h2 class="fn-card-title">Movimientos</h2>
@@ -161,3 +167,4 @@
         <partial name="_Paginacion" model="Model.Paginacion" />
     }
 </div>
+}

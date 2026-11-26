@@ -51,7 +51,7 @@ public class VentaFormViewModel
     [Required(ErrorMessage = "La cantidad es obligatoria.")]
     [Range(0.01, 100000000, ErrorMessage = "La cantidad debe ser mayor que cero.")]
     [Display(Name = "Cantidad")]
-    public decimal? Cantidad { get; set; } = 0.5m;
+    public decimal? Cantidad { get; set; }
 
     [Display(Name = "Unidad")]
     public UnidadVentaCafe Unidad { get; set; } = UnidadVentaCafe.Cajuela;

@@ -1,5 +1,14 @@
 @model VentaFiltroViewModel
 
+@functions {
+    // "1 cajuela", "4 cajuelas", "12 kilogramos".
+    static string Unidad(decimal cantidad, UnidadVentaCafe unidad)
+    {
+        var nombre = unidad.ToString().ToLowerInvariant();
+        return cantidad == 1 ? nombre : nombre + "s";
+    }
+}
+
 @{
     ViewData["Title"] = "Ventas de café";
 }
@@ -36,6 +45,7 @@
                     <a asp-action="Index" class="fn-btn fn-btn-outline">Limpiar</a>
                 </div>
             </div>
+            <span asp-validation-for="Hasta" class="text-danger small d-block mt-2"></span>
         </form>
     </div>
 </div>
@@ -79,7 +89,7 @@
                             <tr>
                                 <td>@v.Fecha.ToString("dd/MM/yyyy")</td>
                                 <td class="fw-bold">@v.Comprador</td>
-                                <td class="text-end">@v.Cantidad.ToString("0.##") @(v.Unidad.ToString().ToLower())</td>
+                                <td class="text-end">@v.Cantidad.ToString("0.##") @Unidad(v.Cantidad, v.Unidad)</td>
                                 <td class="text-end">₡@v.PrecioUnitario.ToString("N2")</td>
                                 <td class="text-end fw-bold">₡@v.Total.ToString("N2")</td>
                                 <td>@(v.Periodo ?? "—")</td>

@@ -5,13 +5,13 @@
 <div class="row g-3">
     <div class="col-md-4">
         <label asp-for="Fecha" class="fn-form-label"></label>
-        <input asp-for="Fecha" type="date" max="@DateTime.Today.ToString("yyyy-MM-dd")" class="fn-form-control" />
+        <input asp-for="Fecha" type="date" max="@DateTime.Today.ToString("yyyy-MM-dd")" data-msg-max="La fecha del gasto no puede ser futura." data-msg-date="Ingresa una fecha válida." class="fn-form-control" />
         <span asp-validation-for="Fecha" class="text-danger"></span>
     </div>
 
     <div class="col-md-4">
         <label asp-for="Monto" class="fn-form-label"></label>
-        <input asp-for="Monto" type="number" step="0.01" min="0.01" class="fn-form-control" />
+        <input asp-for="Monto" type="number" step="0.01" min="0.01" data-msg-min="El monto debe ser mayor que cero." data-msg-number="Ingresa un número válido." data-msg-step="Usa como máximo dos decimales." class="fn-form-control" />
         <span asp-validation-for="Monto" class="text-danger"></span>
     </div>
 

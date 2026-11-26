@@ -14,7 +14,7 @@
 
 <div class="fn-card">
     <div class="fn-card-body">
-        <form asp-action="Editar" asp-route-id="@Model.Id" method="post">
+        <form asp-action="Editar" asp-route-id="@Model.Id" method="post" novalidate>
             <input type="hidden" asp-for="Id" />
             <partial name="_FormFields" model="Model" />
 
@@ -27,6 +27,5 @@
 </div>
 
 @section Scripts {
-    <partial name="_ValidationScriptsPartial" />
     <partial name="_TotalVentaScript" />
 }

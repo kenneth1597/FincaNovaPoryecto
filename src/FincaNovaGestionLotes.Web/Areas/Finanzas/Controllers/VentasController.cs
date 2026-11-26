@@ -32,6 +32,14 @@ public class VentasController : Controller
     {
         var query = _db.Ventas.AsNoTracking().AsQueryable();
 
+        // Con el rango al revés no se muestran datos: solo el aviso.
+        var rangoInvalido = filtro.Desde.HasValue && filtro.Hasta.HasValue && filtro.Desde > filtro.Hasta;
+        if (rangoInvalido)
+        {
+            ModelState.AddModelError(nameof(filtro.Hasta), "La fecha final no puede ser anterior a la inicial.");
+            query = query.Where(v => false);
+        }
+
         if (filtro.Desde.HasValue)
             query = query.Where(v => v.Fecha >= filtro.Desde.Value.Date);
 

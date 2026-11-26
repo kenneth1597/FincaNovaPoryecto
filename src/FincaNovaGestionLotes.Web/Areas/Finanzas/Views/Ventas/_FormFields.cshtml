@@ -5,7 +5,7 @@
 <div class="row g-3">
     <div class="col-md-4">
         <label asp-for="Fecha" class="fn-form-label"></label>
-        <input asp-for="Fecha" type="date" max="@DateTime.Today.ToString("yyyy-MM-dd")" class="fn-form-control" />
+        <input asp-for="Fecha" type="date" max="@DateTime.Today.ToString("yyyy-MM-dd")" data-msg-max="La fecha de la venta no puede ser futura." data-msg-date="Ingresa una fecha válida." class="fn-form-control" />
         <span asp-validation-for="Fecha" class="text-danger"></span>
     </div>
 
@@ -17,7 +17,7 @@
 
     <div class="col-md-4">
         <label asp-for="Cantidad" class="fn-form-label"></label>
-        <input asp-for="Cantidad" type="number" step="0.01" min="0.01" class="fn-form-control" id="cantidad" />
+        <input asp-for="Cantidad" type="number" step="0.01" min="0.01" data-msg-min="La cantidad debe ser mayor que cero." data-msg-number="Ingresa un número válido." data-msg-step="Usa como máximo dos decimales." class="fn-form-control" id="cantidad" />
         <span asp-validation-for="Cantidad" class="text-danger"></span>
     </div>
 
@@ -29,7 +29,7 @@
 
     <div class="col-md-4">
         <label asp-for="PrecioUnitario" class="fn-form-label"></label>
-        <input asp-for="PrecioUnitario" type="number" step="0.01" min="0.01" class="fn-form-control" id="precioUnitario" />
+        <input asp-for="PrecioUnitario" type="number" step="0.01" min="0.01" data-msg-min="El precio unitario debe ser mayor que cero." data-msg-number="Ingresa un número válido." data-msg-step="Usa como máximo dos decimales." class="fn-form-control" id="precioUnitario" />
         <span asp-validation-for="PrecioUnitario" class="text-danger"></span>
     </div>
 
@@ -43,7 +43,7 @@
 
     <div class="col-md-4">
         <label class="fn-form-label">Total de la venta</label>
-        <div class="fn-form-control fw-bold" id="totalVenta">₡0.00</div>
+        <div class="fn-form-control fw-bold d-flex align-items-center" id="totalVenta">₡0,00</div>
     </div>
 
     <div class="col-12">

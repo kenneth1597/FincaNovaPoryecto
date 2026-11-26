@@ -14,7 +14,7 @@
 
 <div class="fn-card">
     <div class="fn-card-body">
-        <form asp-action="Crear" method="post">
+        <form asp-action="Crear" method="post" novalidate>
             <partial name="_FormFields" model="Model" />
 
             <div class="d-flex gap-2 mt-4">
@@ -26,6 +26,5 @@
 </div>
 
 @section Scripts {
-    <partial name="_ValidationScriptsPartial" />
     <partial name="_TotalVentaScript" />
 }

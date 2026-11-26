@@ -65,6 +65,7 @@ public class ControlFinancieroController : Controller
             .Select(v => new MovimientoViewModel
             {
                 Fecha = v.Fecha,
+                Creado = v.FechaCreacion,
                 EsIngreso = true,
                 Concepto = "Venta de café",
                 Detalle = v.Comprador,
@@ -77,6 +78,7 @@ public class ControlFinancieroController : Controller
             .Select(g => new MovimientoViewModel
             {
                 Fecha = g.Fecha,
+                Creado = g.FechaCreacion,
                 EsIngreso = false,
                 Concepto = g.CategoriaGasto.Nombre,
                 Detalle = g.Descripcion,
@@ -88,7 +90,7 @@ public class ControlFinancieroController : Controller
         var (movimientos, paginacion) = ingresos
             .Concat(egresos)
             .OrderByDescending(m => m.Fecha)
-            .ThenBy(m => m.EsIngreso)
+            .ThenByDescending(m => m.Creado)
             .Paginar(filtro.Pagina);
 
         filtro.Movimientos = movimientos;
